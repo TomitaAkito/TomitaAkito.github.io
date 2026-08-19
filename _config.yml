@@ -1,0 +1,43 @@
+# ==============================
+#  サイト基本設定
+#  ※ ご自身の情報に書き換えてください
+# ==============================
+title: "Akito Tomita | Portfolio"
+description: "Akito Tomita's Portfolio Site"
+author: "Akito Tomita"
+
+# GitHub Pages の公開URL（ユーザー名.github.ioの場合はそのまま）
+url: "https://TomitaAkito.github.io"
+baseurl: ""
+
+# GitHub / Researchmap のアカウント情報（JS・リンクから参照）
+github_username: "TomitaAkito"
+researchmap_url: "https://researchmap.jp/akitotomita"   # ← 実際のURLに差し替えてください
+github_url: "https://github.com/TomitaAkito"
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+permalink: /news/:year/:month/:day/:title/
+
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+# _posts をニュースとして扱う
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+
+future: true

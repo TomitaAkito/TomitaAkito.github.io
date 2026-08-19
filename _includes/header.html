@@ -1,0 +1,20 @@
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo" href="{{ '/' | relative_url }}">{{ site.author | default: "Portfolio" }}<span>.</span></a>
+
+    <button class="hamburger" id="hamburger" aria-label="メニューを開く" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="nav" id="nav">
+      <ul class="nav-list">
+        <li><a href="{{ '/' | relative_url }}">HOME</a></li>
+        <li><a href="{{ '/news.html' | relative_url }}">NEWS</a></li>
+        <li><a href="{{ site.researchmap_url }}" target="_blank" rel="noopener noreferrer">RESEARCHMAP</a></li>
+        <li><a href="{{ site.github_url }}" target="_blank" rel="noopener noreferrer">GITHUB</a></li>
+        <li><a href="{{ '/link.html' | relative_url }}">LINK</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="nav-overlay" id="navOverlay"></div>
+</header>

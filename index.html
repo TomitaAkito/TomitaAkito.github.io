@@ -1,0 +1,103 @@
+---
+layout: default
+title: HOME
+extra_js:
+  - /assets/js/home.js
+---
+
+<!-- marked.js（Markdown→HTML変換ライブラリ）をCDNから読み込み -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<section class="hero">
+  <div class="container">
+    <h1>Hi, I'm <span class="marker-blue">{{ site.author }}</span>.</h1>
+    <p>{{ site.description }}</p>
+  </div>
+</section>
+
+<!-- ① News -->
+<section class="section" id="news">
+  <div class="container">
+    <h2 class="section-title">News</h2>
+    <p class="section-lead">最新の<span class="marker">お知らせ</span>を掲載しています。</p>
+
+    <ul class="news-list">
+      {% assign visible_posts = site.posts | where_exp: "item", "item.hidden != true" %}
+      {% for post in visible_posts limit: 5 %}
+      <li class="news-item">
+        <a href="{{ post.url | relative_url }}">
+          <span class="news-date">{{ post.date | date: "%Y.%m.%d" }}</span>
+          {% if post.category %}<span class="news-category">{{ post.category }}</span>{% endif %}
+          <span class="news-title">{{ post.title }}</span>
+        </a>
+      </li>
+      {% else %}
+      <li class="news-item"><p class="loading-text">まだニュースがありません。</p></li>
+      {% endfor %}
+    </ul>
+
+    <div class="more-wrap">
+      <a href="{{ '/news.html' | relative_url }}" class="btn">More</a>
+    </div>
+  </div>
+</section>
+
+<!-- ② Profile -->
+<section class="section section-alt" id="profile">
+  <div class="container">
+    <h2 class="section-title">Profile</h2>
+    
+    <!-- 手動追加：自己紹介・資格・趣味エリア -->
+    <div class="profile-summary" style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+      <p style="margin-bottom: 20px; line-height: 1.6;">
+        ご覧いただきありがとうございます！<br>
+        詳しい研究業績については、<a href="{{ site.researchmap_url }}" target="_blank" rel="noopener noreferrer" style="color: var(--color-main); font-weight: bold; text-decoration: underline;">researchmap</a> をご覧ください。
+      </p>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 30px;">
+        <!-- 資格 -->
+        <div style="flex: 1 1 300px;">
+          <h3 style="font-size: 1.1em; border-bottom: 2px solid var(--color-main); padding-bottom: 5px; margin-bottom: 15px;">資格</h3>
+          <ul style="list-style: none; padding: 0; line-height: 1.8; margin: 0;">
+            <li><span style="display: inline-block; width: 90px; color: #666;">2021/03</span>普通自動車第一種運転免許</li>
+            <li><span style="display: inline-block; width: 90px; color: #666;">2021/04</span>普通自動二輪車免許</li>
+            <li><span style="display: inline-block; width: 90px; color: #666;">2022/12</span>基本情報技術者</li>
+            <li><span style="display: inline-block; width: 90px; color: #666;">2024/04</span>航空無線通信士</li>
+            <li><span style="display: inline-block; width: 90px; color: #666;">2025/05</span>大型自動二輪免許</li>
+          </ul>
+        </div>
+        
+        <!-- 趣味 -->
+        <div style="flex: 1 1 200px;">
+          <h3 style="font-size: 1.1em; border-bottom: 2px solid var(--color-main); padding-bottom: 5px; margin-bottom: 15px;">趣味</h3>
+          <p style="line-height: 1.8; margin: 0;">
+            ツーリング・ドライブ<br>
+            動画編集<br>
+            プログラミング<br>
+            スライド作成
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p class="section-lead">GitHubの<span class="marker">README.md</span>を自動取得して表示しています。</p>
+
+    <div class="profile-card">
+      <div id="profile-content" data-username="{{ site.github_username }}">
+        <p class="loading-text">プロフィールを読み込み中...</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ③ Projects -->
+<section class="section" id="projects">
+  <div class="container">
+    <h2 class="section-title">Projects</h2>
+    <p class="section-lead">GitHub上で公開している<span class="marker">リポジトリ</span>一覧です。</p>
+
+    <div class="project-grid" id="project-grid" data-username="{{ site.github_username }}">
+      <p class="loading-text">プロジェクトを読み込み中...</p>
+    </div>
+  </div>
+</section>

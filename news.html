@@ -1,0 +1,100 @@
+---
+layout: default
+title: NEWS
+permalink: /news.html
+---
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">NEWS</h2>
+    <p class="section-lead">これまでの<span class="marker">お知らせ</span>を一覧表示しています。</p>
+
+    <!-- カテゴリ絞り込みボタン -->
+    <div class="category-filter" style="margin-bottom: 30px; text-align: center;">
+      <button class="filter-btn active" data-filter="all">All</button>
+      
+      <!-- Jekyllの機能で、記事に使われているカテゴリを重複なしで自動抽出 -->
+      {% assign categories = site.posts | map: "category" | compact | uniq %}
+      {% for category in categories %}
+        <button class="filter-btn" data-filter="{{ category }}">{{ category }}</button>
+      {% endfor %}
+    </div>
+
+    <!-- ニュース一覧 -->
+    <ul class="news-list" id="news-list">
+      {% assign visible_posts = site.posts | where_exp: "item", "item.hidden != true" %}
+      {% for post in visible_posts %}
+      <!-- data-category属性を追加して、JSから判別できるようにする -->
+      <li class="news-item" data-category="{{ post.category }}">
+        <a href="{{ post.url | relative_url }}">
+          <span class="news-date">{{ post.date | date: "%Y.%m.%d" }}</span>
+          {% if post.category %}<span class="news-category">{{ post.category }}</span>{% endif %}
+          <span class="news-title">{{ post.title }}</span>
+          {% if post.excerpt %}
+          <span class="news-excerpt">{{ post.excerpt | strip_html | truncate: 80 }}</span>
+          {% endif %}
+        </a>
+      </li>
+      {% else %}
+      <li class="news-item"><p class="loading-text">まだニュースがありません。</p></li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+<!-- ボタンのデザイン -->
+<style>
+  .filter-btn {
+    background: transparent;
+    border: 2px solid var(--color-main, #1e6fd9);
+    color: var(--color-main, #1e6fd9);
+    padding: 6px 16px;
+    margin: 0 5px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: bold;
+    transition: all 0.3s ease;
+  }
+  .filter-btn:hover,
+  .filter-btn.active {
+    background: var(--color-main, #1e6fd9);
+    color: #fff;
+  }
+</style>
+
+<!-- 絞り込み機能のJavaScript -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const newsItems = document.querySelectorAll('.news-item');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        // 1. ボタンのアクティブ状態（色）を切り替え
+        filterBtns.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+
+        // 2. クリックされたボタンのカテゴリを取得
+        const targetCategory = this.getAttribute('data-filter');
+
+        // 3. 記事の表示・非表示を切り替え
+        newsItems.forEach(item => {
+          // 「All」が選ばれている、または記事のカテゴリが一致した場合に表示
+          if (targetCategory === 'all' || item.getAttribute('data-category') === targetCategory) {
+            item.style.display = ''; // 表示
+            
+            // 少しフワッと表示させるアニメーション（おまけ）
+            item.style.opacity = '0';
+            setTimeout(() => {
+              item.style.transition = 'opacity 0.3s ease';
+              item.style.opacity = '1';
+            }, 10);
+          } else {
+            item.style.display = 'none'; // 非表示
+          }
+        });
+      });
+    });
+  });
+</script>

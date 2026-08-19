@@ -1,0 +1,43 @@
+---
+layout: default
+title: LINK
+permalink: /link.html
+---
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">LINK</h2>
+    <p class="section-lead">よく使う<span class="marker">リンク集</span>です。</p>
+
+    <!--
+      新しいリンクを追加する場合は、対象カテゴリの <ul class="link-list"> 内に
+      <li><a href="URL" target="_blank" rel="noopener noreferrer">表示名</a></li>
+      を追加するだけでOKです。カテゴリを増やす場合は .link-category ブロックごとコピーしてください。
+    -->
+
+    <div class="link-category">
+      <h2>所属</h2>
+      <ul class="link-list">
+        <li><a href="https://vclabo.com/index.html" target="_blank" rel="noopener noreferrer">Visual Computing 研究室</a></li>
+        <li><a href="https://www.oit.ac.jp/" target="_blank" rel="noopener noreferrer">大阪工業大学</a></li>
+        <li><a href="https://www.oit.ac.jp/academic/is/" target="_blank" rel="noopener noreferrer">大阪工業大学 情報科学部</a></li>
+      </ul>
+    </div>
+
+    <div class="link-category">
+      <h2>研究・開発</h2>
+      <ul class="link-list">
+        <li><a href="{{ site.researchmap_url }}" target="_blank" rel="noopener noreferrer">Researchmap</a></li>
+        <li><a href="{{ site.github_url }}" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+      </ul>
+    </div>
+
+    <div class="link-category">
+      <h2>その他</h2>
+      <ul class="link-list">
+        <li><a href="https://x.com/VclVisual" target="_blank" rel="noopener noreferrer">Visual Computing 研究室 X (Twitter)</a></li>
+        <li><a href="https://vclabo.com/publication.html" target="_blank" rel="noopener noreferrer">Visual Computing 研究室 論文・発表一覧</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
