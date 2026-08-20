@@ -75,3 +75,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
+
+// BFCache（ブラウザのバックボタン）対策：キャッシュから復元された際に透明状態を解除する
+window.addEventListener('pageshow', function (event) {
+  if (event.persisted || document.body.classList.contains('fade-out')) {
+    document.body.classList.remove('fade-out');
+  }
+});

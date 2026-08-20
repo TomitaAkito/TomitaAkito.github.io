@@ -711,3 +711,9 @@ html {
   from { opacity: 1; }
   to { opacity: 0; }
 }
+
+/* スマートフォンでの横揺れ（意図しない右スワイプ）を防止 */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+}
