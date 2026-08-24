@@ -717,3 +717,80 @@ html, body {
   overflow-x: hidden;
   width: 100%;
 }
+
+/* =========================================
+   1. カテゴリごとの色定義
+========================================= */
+/* 新しいカテゴリを追加したい場合は、ここのブロックを追加 */
+
+[data-cat="国際学会"], [data-filter="国際学会"] {
+  --cat-bg: #e3f2fd;
+  --cat-color: #1e6fd9;
+}
+
+[data-cat="国内学会"], [data-filter="国内学会"] {
+  --cat-bg: #fce4ec;
+  --cat-color: #d81b60;
+}
+
+[data-cat="受賞"], [data-filter="受賞"],
+[data-cat="表彰"], [data-filter="表彰"] {
+  --cat-bg: #fff8e1;
+  --cat-color: #ff8f00;
+}
+
+[data-cat="メディア掲載"], [data-filter="メディア掲載"] {
+  --cat-bg: #f3e5f5;
+  --cat-color: #6a1b9a;
+}
+
+[data-cat="学術論文"], [data-filter="学術論文"] {
+  --cat-bg: #e8f5e9;
+  --cat-color: #2e7d32;
+}
+
+[data-cat="その他"], [data-filter="その他"] {
+  --cat-bg: #e0f7fa;
+  --cat-color: #00796b;
+}
+
+/* =========================================
+   2. バッジの基本スタイル
+========================================= */
+.news-category {
+  display: inline-block;
+  padding: 3px 8px;
+  margin-right: 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  font-weight: bold;
+  /* 変数が設定されていればその色を、なければ #eee と #333 を使う */
+  background-color: var(--cat-bg, #eee);
+  color: var(--cat-color, #333);
+}
+
+/* =========================================
+   3. ボタンの基本スタイル
+========================================= */
+.filter-btn {
+  padding: 6px 16px;
+  margin: 0 5px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  /* 変数が設定されていればその色を、なければデフォルトの色を使う */
+  background-color: var(--cat-bg, #f8f9fa);
+  border: 2px solid var(--cat-color, #999);
+  color: var(--cat-color, #333);
+}
+
+/* 4. ボタンのホバー・アクティブ状態 */
+.filter-btn:hover,
+.filter-btn.active {
+  /* アクティブ時は背景を文字色（濃い色）で塗りつぶし、文字を白にする */
+  background-color: var(--cat-color, #333);
+  border-color: var(--cat-color, #333);
+  color: #fff;
+}

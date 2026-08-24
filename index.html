@@ -27,7 +27,9 @@ extra_js:
       <li class="news-item">
         <a href="{{ post.url | relative_url }}">
           <span class="news-date">{{ post.date | date: "%Y.%m.%d" }}</span>
-          {% if post.category %}<span class="news-category">{{ post.category }}</span>{% endif %}
+          {% for cat in post.categories %}
+            <span class="news-category" data-cat="{{ cat }}">{{ cat }}</span>
+          {% endfor %}
           <span class="news-title">{{ post.title }}</span>
         </a>
       </li>
@@ -47,7 +49,7 @@ extra_js:
   <div class="container">
     <h2 class="section-title">Profile</h2>
     
-    <!-- 手動追加：自己紹介・資格・趣味エリア -->
+    <!-- 自己紹介・資格・趣味エリア -->
     <div class="profile-summary" style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
       <p style="margin-bottom: 20px; line-height: 1.6;">
         ご覧いただきありがとうございます！<br>
@@ -79,8 +81,6 @@ extra_js:
         </div>
       </div>
     </div>
-
-    <p class="section-lead">GitHubの<span class="marker">README.md</span>を自動取得して表示しています。</p>
 
     <div class="profile-card">
       <div id="profile-content" data-username="{{ site.github_username }}">

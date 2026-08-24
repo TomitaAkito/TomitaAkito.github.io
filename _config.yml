@@ -41,3 +41,21 @@ exclude:
   - node_modules
 
 future: true
+
+# =========================
+# SEO & OGP 設定
+# =========================
+plugins:
+  - jekyll-seo-tag
+
+# サイトの基本情報（すでに設定済みの場合は不要です）
+title: "Portfolio"
+description: "研究業績や開発プロジェクトをまとめたポートフォリオサイトです。"
+author: "Tomita Akito"
+
+# OGP用画像
+image: "/assets/images/ogp.png"
+
+# X（旧Twitter）でカードを大きく表示するための設定
+twitter:
+  card: "summary_large_image"
