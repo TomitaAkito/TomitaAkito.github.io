@@ -82,3 +82,75 @@ window.addEventListener('pageshow', function (event) {
     document.body.classList.remove('fade-out');
   }
 });
+
+// =========================================================
+// マウス追従型 ニュースプレビュー機能
+// =========================================================
+document.addEventListener('DOMContentLoaded', () => {
+  // 画面上に1つだけプレビュー用の「箱」を作る
+  const previewBox = document.createElement('div');
+  previewBox.className = 'hover-preview-window';
+  previewBox.innerHTML = `
+    <img src="" alt="preview" id="hp-img">
+    <p id="hp-text"></p>
+  `;
+  document.body.appendChild(previewBox);
+
+  const hpImg = document.getElementById('hp-img');
+  const hpText = document.getElementById('hp-text');
+
+  // 全てのニュースリンクを取得
+  const links = document.querySelectorAll('.news-item a');
+  
+  links.forEach(link => {
+    // 1. マウスが乗った時（データを取り出してウィンドウを表示）
+    link.addEventListener('mouseenter', () => {
+      const previewData = link.querySelector('.news-preview-data');
+      if (!previewData) return;
+      
+      const imgSrc = previewData.getAttribute('data-image');
+      const text = previewData.getAttribute('data-text');
+
+      // 画像があれば表示
+      if (imgSrc) {
+        hpImg.src = imgSrc;
+        hpImg.style.display = 'block';
+      } else {
+        hpImg.style.display = 'none';
+      }
+
+      // 文章があれば表示
+      if (text) {
+        hpText.textContent = text;
+        hpText.style.display = 'block';
+      } else {
+        hpText.style.display = 'none';
+      }
+
+      // どちらかがあればウィンドウを表示
+      if (imgSrc || text) {
+        previewBox.classList.add('show');
+      }
+    });
+
+    // 2. マウスが動いている時（カーソルの右下に追従させる）
+    link.addEventListener('mousemove', (e) => {
+      // カーソルの位置から「右に15px、下に15px」ズラした場所に配置
+      let x = e.clientX + 15;
+      let y = e.clientY + 15;
+      
+      // 画面の右端にはみ出しそうな時は、カーソルの「左側」に反転させる
+      if (x + 300 > window.innerWidth) {
+        x = e.clientX - 295;
+      }
+      
+      previewBox.style.left = x + 'px';
+      previewBox.style.top = y + 'px';
+    });
+
+    // 3. マウスが離れた時（ウィンドウを隠す）
+    link.addEventListener('mouseleave', () => {
+      previewBox.classList.remove('show');
+    });
+  });
+});

@@ -4,6 +4,9 @@ categories: ["受賞"]
 # published: false
 # hidden: true
 ---
+<div class="watermark-container">
+<img src="/assets/img/post/sketchaq.png" alt="画像">
+</div>
 
 大学より研究優秀賞をいただきました。情報処理学会での口頭発表によるものです。関係者の皆様へ心より感謝申し上げます。
 

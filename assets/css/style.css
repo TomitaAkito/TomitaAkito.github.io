@@ -719,6 +719,108 @@ html, body {
 }
 
 /* =========================================
+   ニュース画像のサイズ統一と透かし
+========================================= */
+.watermark-container {
+  position: relative;
+  /* 画像の中央寄せと、上下の余白 */
+  margin: 30px auto; 
+  
+  /* ▼ココが重要！▼
+     コンテナ（透かしの枠）を、中の画像のサイズにぴったり密着させます。
+     これがないと、透かしが右下にズレてしまいます。 */
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* 画像本体のサイズ統一設定 */
+.watermark-container img {
+  display: block;
+  
+  /* 小さい画像は拡大し、大きい画像は縮小してサイズ感を統一します */
+  width: 1000px; 
+  
+  /* ただし、スマホの画面や記事の幅は絶対にはみ出さないようにガード */
+  max-width: 100%; 
+  
+  /* 縦横比を維持（画像が潰れるのを防ぐ） */
+  height: auto;
+  
+  /* （お好みで）画像の角を少し丸くすると今風になります */
+  border-radius: 8px;
+}
+
+/* 画像の右下に重ねる透かし文字（変更なし） */
+.watermark-container::after {
+  content: "© Tomita Akito";
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85em;
+  font-weight: bold;
+  pointer-events: none;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  z-index: 10;
+}
+
+/* =========================================
+   マウス追従型 プレビューウィンドウ
+========================================= */
+.hover-preview-window {
+  position: fixed; /* 画面上の絶対位置（マウス座標）に合わせる */
+  z-index: 9999;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  width: 280px; /* ウィンドウの横幅 */
+  padding: 12px;
+  pointer-events: none; /* マウスの邪魔をしないようにする */
+  
+  /* 初期状態は透明で隠しておく */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease;
+}
+
+/* Javascriptで.showが付いた時だけ表示 */
+.hover-preview-window.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ポップアップ内の画像（上） */
+.hover-preview-window img {
+  width: 100%;
+  height: auto; /* 固定高さをやめ、元の比率を保つ */
+  max-height: 150px; /* ただし、大きくなりすぎないように制限 */
+  object-fit: contain; /* ★ cover（切り抜き）から contain（全体を収める）に変更 */
+  border-radius: 6px;
+  margin-bottom: 10px;
+  display: none;
+}
+
+/* ポップアップ内の文字（下） */
+.hover-preview-window p {
+  font-size: 0.85em;
+  color: #444;
+  margin: 0;
+  line-height: 1.5;
+  display: none; /* JSで文字がある時だけ表示 */
+}
+
+
+/* スマホではカーソルが存在しないため無効化 */
+@media (hover: none) {
+  .hover-preview-window {
+    display: none !important;
+  }
+}
+
+/* =========================================
    1. カテゴリごとの色定義
 ========================================= */
 /* 新しいカテゴリを追加したい場合は、ここのブロックを追加 */

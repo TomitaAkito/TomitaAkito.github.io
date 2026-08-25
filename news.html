@@ -24,19 +24,40 @@ permalink: /news.html
       {% assign visible_posts = site.posts | where_exp: "item", "item.hidden != true" %}
       {% for post in visible_posts %}
       <!-- 複数のカテゴリをカンマ区切りで裏側に持たせる -->
-      <li class="news-item" data-categories="{{ post.categories | join: ',' }}">
-        <a href="{{ post.url | relative_url }}">
-          <span class="news-date">{{ post.date | date: "%Y.%m.%d" }}</span>
+<li class="news-item" data-categories="{{ post.categories | join: ',' }}">
+        <a href="{{ post.url | relative_url }}" class="news-link">
           
-          <!-- カテゴリをループしてすべて表示 -->
+          <!-- ★ ① 画像の自動抽出ロジック -->
+          {% assign preview_img = post.image %}
+          {% if preview_img == nil %}
+            {% if post.content contains '<img' %}
+              {% assign parts = post.content | split: 'src="' %}
+              {% if parts.size > 1 %}
+                {% assign preview_img = parts[1] | split: '"' | first %}
+              {% endif %}
+            {% endif %}
+          {% endif %}
+
+          <!-- ★ ② MD側の「最初の1文（。または．まで）」を抽出するロジック -->
+          {% assign plain_text = post.content | strip_html | strip_newlines | strip %}
+          {% assign first_sentence = plain_text | split: "。" | first | split: "．" | first %}
+          
+          {% if plain_text != first_sentence %}
+            {% assign first_sentence = first_sentence | append: "。" %}
+          {% endif %}
+          
+          <!-- プレビュー用のデータを裏側に持たせる -->
+          <div class="news-preview-data" 
+               data-image="{{ preview_img }}" 
+               data-text="{{ first_sentence }}"></div>
+          
+          <!-- 常に表示されている部分 -->
+          <span class="news-date">{{ post.date | date: "%Y.%m.%d" }}</span>
           {% for cat in post.categories %}
             <span class="news-category" data-cat="{{ cat }}">{{ cat }}</span>
           {% endfor %}
-          
           <span class="news-title">{{ post.title }}</span>
-          {% if post.excerpt %}
-          <span class="news-excerpt">{{ post.excerpt | strip_html | truncate: 80 }}</span>
-          {% endif %}
+          
         </a>
       </li>
       {% else %}
