@@ -27,7 +27,7 @@ extra_js:
       <li class="news-item" data-categories="{{ post.categories | join: ',' }}">
         <a href="{{ post.url | relative_url }}" class="news-link">
           
-          <!-- ★ ① 画像の自動抽出ロジック -->
+          <!-- ① 画像の自動抽出ロジック -->
           {% assign preview_img = post.image %}
           {% if preview_img == nil %}
             {% if post.content contains '<img' %}
@@ -38,7 +38,7 @@ extra_js:
             {% endif %}
           {% endif %}
 
-          <!-- ★ ② MD側の「最初の1文（。または．まで）」を抽出するロジック -->
+          <!-- ② MD側の「最初の1文（。または．まで）」を抽出するロジック -->
           {% assign plain_text = post.content | strip_html | strip_newlines | strip %}
           {% assign first_sentence = plain_text | split: "。" | first | split: "．" | first %}
           
@@ -46,17 +46,49 @@ extra_js:
             {% assign first_sentence = first_sentence | append: "。" %}
           {% endif %}
           
-          <!-- プレビュー用のデータを裏側に持たせる -->
+          <!-- ③ PCプレビュー用のデータを裏側に持たせる -->
           <div class="news-preview-data" 
                data-image="{{ preview_img }}" 
                data-text="{{ first_sentence }}"></div>
           
-          <!-- 常に表示されている部分 -->
-          <span class="news-date">{{ post.date | date: "%Y.%m.%d" }}</span>
-          {% for cat in post.categories %}
-            <span class="news-category" data-cat="{{ cat }}">{{ cat }}</span>
-          {% endfor %}
-          <span class="news-title">{{ post.title }}</span>
+          <!-- 常に表示されているタイトル部分 -->
+          <div class="news-meta-title">
+            
+            <!-- 左側：日付（上下中央配置） -->
+            <div class="news-date-col">
+              <span class="news-date">{{ post.date | date: "%Y.%m.%d" }}</span>
+            </div>
+            
+            <!-- 右側：カテゴリとタイトル（縦並び） -->
+            <div class="news-content-col">
+              
+              <!-- 1行目：カテゴリとNEWバッジ -->
+              <div class="news-category-list">
+                
+                <!-- ★ NEWバッジの自動判定ロジック -->
+                {% assign current_time = 'now' | date: "%s" %}
+                {% assign post_time = post.date | date: "%s" %}
+                {% assign time_diff = current_time | minus: post_time %}
+                
+                <!-- 差分が約1ヶ月（30日 = 2592000秒）以内、かつ未来の記事ではない場合 -->
+                {% if time_diff >= 0 and time_diff <= 2592000 %}
+                  <span class="news-new-badge">NEW</span>
+                {% endif %}
+
+                {% for cat in post.categories %}
+                  <span class="news-category" data-cat="{{ cat }}">{{ cat }}</span>
+                {% endfor %}
+              </div>
+              
+              <!-- 2行目：タイトル -->
+              <div class="news-title">{{ post.title }}</div>
+              
+            </div>
+            
+          </div>
+
+          <!-- ★ ④ スマホ向け：タイトルの下に表示する1行分の文章 -->
+          <p class="mobile-news-excerpt">{{ first_sentence }}</p>
           
         </a>
       </li>

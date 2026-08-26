@@ -39,6 +39,11 @@
 
 document.addEventListener('DOMContentLoaded', function() {
   
+  // ★ サイト内のすべての画像に対して、HTMLのドラッグ機能を強制的に「無効(false)」にする
+  document.querySelectorAll('img').forEach(img => {
+    img.draggable = false;
+  });
+
   // 1. トップへ戻るボタンの表示・非表示制御
   const pageTopBtn = document.getElementById('page-top');
   if (pageTopBtn) {
@@ -133,17 +138,28 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // 2. マウスが動いている時（カーソルの右下に追従させる）
+    // 2. マウスが動いている時（カーソルの位置に合わせて追従・反転）
     link.addEventListener('mousemove', (e) => {
-      // カーソルの位置から「右に15px、下に15px」ズラした場所に配置
+      // プレビューウィンドウの実際の幅と高さを取得
+      const boxWidth = previewBox.offsetWidth || 300;
+      const boxHeight = previewBox.offsetHeight || 250;
+      
+      // 基本はカーソルの「右下（+15px）」に配置
       let x = e.clientX + 15;
       let y = e.clientY + 15;
       
-      // 画面の右端にはみ出しそうな時は、カーソルの「左側」に反転させる
-      if (x + 300 > window.innerWidth) {
-        x = e.clientX - 295;
+      // ① もし画面の「右端」にはみ出すなら、カーソルの「左側」に反転させる
+      if (x + boxWidth > window.innerWidth) {
+        x = e.clientX - boxWidth - 15;
       }
       
+      // ② もし画面の「下端」にはみ出すなら、カーソルの「上側」に反転させる
+      // （※ ①と組み合わせることで、右下で見切れる時は「左上」に表示されます）
+      if (y + boxHeight > window.innerHeight) {
+        y = e.clientY - boxHeight - 15;
+      }
+      
+      // 計算したXとYの位置を適用
       previewBox.style.left = x + 'px';
       previewBox.style.top = y + 'px';
     });

@@ -723,32 +723,21 @@ html, body {
 ========================================= */
 .watermark-container {
   position: relative;
-  /* 画像の中央寄せと、上下の余白 */
-  margin: 30px auto; 
-  
-  /* ▼ココが重要！▼
-     コンテナ（透かしの枠）を、中の画像のサイズにぴったり密着させます。
-     これがないと、透かしが右下にズレてしまいます。 */
-  display: block;
+  display: block; /* flexからblockに変更 */
   width: fit-content;
+  height: fit-content;
+  margin: 30px auto; 
   max-width: 100%;
+  line-height: 0; /* ★ ゴーストスペース（見えない文字の高さ）を徹底排除 */
 }
 
-/* 画像本体のサイズ統一設定 */
 .watermark-container img {
   display: block;
-  
-  /* 小さい画像は拡大し、大きい画像は縮小してサイズ感を統一します */
-  width: 1000px; 
-  
-  /* ただし、スマホの画面や記事の幅は絶対にはみ出さないようにガード */
+  margin: 0 !important;  /* ★ 最重要：テーマが勝手に入れている画像下の余白を強制リセット */
+  padding: 0 !important; /* ★ 念のため内側の余白もリセット */
   max-width: 100%; 
-  
-  /* 縦横比を維持（画像が潰れるのを防ぐ） */
   height: auto;
-  
-  /* （お好みで）画像の角を少し丸くすると今風になります */
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
 /* 画像の右下に重ねる透かし文字（変更なし） */
@@ -895,4 +884,239 @@ html, body {
   background-color: var(--cat-color, #333);
   border-color: var(--cat-color, #333);
   color: #fff;
+}
+
+/* =========================================
+   スマホ向け ニュース抜粋テキスト
+========================================= */
+.mobile-news-excerpt {
+  display: none; /* PC（マウスがある端末）では非表示にしておく */
+  font-size: 0.85em;
+  color: #777;
+  margin: 8px 0 0 0;
+  line-height: 1.4;
+  
+  /* スマホの細い画面でも必ず「1行」に収め、はみ出た分を「...」にする */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* スマホ（ホバーが使えない端末）の時だけブロック要素として表示する */
+@media (hover: none) {
+  .mobile-news-excerpt {
+    display: block;
+  }
+}
+
+/* =========================================
+   2カラム（並列）画像レイアウト
+========================================= */
+.image-row {
+  display: flex;
+  gap: 20px; /* 画像と画像の間の隙間 */
+  margin: 30px auto;
+  max-width: 1000px; /* 記事の最大幅に合わせる */
+}
+
+/* 2カラム内の透かしコンテナの調整 */
+.image-row .watermark-container {
+  margin: 0; /* コンテナ独自の余白を消す */
+  flex: 1; /* 2つの画像をぴったり「1:1」の均等な幅にする */
+  width: 100%;
+}
+
+/* 2カラム内の画像サイズを枠に合わせる */
+.image-row .watermark-container img {
+  width: 100%;
+}
+
+/* スマホ閲覧時は自動で「縦並び」に変更する（小さくなりすぎるのを防ぐ） */
+@media (max-width: 768px) {
+  .image-row {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+/* =========================================
+   ニュース画像のサイズ統一と透かし
+========================================= */
+.watermark-container {
+  position: relative;
+  display: flex; /* 枠が画像から浮かないようにする魔法 */
+  width: fit-content;
+  height: fit-content;
+  margin: 30px auto; 
+  max-width: 100%;
+}
+
+.watermark-container img {
+  display: block;
+  max-width: 100%; 
+  height: auto;
+  border-radius: 6px;
+}
+
+/* 画像の右下に重ねる透かし文字 */
+.watermark-container::after {
+  content: "© Tomita Akito";
+  position: absolute;
+  bottom: 6px;  /* 下端のギリギリに配置 */
+  right: 10px;  /* 右端のギリギリに配置 */
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85em;
+  font-weight: bold;
+  pointer-events: none;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  z-index: 10;
+}
+
+/* =========================================
+   画像キャプション（説明文）
+========================================= */
+/* 画像とキャプションをセットにまとめる枠 */
+figure.image-wrapper {
+  margin: 30px auto; /* 1枚画像の時は上下に余白をあけて中央寄せ */
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* キャプションを中央寄せにする */
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* キャプション枠の中にある「透かしコンテナ」の余白をリセット */
+figure.image-wrapper .watermark-container {
+  margin: 0;
+}
+
+/* キャプションの文字デザイン */
+.image-caption {
+  font-size: 0.85em;
+  color: #666; 
+  margin-top: 4px; /* 画像とキャプションの隙間 */
+  text-align: center;
+  line-height: 1.4;
+  width: 100%;
+}
+
+/* =========================================
+   2カラム（並列）画像レイアウト（切り取りなし・高さ揃え）
+========================================= */
+.image-row {
+  display: flex;
+  gap: 20px;
+  margin: 30px auto;
+  max-width: 1000px;
+  align-items: flex-end; /* 下に配置されるキャプションの高さをピシッと揃える */
+  justify-content: center;
+}
+
+/* 2カラムレイアウトの中に入った時だけ、余分な余白を消す */
+.image-row figure.image-wrapper,
+.image-row .watermark-container {
+  margin: 0;
+}
+
+/* 高さを揃えて、幅を自動調整する（切り取りなし） */
+.image-row .watermark-container img {
+  max-height: 380px; /* ここで高さを揃えます */
+  width: auto;       /* 画像の元の比率に合わせて横幅を自動で決定します */
+}
+
+/* スマホ閲覧時は縦並びにし、制限を解除する */
+@media (max-width: 768px) {
+  .image-row {
+    flex-direction: column;
+    align-items: center;
+  }
+  .image-row .watermark-container img {
+    max-height: none; 
+    width: 100%;
+  }
+}
+
+/* =========================================
+   サイト全体の画像保護設定
+========================================= */
+img {
+  -webkit-user-drag: none; /* Chrome, Safari, Edge用 */
+  -webkit-touch-callout: none; /* スマホでの長押しメニューを禁止 */
+  user-select: none; /* 画像が青く選択状態になるのを防ぐ */
+}
+
+/* =========================================
+   ニュースリストのレイアウト（日付左＋右側2段構成）
+========================================= */
+.news-meta-title {
+  display: flex;
+  align-items: center; 
+  gap: 24px; /* 日付と右側コンテンツの間の隙間 */
+}
+
+/* 左側：日付カラム */
+.news-date-col {
+  flex-shrink: 0;
+  width: 85px; 
+}
+
+.news-date {
+  font-size: 0.9em;
+  color: #666;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* 右側：カテゴリとタイトルのカラム */
+.news-content-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; 
+  flex: 1; 
+}
+
+/* 右側1行目：カテゴリリスト */
+.news-category-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* 右側2行目：タイトル */
+.news-title {
+  font-size: 1.05em;
+  font-weight: bold;
+  color: #333;
+  line-height: 1.4;
+}
+
+/* スマホ閲覧時：画面が狭い場合は縦並びに戻す安全設計 */
+@media (max-width: 600px) {
+  .news-meta-title {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .news-date-col {
+    width: auto;
+  }
+}
+/* =========================================
+   NEWバッジのデザイン（カプセル型）
+========================================= */
+.news-new-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ff3b30; 
+  color: #ffffff;
+  font-size: 0.8em;
+  font-weight: bold;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  padding: 3px 10px; 
+  border-radius: 50px; 
+  
+  line-height: 1.2;
+  letter-spacing: 0.5px; 
 }
