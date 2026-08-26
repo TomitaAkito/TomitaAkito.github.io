@@ -38,10 +38,18 @@ permalink: /news.html
             {% endif %}
           {% endif %}
 
-          <!-- ② MD側の「最初の1文（。または．まで）」を抽出するロジック -->
-          {% assign plain_text = post.content | strip_html | strip_newlines | strip %}
-          {% assign first_sentence = plain_text | split: "。" | first | split: "．" | first %}
+          <!-- ② MD側の「最初の<p>タグ（本文の段落）」から1文を抽出するロジック -->
+          {% assign first_p = post.content | split: '<p>' | slice: 1 | first | split: '</p>' | first %}
           
+          <!-- キャプションを無視して純粋な本文を取得 -->
+          {% if first_p %}
+            {% assign plain_text = first_p | strip_html | strip_newlines | strip %}
+          {% else %}
+            {% assign plain_text = post.content | strip_html | strip_newlines | strip %}
+          {% endif %}
+          
+          <!-- 「。」または「．」で区切って最初の1文だけにする -->
+          {% assign first_sentence = plain_text | split: "。" | first | split: "．" | first %}
           {% if plain_text != first_sentence %}
             {% assign first_sentence = first_sentence | append: "。" %}
           {% endif %}
