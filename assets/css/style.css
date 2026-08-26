@@ -380,6 +380,22 @@ a:hover {
   margin-top: 36px;
 }
 
+/* リンクの枠そのものを画面幅100%に強制する */
+.news-link {
+  display: block !important;
+  width: 100% !important; /* ★ 追加：枠が縮むのを防ぐ */
+  box-sizing: border-box;
+}
+
+/* タイトルと日付をまとめるコンテナ */
+.news-meta-title {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100% !important; /* ★ 追加：短い文字でも横幅100%を確保させる */
+  justify-content: flex-start !important; /* ★ 追加：中身を絶対に左寄せにする */
+}
+
 /* -------------------------------------------
    Profile（README.mdレンダリング領域）
    ------------------------------------------- */
@@ -1072,6 +1088,8 @@ img {
 .news-content-col {
   display: flex;
   flex-direction: column;
+  align-items: flex-start !important; /* ★ここが重要：短い行が中央に浮くのを防ぎ、左端に強制固定する */
+  text-align: left !important;        /* ★ここが重要：テキストを確実に左揃えにする */
   gap: 8px; 
   flex: 1; 
 }
@@ -1080,6 +1098,7 @@ img {
 .news-category-list {
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-start !important; /* ★バッジ類も確実に左端からスタートさせる */
   gap: 8px;
 }
 
@@ -1091,17 +1110,27 @@ img {
   line-height: 1.4;
 }
 
-/* スマホ閲覧時：画面が狭い場合は縦並びに戻す安全設計 */
+/* スマホ閲覧時：横並びを完全に固定し、インデントのズレを防ぐ */
 @media (max-width: 600px) {
   .news-meta-title {
-    align-items: flex-start;
-    flex-direction: column;
+    display: grid !important; 
+    grid-template-columns: 85px 1fr !important; 
+    width: 100% !important; /* ★ スマホでも絶対に幅100%を確保 */
     gap: 12px;
+    align-items: start !important;
   }
+  
   .news-date-col {
-    width: auto;
+    width: 100% !important; 
+    margin-top: 3px;
+  }
+
+  .news-content-col {
+    min-width: 0; 
   }
 }
+
+
 /* =========================================
    NEWバッジのデザイン（カプセル型）
 ========================================= */
