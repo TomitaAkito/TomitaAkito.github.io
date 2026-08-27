@@ -1,58 +1,82 @@
-<!DOCTYPE html>
-<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% if page.title %}{{ page.title }} | {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
-  <meta name="description" content="{{ page.description | default: site.description }}">
 
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
   <link rel="icon" href="data:,">
-  <!--OGP・SEOタグ-->
+  
   <!-- Jekyll SEO Tag の出力（基本設定） -->
   {% seo %}
 
-  {% unless page.image %}
-  <!-- Front Matterで手動指定(page.image)がない場合のみ、以下の自動生成をスタート -->
-  {% assign dynamic_ogp = nil %}
+  <!-- ==========================================
+       ★ 完全動的SEO（説明文＆画像）の上書きロジック ★
+       ========================================== -->
 
-  <!-- 1. 本文に <img> タグが含まれているかチェックし、最初の画像を抽出 -->
-  {% if page.content contains '<img' %}
-    {% assign parts = page.content | split: 'src="' %}
-    {% if parts.size > 1 %}
-      {% assign extracted_img = parts[1] | split: '"' | first %}
-      {% assign dynamic_ogp = extracted_img | absolute_url %}
+  <!-- 【1】動的Description（説明文）の抽出と生成 -->
+  {% assign dynamic_desc = page.description %}
+  
+  <!-- 手動設定がない場合、本文から自動抽出をスタート -->
+  {% if dynamic_desc == nil or dynamic_desc == "" %}
+    {% if page.content and page.content != "" %}
+      
+      <!-- キャプションを無視して最初の <p> 段落を抽出 -->
+      {% assign first_p = page.content | split: '<p>' | slice: 1 | first | split: '</p>' | first %}
+      {% if first_p %}
+        {% assign plain_text = first_p | strip_html | strip_newlines | strip %}
+      {% else %}
+        {% assign plain_text = page.content | strip_html | strip_newlines | strip %}
+      {% endif %}
+      
+      <!-- 「。」または「．」で区切って最初の1文にする -->
+      {% assign first_sentence = plain_text | split: "。" | first | split: "．" | first %}
+      {% if plain_text != first_sentence %}
+        {% assign dynamic_desc = first_sentence | append: "。" %}
+      {% else %}
+        {% assign dynamic_desc = first_sentence | truncate: 120 %}
+      {% endif %}
+      
     {% endif %}
   {% endif %}
-
-  <!-- 2. 画像が見つからなかった場合は、「現在開いているページのURL」を渡してスクショを自動生成 -->
-  {% if dynamic_ogp == nil %}
-    <!-- 現在のページの絶対URL（例：https://TomitaAkito.github.io/about.html）を取得 -->
-    {% assign current_url = page.url | absolute_url %}
-    <!-- スクショAPIに現在のURLをくっつける -->
-    {% assign dynamic_ogp = "https://image.thum.io/get/width/1200/crop/630/" | append: current_url %}
+  
+  <!-- 記事がないページ（トップページなど）は、サイト全体のデフォルト説明文を使う -->
+  {% if dynamic_desc == nil or dynamic_desc == "" %}
+    {% assign dynamic_desc = site.description %}
   {% endif %}
 
-  <!-- 3. 確定した画像をOGPタグとしてHTMLに出力 -->
-  <meta property="og:image" content="{{ dynamic_ogp }}" />
-  <meta name="twitter:image" content="{{ dynamic_ogp }}" />
+  <!-- 説明文のSEOタグを出力（Jekyll SEO Tagの出力を上書き） -->
+  <meta name="description" content="{{ dynamic_desc }}" />
+  <meta property="og:description" content="{{ dynamic_desc }}" />
+  <meta name="twitter:description" content="{{ dynamic_desc }}" />
+
+
+  <!-- 【2】動的OGP画像（プレビュー画像）の抽出と生成 -->
+  {% unless page.image %}
+    {% assign dynamic_ogp = nil %}
+
+    <!-- 安全な画像抽出：必ず <img タグの中にある src=" だけを探す -->
+    {% if page.content contains '<img' %}
+      {% assign img_blocks = page.content | split: '<img' %}
+      {% if img_blocks.size > 1 %}
+        {% assign img_attributes = img_blocks[1] | split: '>' | first %}
+        {% if img_attributes contains 'src="' %}
+          {% assign src_parts = img_attributes | split: 'src="' %}
+          {% if src_parts.size > 1 %}
+            {% assign extracted_img = src_parts[1] | split: '"' | first %}
+            {% assign dynamic_ogp = extracted_img | absolute_url %}
+          {% endif %}
+        {% endif %}
+      {% endif %}
+    {% endif %}
+
+    <!-- 画像が見つからなかった場合はスクショ自動生成 -->
+    {% if dynamic_ogp == nil %}
+      {% assign current_url = page.url | absolute_url %}
+      {% assign dynamic_ogp = "https://image.thum.io/get/width/1200/crop/630/" | append: current_url %}
+    {% endif %}
+
+    <!-- 画像のSEOタグを出力 -->
+    <meta property="og:image" content="{{ dynamic_ogp }}" />
+    <meta name="twitter:image" content="{{ dynamic_ogp }}" />
   {% endunless %}
 </head>
-<body>
-
-  {% include header.html %}
-
-  <main>
-    {{ content }}
-  </main>
-
-  {% include footer.html %}
-
-  <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
-  {% if page.extra_js %}
-    {% for js in page.extra_js %}
-      <script src="{{ js | relative_url }}"></script>
-    {% endfor %}
-  {% endif %}
-</body>
-</html>
