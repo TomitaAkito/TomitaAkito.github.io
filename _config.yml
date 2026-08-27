@@ -1,20 +1,27 @@
 # ==============================
-#  サイト基本設定
-#  ※ ご自身の情報に書き換えてください
+#  サイト基本設定 & SEO設定
 # ==============================
+# ★検索結果で一番目立つタイトルと説明文になります
 title: "Akito Tomita | Portfolio"
-description: "Akito Tomita's Portfolio Site"
+description: "研究業績や開発プロジェクトをまとめたポートフォリオサイトです。"
 author: "Akito Tomita"
 
-# GitHub Pages の公開URL（ユーザー名.github.ioの場合はそのまま）
 url: "https://TomitaAkito.github.io"
 baseurl: ""
 
-# GitHub / Researchmap のアカウント情報（JS・リンクから参照）
+# GitHub / Researchmap のアカウント情報
 github_username: "TomitaAkito"
-researchmap_url: "https://researchmap.jp/akitotomita"   # ← 実際のURLに差し替えてください
+researchmap_url: "https://researchmap.jp/akitotomita"
 github_url: "https://github.com/TomitaAkito"
 
+# OGP（SNSでシェアされた時の画像）設定
+image: "/assets/images/ogp.png"
+twitter:
+  card: "summary_large_image"
+
+# ==============================
+#  ビルド・プラグイン設定
+# ==============================
 markdown: kramdown
 kramdown:
   input: GFM
@@ -25,8 +32,8 @@ permalink: /news/:year/:month/:day/:title/
 plugins:
   - jekyll-feed
   - jekyll-sitemap
+  - jekyll-seo-tag
 
-# _posts をニュースとして扱う
 defaults:
   - scope:
       path: ""
@@ -41,21 +48,3 @@ exclude:
   - node_modules
 
 future: true
-
-# =========================
-# SEO & OGP 設定
-# =========================
-plugins:
-  - jekyll-seo-tag
-
-# サイトの基本情報（すでに設定済みの場合は不要です）
-title: "Portfolio"
-description: "研究業績や開発プロジェクトをまとめたポートフォリオサイトです。"
-author: "Tomita Akito"
-
-# OGP用画像
-image: "/assets/images/ogp.png"
-
-# X（旧Twitter）でカードを大きく表示するための設定
-twitter:
-  card: "summary_large_image"

@@ -9,7 +9,34 @@
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
   <link rel="icon" href="data:,">
   <!--OGP・SEOタグ-->
-  {% seo %}   
+  <!-- Jekyll SEO Tag の出力（基本設定） -->
+  {% seo %}
+
+  {% unless page.image %}
+  <!-- Front Matterで手動指定(page.image)がない場合のみ、以下の自動生成をスタート -->
+  {% assign dynamic_ogp = nil %}
+
+  <!-- 1. 本文に <img> タグが含まれているかチェックし、最初の画像を抽出 -->
+  {% if page.content contains '<img' %}
+    {% assign parts = page.content | split: 'src="' %}
+    {% if parts.size > 1 %}
+      {% assign extracted_img = parts[1] | split: '"' | first %}
+      {% assign dynamic_ogp = extracted_img | absolute_url %}
+    {% endif %}
+  {% endif %}
+
+  <!-- 2. 画像が見つからなかった場合は、「現在開いているページのURL」を渡してスクショを自動生成 -->
+  {% if dynamic_ogp == nil %}
+    <!-- 現在のページの絶対URL（例：https://TomitaAkito.github.io/about.html）を取得 -->
+    {% assign current_url = page.url | absolute_url %}
+    <!-- スクショAPIに現在のURLをくっつける -->
+    {% assign dynamic_ogp = "https://image.thum.io/get/width/1200/crop/630/" | append: current_url %}
+  {% endif %}
+
+  <!-- 3. 確定した画像をOGPタグとしてHTMLに出力 -->
+  <meta property="og:image" content="{{ dynamic_ogp }}" />
+  <meta name="twitter:image" content="{{ dynamic_ogp }}" />
+{% endunless %}
 </head>
 <body>
 
