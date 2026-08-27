@@ -5,8 +5,9 @@ categories: ["受賞","メディア掲載"]
 # hidden: true
 ---
 <div class="watermark-container">
-<img src="/assets/img/post/soichalle1.png" alt="画像">
+  <img src="/assets/img/post/soichalle1.png" alt="画像">
 </div>
+
 ソーシャル・オープンイノベーション・チャレンジ（ソイチャレ）において、私たちが取り組んだプロジェクトが評価され、賞を授与されました。関係者の皆様へ心より感謝申し上げます。
 
 ## 🏆 受賞情報
