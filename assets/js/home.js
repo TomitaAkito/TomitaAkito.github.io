@@ -92,4 +92,41 @@
 
   renderProfile();
   renderProjects();
+
+  // Typewriter effect
+  const typewriterEl = document.getElementById("hero-typewriter");
+  if (typewriterEl) {
+    const roles = ["Software Engineer", "Researcher", "Programmer"];
+    let roleIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let typingSpeed = 100;
+
+    function type() {
+      const currentRole = roles[roleIndex];
+
+      if (isDeleting) {
+        typewriterEl.textContent = currentRole.substring(0, charIndex - 1);
+        charIndex--;
+        typingSpeed = 50;
+      } else {
+        typewriterEl.textContent = currentRole.substring(0, charIndex + 1);
+        charIndex++;
+        typingSpeed = 100;
+      }
+
+      if (!isDeleting && charIndex === currentRole.length) {
+        typingSpeed = 2000;
+        isDeleting = true;
+      } else if (isDeleting && charIndex === 0) {
+        isDeleting = false;
+        roleIndex = (roleIndex + 1) % roles.length;
+        typingSpeed = 500;
+      }
+
+      setTimeout(type, typingSpeed);
+    }
+
+    setTimeout(type, 1000);
+  }
 })();

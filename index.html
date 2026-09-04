@@ -2,15 +2,19 @@
 layout: default
 title: HOME
 extra_js:
-  - /assets/js/home.js
+- /assets/js/home.js
 ---
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-<section class="hero">
-  <div class="container">
-    <h1>Hi, I'm <span class="marker-blue">{{ site.author }}</span>.</h1>
-    <p>{{ site.description }}</p>
+<section class="hero hero-animated">
+  <div class="hero-bg"></div>
+  <div class="container hero-content">
+    <h1 class="hero-title">
+      <span class="hero-subtitle" id="hero-typewriter"></span><br>
+      <span class="hero-name">{{ site.author }}</span>
+    </h1>
+    <p class="hero-desc">{{ site.description }}</p>
   </div>
 </section>
 
@@ -24,68 +28,65 @@ extra_js:
       {% for post in visible_posts limit: 5 %}
       <li class="news-item" data-categories="{{ post.categories | join: ',' }}">
         <a href="{{ post.url | relative_url }}" class="news-link">
-          
+
           {% assign preview_img = post.image %}
           {% if preview_img == nil %}
-            {% if post.content contains '<img' %}
-              {% assign parts = post.content | split: 'src="' %}
-              {% if parts.size > 1 %}
-                {% assign preview_img = parts[1] | split: '"' | first %}
-              {% endif %}
+          {% if post.content contains '<img' %} {% assign parts=post.content | split: 'src="' %} {% if parts.size> 1 %}
+            {% assign preview_img = parts[1] | split: '"' | first %}
             {% endif %}
-          {% endif %}
+            {% endif %}
+            {% endif %}
 
-          {% assign first_p = post.content | split: '<p>' | slice: 1 | first | split: '</p>' | first %}
-          
-          {% if first_p %}
+            {% assign first_p = post.content | split: '<p>' | slice: 1 | first | split: '</p>' | first %}
+
+            {% if first_p %}
             {% assign plain_text = first_p | strip_html | strip_newlines | strip %}
-          {% else %}
+            {% else %}
             {% assign plain_text = post.content | strip_html | strip_newlines | strip %}
-          {% endif %}
-          
-          {% assign first_sentence = plain_text | split: "。" | first | split: "．" | first %}
-          {% if plain_text != first_sentence %}
+            {% endif %}
+
+            {% assign first_sentence = plain_text | split: "。" | first | split: "．" | first %}
+            {% if plain_text != first_sentence %}
             {% assign first_sentence = first_sentence | append: "。" %}
-          {% endif %}
-          <div class="news-preview-data" 
-               data-image="{{ preview_img }}" 
-               data-text="{{ first_sentence }}"></div>
-          
-          <div class="news-meta-title">
-            
-            <div class="news-date-col">
-              <span class="news-date">{{ post.date | date: "%Y.%m.%d" }}</span>
-            </div>
-            
-            <div class="news-content-col">
-              
-              <div class="news-category-list">
-                
-                {% assign current_time = 'now' | date: "%s" %}
-                {% assign post_time = post.date | date: "%s" %}
-                {% assign time_diff = current_time | minus: post_time %}
-                
-                {% if time_diff >= 0 and time_diff <= 2592000 %}
-                  <span class="news-new-badge">NEW</span>
-                {% endif %}
+            {% endif %}
+            <div class="news-preview-data" data-image="{{ preview_img }}" data-text="{{ first_sentence }}"></div>
 
-                {% for cat in post.categories %}
-                  <span class="news-category" data-cat="{{ cat }}">{{ cat }}</span>
-                {% endfor %}
+            <div class="news-meta-title">
+
+              <div class="news-date-col">
+                <span class="news-date">{{ post.date | date: "%Y.%m.%d" }}</span>
               </div>
-              
-              <div class="news-title">{{ post.title }}</div>
-              
-            </div>
-            
-          </div>
 
-          <p class="mobile-news-excerpt">{{ first_sentence }}</p>
-          
+              <div class="news-content-col">
+
+                <div class="news-category-list">
+
+                  {% assign current_time = 'now' | date: "%s" %}
+                  {% assign post_time = post.date | date: "%s" %}
+                  {% assign time_diff = current_time | minus: post_time %}
+
+                  {% if time_diff >= 0 and time_diff <= 2592000 %} <span class="news-new-badge">NEW</span>
+                    {% endif %}
+
+                    {% for cat in post.categories %}
+                    <span class="news-category" data-cat="{{ cat }}">{{ cat }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="news-title">{{ post.title }}</div>
+
+              </div>
+
+            </div>
+
+            <p class="mobile-news-excerpt">{{ first_sentence }}</p>
+
         </a>
       </li>
       {% else %}
-      <li class="news-item"><p class="loading-text">まだニュースがありません。</p></li>
+      <li class="news-item">
+        <p class="loading-text">まだニュースがありません。</p>
+      </li>
       {% endfor %}
     </ul>
 
@@ -99,18 +100,22 @@ extra_js:
 <section class="section section-alt" id="profile">
   <div class="container">
     <h2 class="section-title">Profile</h2>
-    
-    
-    <div class="profile-summary" style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+
+
+    <div class="profile-summary"
+      style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
       <p style="margin-bottom: 20px; line-height: 1.6;">
         ご覧いただきありがとうございます！<br>
-        詳しい研究業績については、<a href="{{ site.researchmap_url }}" target="_blank" rel="noopener noreferrer" style="color: var(--color-main); font-weight: bold; text-decoration: underline;">researchmap</a> をご覧ください。
+        詳しい研究業績については、<a href="{{ site.researchmap_url }}" target="_blank" rel="noopener noreferrer"
+          style="color: var(--color-main); font-weight: bold; text-decoration: underline;">researchmap</a> をご覧ください。
       </p>
 
       <div style="display: flex; flex-wrap: wrap; gap: 30px;">
-        
+
         <div style="flex: 1 1 300px;">
-          <h3 style="font-size: 1.1em; border-bottom: 2px solid var(--color-main); padding-bottom: 5px; margin-bottom: 15px;">資格</h3>
+          <h3
+            style="font-size: 1.1em; border-bottom: 2px solid var(--color-main); padding-bottom: 5px; margin-bottom: 15px;">
+            資格</h3>
           <ul style="list-style: none; padding: 0; line-height: 1.8; margin: 0;">
             <li><span style="display: inline-block; width: 90px; color: #666;">2021/03</span>普通自動車第一種運転免許</li>
             <li><span style="display: inline-block; width: 90px; color: #666;">2021/04</span>普通自動二輪車免許</li>
@@ -119,10 +124,12 @@ extra_js:
             <li><span style="display: inline-block; width: 90px; color: #666;">2025/05</span>大型自動二輪免許</li>
           </ul>
         </div>
-        
-        
+
+
         <div style="flex: 1 1 200px;">
-          <h3 style="font-size: 1.1em; border-bottom: 2px solid var(--color-main); padding-bottom: 5px; margin-bottom: 15px;">趣味</h3>
+          <h3
+            style="font-size: 1.1em; border-bottom: 2px solid var(--color-main); padding-bottom: 5px; margin-bottom: 15px;">
+            趣味</h3>
           <p style="line-height: 1.8; margin: 0;">
             ツーリング・ドライブ<br>
             動画編集<br>

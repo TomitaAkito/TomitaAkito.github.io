@@ -80,13 +80,25 @@ a:hover {
 
 
 .site-header {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 100;
   height: var(--header-height);
   background: rgba(248, 249, 250, 0.85);
   backdrop-filter: saturate(180%) blur(10px);
   border-bottom: 1px solid var(--color-border);
+}
+
+@media (min-width: 769px) {
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+  
+  body {
+    padding-top: var(--header-height);
+  }
 }
 
 .header-inner {
@@ -288,22 +300,99 @@ a:hover {
 }
 
 
-.hero {
-  padding: 100px 0 60px;
+.hero-animated {
+  position: relative;
+  padding: 120px 0 100px;
   text-align: center;
+  overflow: hidden;
 }
 
-.hero h1 {
-  font-size: clamp(2rem, 5vw, 3.2rem);
+.hero-animated::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 150px;
+  background: linear-gradient(to bottom, transparent, var(--color-bg));
+  pointer-events: none;
+  z-index: 2;
+}
+
+.hero-bg {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 40% 50%, rgba(30, 111, 217, 0.18) 0%, transparent 50%),
+              radial-gradient(circle at 60% 30%, rgba(255, 122, 48, 0.12) 0%, transparent 50%),
+              radial-gradient(circle at 20% 80%, rgba(30, 111, 217, 0.1) 0%, transparent 40%);
+  animation: bgPulse 5s ease-in-out infinite alternate;
+  z-index: -1;
+  filter: blur(60px);
+}
+
+@keyframes bgPulse {
+  0% { transform: scale(1) translate(0, 0); }
+  50% { transform: scale(1.1) translate(-2%, 2%); }
+  100% { transform: scale(1) translate(2%, -2%); }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hero-title {
+  margin-bottom: 24px;
+  line-height: 1.2;
+  text-shadow: 0 4px 20px rgba(255, 255, 255, 0.9), 0 0 30px rgba(255, 255, 255, 1);
+}
+
+.hero-subtitle {
+  display: inline-block;
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  color: var(--color-main);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  min-height: 1.5em; 
+}
+
+.hero-subtitle::after {
+  content: '|';
+  margin-left: 4px;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.hero-name {
+  font-size: clamp(2.5rem, 6vw, 4rem);
   font-weight: 900;
-  margin-bottom: 16px;
+  color: var(--color-text);
+  letter-spacing: -0.02em;
 }
 
-.hero p {
+.hero-desc {
   color: var(--color-text-sub);
-  font-size: 1.1rem;
-  max-width: 560px;
-  margin: 0 auto;
+  font-size: clamp(1rem, 2.5vw, 1.15rem);
+  max-width: 600px;
+  margin: 0 auto 40px;
+  line-height: 1.8;
+  text-shadow: 0 4px 15px rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+@keyframes slideUpFade {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 
