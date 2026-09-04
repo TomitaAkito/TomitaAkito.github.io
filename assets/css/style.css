@@ -1,19 +1,16 @@
-/* =========================================================
-   Portfolio Site Stylesheet
-   コンセプト: シンプル / かっこいい / おしゃれ
-   ========================================================= */
+
 
 :root {
-  /* カラーパレット */
+  
   --color-bg: #f8f9fa;
   --color-surface: #ffffff;
   --color-text: #212529;
   --color-text-sub: #6c757d;
   --color-border: #e9ecef;
 
-  --color-main: #1e6fd9;       /* メインカラー：青（ボタン・リンク） */
+  --color-main: #1e6fd9;       
   --color-main-dark: #1552a8;
-  --color-accent: #ff7a30;     /* アクセントカラー：オレンジ */
+  --color-accent: #ff7a30;     
 
   --header-height: 64px;
   --radius: 14px;
@@ -62,9 +59,7 @@ a:hover {
   padding: 0 24px;
 }
 
-/* -------------------------------------------
-   マーカー風テキスト装飾（linear-gradient使用）
-   ------------------------------------------- */
+
 .marker {
   background-image: linear-gradient(
     transparent 60%,
@@ -83,9 +78,7 @@ a:hover {
   font-weight: 600;
 }
 
-/* -------------------------------------------
-   ヘッダー / ナビゲーション
-   ------------------------------------------- */
+
 .site-header {
   position: sticky;
   top: 0;
@@ -153,7 +146,7 @@ a:hover {
   width: 100%;
 }
 
-/* ハンバーガーメニュー（スマホ） */
+
 .hamburger {
   display: none;
   flex-direction: column;
@@ -233,9 +226,7 @@ a:hover {
   }
 }
 
-/* -------------------------------------------
-   共通セクション / ボタン
-   ------------------------------------------- */
+
 .section {
   padding: 72px 0;
 }
@@ -296,9 +287,7 @@ a:hover {
   background: #e0650f;
 }
 
-/* -------------------------------------------
-   Hero
-   ------------------------------------------- */
+
 .hero {
   padding: 100px 0 60px;
   text-align: center;
@@ -317,9 +306,7 @@ a:hover {
   margin: 0 auto;
 }
 
-/* -------------------------------------------
-   News（Home上のプレビュー & 一覧共通）
-   ------------------------------------------- */
+
 .news-list {
   list-style: none;
   margin: 0;
@@ -380,25 +367,23 @@ a:hover {
   margin-top: 36px;
 }
 
-/* リンクの枠そのものを画面幅100%に強制する */
+
 .news-link {
   display: block !important;
-  width: 100% !important; /* ★ 追加：枠が縮むのを防ぐ */
+  width: 100% !important; 
   box-sizing: border-box;
 }
 
-/* タイトルと日付をまとめるコンテナ */
+
 .news-meta-title {
   display: flex;
   align-items: center;
   gap: 24px;
-  width: 100% !important; /* ★ 追加：短い文字でも横幅100%を確保させる */
-  justify-content: flex-start !important; /* ★ 追加：中身を絶対に左寄せにする */
+  width: 100% !important; 
+  justify-content: flex-start !important; 
 }
 
-/* -------------------------------------------
-   Profile（README.mdレンダリング領域）
-   ------------------------------------------- */
+
 .profile-card {
   background: var(--color-surface);
   border-radius: var(--radius);
@@ -450,9 +435,7 @@ a:hover {
   font-style: italic;
 }
 
-/* -------------------------------------------
-   Projects（GitHub APIカード）
-   ------------------------------------------- */
+
 .project-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -520,9 +503,7 @@ a:hover {
   margin-right: 6px;
 }
 
-/* -------------------------------------------
-   ニュース詳細（Jekyll post）
-   ------------------------------------------- */
+
 .post-header {
   padding: 60px 0 30px;
   text-align: center;
@@ -558,7 +539,7 @@ a:hover {
   margin: 24px auto;
 }
 
-/* Jekyll(kramdown)でiframeを直書きした際のレスポンシブ対応（YouTube埋め込み等） */
+
 .post-body iframe {
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -586,9 +567,7 @@ a:hover {
   padding: 0 24px 60px;
 }
 
-/* -------------------------------------------
-   LINKページ
-   ------------------------------------------- */
+
 .link-category {
   margin-bottom: 48px;
 }
@@ -628,9 +607,7 @@ a:hover {
   transform: translateX(4px);
 }
 
-/* -------------------------------------------
-   フッター
-   ------------------------------------------- */
+
 .site-footer {
   padding: 40px 0;
   text-align: center;
@@ -639,9 +616,7 @@ a:hover {
   border-top: 1px solid var(--color-border);
 }
 
-/* -------------------------------------------
-   汎用レスポンシブ調整
-   ------------------------------------------- */
+
 @media (max-width: 600px) {
   .section {
     padding: 52px 0;
@@ -655,16 +630,14 @@ a:hover {
 }
 
 
-/* =========================================
-   ページ遷移アニメーション
-========================================= */
-/* 初期状態：少し下からフワッと浮き上がりながら表示 */
+
+
 body {
   animation: fadeIn 0.5s ease-out forwards;
   opacity: 0; 
 }
 
-/* リンククリック時：少し上に消えていく */
+
 body.fade-out {
   animation: fadeOut 0.3s ease-in forwards;
 }
@@ -679,10 +652,8 @@ body.fade-out {
   to { opacity: 0; transform: translateY(-10px); }
 }
 
-/* =========================================
-   トップへ戻るボタン ＆ スムーススクロール
-========================================= */
-/* ページ内リンク（#）で移動する際になめらかにスクロールさせる */
+
+
 html {
   scroll-behavior: smooth;
 }
@@ -713,11 +684,11 @@ html {
 }
 
 #page-top:hover {
-  transform: translateY(-5px); /* ホバー時に少し浮く */
-  background-color: var(--color-accent, #ff7a30); /* ホバーでオレンジに */
+  transform: translateY(-5px); 
+  background-color: var(--color-accent, #ff7a30); 
 }
 
-/* 修正版：transform（上下の移動）を削除し、透明度の変化のみにする */
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -728,35 +699,33 @@ html {
   to { opacity: 0; }
 }
 
-/* スマートフォンでの横揺れ（意図しない右スワイプ）を防止 */
+
 html, body {
   overflow-x: hidden;
   width: 100%;
 }
 
-/* =========================================
-   ニュース画像のサイズ統一と透かし
-========================================= */
+
 .watermark-container {
   position: relative;
-  display: block; /* flexからblockに変更 */
+  display: block; 
   width: fit-content;
   height: fit-content;
   margin: 30px auto; 
   max-width: 100%;
-  line-height: 0; /* ★ ゴーストスペース（見えない文字の高さ）を徹底排除 */
+  line-height: 0; 
 }
 
 .watermark-container img {
   display: block;
-  margin: 0 !important;  /* ★ 最重要：テーマが勝手に入れている画像下の余白を強制リセット */
-  padding: 0 !important; /* ★ 念のため内側の余白もリセット */
+  margin: 0 !important;  
+  padding: 0 !important; 
   max-width: 100%; 
   height: auto;
   border-radius: 6px;
 }
 
-/* 画像の右下に重ねる透かし文字（変更なし） */
+
 .watermark-container::after {
   content: "© Tomita Akito";
   position: absolute;
@@ -771,64 +740,60 @@ html, body {
   z-index: 10;
 }
 
-/* =========================================
-   マウス追従型 プレビューウィンドウ
-========================================= */
+
 .hover-preview-window {
-  position: fixed; /* 画面上の絶対位置（マウス座標）に合わせる */
+  position: fixed; 
   z-index: 9999;
   background: rgba(255, 255, 255, 0.98);
   border: 1px solid #ddd;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-  width: 280px; /* ウィンドウの横幅 */
+  width: 280px; 
   padding: 12px;
-  pointer-events: none; /* マウスの邪魔をしないようにする */
+  pointer-events: none; 
   
-  /* 初期状態は透明で隠しておく */
+  
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.2s ease;
 }
 
-/* Javascriptで.showが付いた時だけ表示 */
+
 .hover-preview-window.show {
   opacity: 1;
   visibility: visible;
 }
 
-/* ポップアップ内の画像（上） */
+
 .hover-preview-window img {
   width: 100%;
-  height: auto; /* 固定高さをやめ、元の比率を保つ */
-  max-height: 150px; /* ただし、大きくなりすぎないように制限 */
-  object-fit: contain; /* ★ cover（切り抜き）から contain（全体を収める）に変更 */
+  height: auto; 
+  max-height: 150px; 
+  object-fit: contain; 
   border-radius: 6px;
   margin-bottom: 10px;
   display: none;
 }
 
-/* ポップアップ内の文字（下） */
+
 .hover-preview-window p {
   font-size: 0.85em;
   color: #444;
   margin: 0;
   line-height: 1.5;
-  display: none; /* JSで文字がある時だけ表示 */
+  display: none; 
 }
 
 
-/* スマホではカーソルが存在しないため無効化 */
+
 @media (hover: none) {
   .hover-preview-window {
     display: none !important;
   }
 }
 
-/* =========================================
-   1. カテゴリごとの色定義
-========================================= */
-/* 新しいカテゴリを追加したい場合は、ここのブロックを追加 */
+
+
 
 [data-cat="国際学会"], [data-filter="国際学会"] {
   --cat-bg: #e3f2fd;
@@ -861,9 +826,7 @@ html, body {
   --cat-color: #00796b;
 }
 
-/* =========================================
-   2. バッジの基本スタイル
-========================================= */
+
 .news-category {
   display: inline-block;
   padding: 3px 8px;
@@ -871,14 +834,12 @@ html, body {
   border-radius: 4px;
   font-size: 0.8em;
   font-weight: bold;
-  /* 変数が設定されていればその色を、なければ #eee と #333 を使う */
+  
   background-color: var(--cat-bg, #eee);
   color: var(--cat-color, #333);
 }
 
-/* =========================================
-   3. ボタンの基本スタイル
-========================================= */
+
 .filter-btn {
   padding: 6px 16px;
   margin: 0 5px 10px;
@@ -887,67 +848,63 @@ html, body {
   font-size: 0.9em;
   font-weight: bold;
   transition: all 0.3s ease;
-  /* 変数が設定されていればその色を、なければデフォルトの色を使う */
+  
   background-color: var(--cat-bg, #f8f9fa);
   border: 2px solid var(--cat-color, #999);
   color: var(--cat-color, #333);
 }
 
-/* 4. ボタンのホバー・アクティブ状態 */
+
 .filter-btn:hover,
 .filter-btn.active {
-  /* アクティブ時は背景を文字色（濃い色）で塗りつぶし、文字を白にする */
+  
   background-color: var(--cat-color, #333);
   border-color: var(--cat-color, #333);
   color: #fff;
 }
 
-/* =========================================
-   スマホ向け ニュース抜粋テキスト
-========================================= */
+
 .mobile-news-excerpt {
-  display: none; /* PC（マウスがある端末）では非表示にしておく */
+  display: none; 
   font-size: 0.85em;
   color: #777;
   margin: 8px 0 0 0;
   line-height: 1.4;
   
-  /* スマホの細い画面でも必ず「1行」に収め、はみ出た分を「...」にする */
+  
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* スマホ（ホバーが使えない端末）の時だけブロック要素として表示する */
+
 @media (hover: none) {
   .mobile-news-excerpt {
     display: block;
   }
 }
 
-/* =========================================
-   2カラム（並列）画像レイアウト
-========================================= */
+
 .image-row {
   display: flex;
-  gap: 20px; /* 画像と画像の間の隙間 */
+  gap: 20px; 
   margin: 30px auto;
-  max-width: 1000px; /* 記事の最大幅に合わせる */
+  max-width: 1000px; 
 }
 
-/* 2カラム内の透かしコンテナの調整 */
+
 .image-row .watermark-container {
-  margin: 0; /* コンテナ独自の余白を消す */
-  flex: 1; /* 2つの画像をぴったり「1:1」の均等な幅にする */
+  margin: 0; 
+  flex: 1; 
   width: 100%;
 }
 
-/* 2カラム内の画像サイズを枠に合わせる */
+
 .image-row .watermark-container img {
   width: 100%;
 }
 
-/* スマホ閲覧時は自動で「縦並び」に変更する（小さくなりすぎるのを防ぐ） */
+
 @media (max-width: 768px) {
   .image-row {
     flex-direction: column;
@@ -955,12 +912,10 @@ html, body {
   }
 }
 
-/* =========================================
-   ニュース画像のサイズ統一と透かし
-========================================= */
+
 .watermark-container {
   position: relative;
-  display: flex; /* 枠が画像から浮かないようにする魔法 */
+  display: flex; 
   width: fit-content;
   height: fit-content;
   margin: 30px auto; 
@@ -974,12 +929,12 @@ html, body {
   border-radius: 6px;
 }
 
-/* 画像の右下に重ねる透かし文字 */
+
 .watermark-container::after {
   content: "© Tomita Akito";
   position: absolute;
-  bottom: 6px;  /* 下端のギリギリに配置 */
-  right: 10px;  /* 右端のギリギリに配置 */
+  bottom: 6px;  
+  right: 10px;  
   color: rgba(255, 255, 255, 0.8);
   font-size: 0.85em;
   font-weight: bold;
@@ -989,60 +944,56 @@ html, body {
   z-index: 10;
 }
 
-/* =========================================
-   画像キャプション（説明文）
-========================================= */
-/* 画像とキャプションをセットにまとめる枠 */
+
+
 figure.image-wrapper {
-  margin: 30px auto; /* 1枚画像の時は上下に余白をあけて中央寄せ */
+  margin: 30px auto; 
   padding: 0;
   display: flex;
   flex-direction: column;
-  align-items: center; /* キャプションを中央寄せにする */
+  align-items: center; 
   width: fit-content;
   max-width: 100%;
 }
 
-/* キャプション枠の中にある「透かしコンテナ」の余白をリセット */
+
 figure.image-wrapper .watermark-container {
   margin: 0;
 }
 
-/* キャプションの文字デザイン */
+
 .image-caption {
   font-size: 0.85em;
   color: #666; 
-  margin-top: 4px; /* 画像とキャプションの隙間 */
+  margin-top: 4px; 
   text-align: center;
   line-height: 1.4;
   width: 100%;
 }
 
-/* =========================================
-   2カラム（並列）画像レイアウト（切り取りなし・高さ揃え）
-========================================= */
+
 .image-row {
   display: flex;
   gap: 20px;
   margin: 30px auto;
   max-width: 1000px;
-  align-items: flex-end; /* 下に配置されるキャプションの高さをピシッと揃える */
+  align-items: flex-end; 
   justify-content: center;
 }
 
-/* 2カラムレイアウトの中に入った時だけ、余分な余白を消す */
+
 .image-row figure.image-wrapper,
 .image-row .watermark-container {
   margin: 0;
 }
 
-/* 高さを揃えて、幅を自動調整する（切り取りなし） */
+
 .image-row .watermark-container img {
-  max-height: 380px; /* ここで高さを揃えます */
-  width: auto;       /* 画像の元の比率に合わせて横幅を自動で決定します */
+  max-height: 380px; 
+  width: auto;       
 }
 
-/* スマホ閲覧時は縦並びにし、制限を解除する */
+
 @media (max-width: 768px) {
   .image-row {
     flex-direction: column;
@@ -1054,25 +1005,21 @@ figure.image-wrapper .watermark-container {
   }
 }
 
-/* =========================================
-   サイト全体の画像保護設定
-========================================= */
+
 img {
-  -webkit-user-drag: none; /* Chrome, Safari, Edge用 */
-  -webkit-touch-callout: none; /* スマホでの長押しメニューを禁止 */
-  user-select: none; /* 画像が青く選択状態になるのを防ぐ */
+  -webkit-user-drag: none; 
+  -webkit-touch-callout: none; 
+  user-select: none; 
 }
 
-/* =========================================
-   ニュースリストのレイアウト（日付左＋右側2段構成）
-========================================= */
+
 .news-meta-title {
   display: flex;
   align-items: center; 
-  gap: 24px; /* 日付と右側コンテンツの間の隙間 */
+  gap: 24px; 
 }
 
-/* 左側：日付カラム */
+
 .news-date-col {
   flex-shrink: 0;
   width: 85px; 
@@ -1084,25 +1031,25 @@ img {
   font-family: 'Helvetica Neue', Arial, sans-serif;
 }
 
-/* 右側：カテゴリとタイトルのカラム */
+
 .news-content-col {
   display: flex;
   flex-direction: column;
-  align-items: flex-start !important; /* ★ここが重要：短い行が中央に浮くのを防ぎ、左端に強制固定する */
-  text-align: left !important;        /* ★ここが重要：テキストを確実に左揃えにする */
+  align-items: flex-start !important; 
+  text-align: left !important;        
   gap: 8px; 
   flex: 1; 
 }
 
-/* 右側1行目：カテゴリリスト */
+
 .news-category-list {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start !important; /* ★バッジ類も確実に左端からスタートさせる */
+  justify-content: flex-start !important; 
   gap: 8px;
 }
 
-/* 右側2行目：タイトル */
+
 .news-title {
   font-size: 1.05em;
   font-weight: bold;
@@ -1110,12 +1057,12 @@ img {
   line-height: 1.4;
 }
 
-/* スマホ閲覧時：横並びを完全に固定し、インデントのズレを防ぐ */
+
 @media (max-width: 600px) {
   .news-meta-title {
     display: grid !important; 
     grid-template-columns: 85px 1fr !important; 
-    width: 100% !important; /* ★ スマホでも絶対に幅100%を確保 */
+    width: 100% !important; 
     gap: 12px;
     align-items: start !important;
   }
@@ -1131,9 +1078,7 @@ img {
 }
 
 
-/* =========================================
-   NEWバッジのデザイン（カプセル型）
-========================================= */
+
 .news-new-badge {
   display: inline-flex;
   align-items: center;

@@ -1,8 +1,3 @@
-// =========================================================
-// Home画面専用スクリプト
-//  1. Profile: GitHubのREADME.mdをFetchし、marked.jsでHTML化して表示
-//  2. Projects: GitHub REST APIから公開リポジトリを取得し、カードUIを生成
-// =========================================================
 (function () {
   const profileEl = document.getElementById("profile-content");
   const projectsEl = document.getElementById("project-grid");
@@ -17,9 +12,6 @@
   const README_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${GITHUB_USERNAME}/main/README.md`;
   const REPOS_API_URL = `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`;
 
-  // ---------------------------------------------------
-  // ① Profile: README.md を取得してMarkdownパース
-  // ---------------------------------------------------
   async function renderProfile() {
     if (!profileEl) return;
     try {
@@ -30,7 +22,6 @@
       if (window.marked) {
         profileEl.innerHTML = window.marked.parse(markdown);
       } else {
-        // marked.js が読み込めなかった場合のフォールバック
         const pre = document.createElement("pre");
         pre.textContent = markdown;
         profileEl.innerHTML = "";
@@ -42,9 +33,6 @@
     }
   }
 
-  // ---------------------------------------------------
-  // ② Projects: GitHub REST APIからリポジトリ一覧を取得
-  // ---------------------------------------------------
   function escapeHtml(str) {
     const div = document.createElement("div");
     div.textContent = str || "";
@@ -58,13 +46,11 @@
       if (!res.ok) throw new Error(`リポジトリ取得に失敗しました (status: ${res.status})`);
       let repos = await res.json();
 
-      // 💡 ここに一覧から隠したいリポジトリ名を追加・編集できます
       const excludeRepos = ['TomitaAkito', 'TomitaAkito.github.io', 'zisaku'];
 
-      // Forkと指定したリポジトリを除外し、更新日順に並び替えて上位を表示
       repos = repos
         .filter((repo) => !repo.fork)
-        .filter((repo) => !excludeRepos.includes(repo.name)) // ← 除外処理を追加
+        .filter((repo) => !excludeRepos.includes(repo.name))
         .sort((a, b) => new Date(b.pushed_at) - new Date(a.pushed_at));
 
       if (repos.length === 0) {

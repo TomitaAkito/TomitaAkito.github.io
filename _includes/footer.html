@@ -4,46 +4,40 @@
   </div>
 </footer>
 
-<!-- トップへ戻るボタン -->
 <a href="#" id="page-top" title="ページトップへ">↑</a>
 
-<!-- ボタン専用のスタイル（強制的に画面右下に固定する） -->
 <style>
-  /* ページ内リンクでなめらかに移動する */
   html {
     scroll-behavior: smooth !important;
   }
 
-  /* ボタンのデザインと固定配置 */
   #page-top {
-    position: fixed !important; /* 絶対に画面に追従させる */
-    bottom: 30px !important;    /* 下から30pxの位置 */
-    right: 30px !important;     /* 右から30pxの位置 */
+    position: fixed !important;
+    bottom: 30px !important;
+    right: 30px !important;
     width: 50px;
     height: 50px;
-    background-color: #1e6fd9;  /* 青色 */
-    color: #fff !important;     /* 文字は白 */
-    border-radius: 50%;         /* 丸くする */
+    background-color: #1e6fd9;
+    color: #fff !important;
+    border-radius: 50%;
     text-align: center;
     line-height: 50px;
     font-size: 20px;
     text-decoration: none;
-    opacity: 0;                 /* 最初は透明 */
-    visibility: hidden;         /* 最初は隠す */
+    opacity: 0;
+    visibility: hidden;
     transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    z-index: 9999 !important;   /* 他の要素より絶対に手前に表示する */
+    z-index: 9999 !important;
   }
 
-  /* JavaScriptで「show」クラスが付いたときに出現 */
   #page-top.show {
     opacity: 1 !important;
     visibility: visible !important;
   }
 
-  /* マウスを乗せたときの動き */
   #page-top:hover {
     transform: translateY(-5px);
-    background-color: #ff7a30;  /* オレンジ色に変化 */
+    background-color: #ff7a30;
   }
 </style>

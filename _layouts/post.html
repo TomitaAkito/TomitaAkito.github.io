@@ -11,17 +11,14 @@ layout: default
     {{ content }}
   </div>
 
-  <!-- 隠しページ（hidden: true）を除外した記事リストを作成 -->
 {% assign visible_posts = site.posts | where_exp: "item", "item.hidden != true" %}
 
-<!-- 現在の記事がリストの何番目かを探す -->
 {% for post in visible_posts %}
   {% if post.url == page.url %}
     {% assign current_index = forloop.index0 %}
   {% endif %}
 {% endfor %}
 
-<!-- Jekyllの記事は「新しい順」なので、+1が古い記事(Prev)、-1が新しい記事(Next) -->
 {% assign prev_index = current_index | plus: 1 %}
 {% assign next_index = current_index | minus: 1 %}
 
@@ -32,10 +29,8 @@ layout: default
   {% assign next_post = nil %}
 {% endif %}
 
-<!-- 記事ナビゲーションUI -->
 <div class="post-nav" style="display: flex; justify-content: space-between; align-items: center; margin-top: 60px; padding-top: 30px; border-top: 1px solid #ddd; flex-wrap: wrap; gap: 15px;">
   
-  <!-- 左側：前の記事（古い記事） -->
   <div style="flex: 1; min-width: 120px; text-align: left;">
     {% if prev_post %}
     <a href="{{ prev_post.url | relative_url }}" style="text-decoration: none; color: var(--color-main, #1e6fd9); display: block; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
@@ -45,12 +40,10 @@ layout: default
     {% endif %}
   </div>
 
-  <!-- 中央：一覧に戻る -->
   <div style="text-align: center;">
     <a href="{{ '/news.html' | relative_url }}" class="btn">News一覧</a>
   </div>
 
-  <!-- 右側：次の記事（新しい記事） -->
   <div style="flex: 1; min-width: 120px; text-align: right;">
     {% if next_post %}
     <a href="{{ next_post.url | relative_url }}" style="text-decoration: none; color: var(--color-main, #1e6fd9); display: block; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">

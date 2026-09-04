@@ -5,7 +5,6 @@ extra_js:
   - /assets/js/home.js
 ---
 
-<!-- marked.js（Markdown→HTML変換ライブラリ）をCDNから読み込み -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <section class="hero">
@@ -15,7 +14,6 @@ extra_js:
   </div>
 </section>
 
-<!-- ① News -->
 <section class="section" id="news">
   <div class="container">
     <h2 class="section-title">News</h2>
@@ -27,7 +25,6 @@ extra_js:
       <li class="news-item" data-categories="{{ post.categories | join: ',' }}">
         <a href="{{ post.url | relative_url }}" class="news-link">
           
-          <!-- ① 画像の自動抽出ロジック -->
           {% assign preview_img = post.image %}
           {% if preview_img == nil %}
             {% if post.content contains '<img' %}
@@ -38,46 +35,36 @@ extra_js:
             {% endif %}
           {% endif %}
 
-          <!-- ② MD側の「最初の<p>タグ（本文の段落）」から1文を抽出するロジック -->
           {% assign first_p = post.content | split: '<p>' | slice: 1 | first | split: '</p>' | first %}
           
-          <!-- キャプションを無視して純粋な本文を取得 -->
           {% if first_p %}
             {% assign plain_text = first_p | strip_html | strip_newlines | strip %}
           {% else %}
             {% assign plain_text = post.content | strip_html | strip_newlines | strip %}
           {% endif %}
           
-          <!-- 「。」または「．」で区切って最初の1文だけにする -->
           {% assign first_sentence = plain_text | split: "。" | first | split: "．" | first %}
           {% if plain_text != first_sentence %}
             {% assign first_sentence = first_sentence | append: "。" %}
           {% endif %}
-          <!-- ③ PCプレビュー用のデータを裏側に持たせる -->
           <div class="news-preview-data" 
                data-image="{{ preview_img }}" 
                data-text="{{ first_sentence }}"></div>
           
-          <!-- 常に表示されているタイトル部分 -->
           <div class="news-meta-title">
             
-            <!-- 左側：日付（上下中央配置） -->
             <div class="news-date-col">
               <span class="news-date">{{ post.date | date: "%Y.%m.%d" }}</span>
             </div>
             
-            <!-- 右側：カテゴリとタイトル（縦並び） -->
             <div class="news-content-col">
               
-              <!-- 1行目：カテゴリとNEWバッジ -->
               <div class="news-category-list">
                 
-                <!-- ★ NEWバッジの自動判定ロジック -->
                 {% assign current_time = 'now' | date: "%s" %}
                 {% assign post_time = post.date | date: "%s" %}
                 {% assign time_diff = current_time | minus: post_time %}
                 
-                <!-- 差分が約1ヶ月（30日 = 2592000秒）以内、かつ未来の記事ではない場合 -->
                 {% if time_diff >= 0 and time_diff <= 2592000 %}
                   <span class="news-new-badge">NEW</span>
                 {% endif %}
@@ -87,14 +74,12 @@ extra_js:
                 {% endfor %}
               </div>
               
-              <!-- 2行目：タイトル -->
               <div class="news-title">{{ post.title }}</div>
               
             </div>
             
           </div>
 
-          <!-- ★ ④ スマホ向け：タイトルの下に表示する1行分の文章 -->
           <p class="mobile-news-excerpt">{{ first_sentence }}</p>
           
         </a>
@@ -110,12 +95,12 @@ extra_js:
   </div>
 </section>
 
-<!-- ② Profile -->
+
 <section class="section section-alt" id="profile">
   <div class="container">
     <h2 class="section-title">Profile</h2>
     
-    <!-- 自己紹介・資格・趣味エリア -->
+    
     <div class="profile-summary" style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
       <p style="margin-bottom: 20px; line-height: 1.6;">
         ご覧いただきありがとうございます！<br>
@@ -123,7 +108,7 @@ extra_js:
       </p>
 
       <div style="display: flex; flex-wrap: wrap; gap: 30px;">
-        <!-- 資格 -->
+        
         <div style="flex: 1 1 300px;">
           <h3 style="font-size: 1.1em; border-bottom: 2px solid var(--color-main); padding-bottom: 5px; margin-bottom: 15px;">資格</h3>
           <ul style="list-style: none; padding: 0; line-height: 1.8; margin: 0;">
@@ -135,7 +120,7 @@ extra_js:
           </ul>
         </div>
         
-        <!-- 趣味 -->
+        
         <div style="flex: 1 1 200px;">
           <h3 style="font-size: 1.1em; border-bottom: 2px solid var(--color-main); padding-bottom: 5px; margin-bottom: 15px;">趣味</h3>
           <p style="line-height: 1.8; margin: 0;">
@@ -156,7 +141,7 @@ extra_js:
   </div>
 </section>
 
-<!-- ③ Projects -->
+
 <section class="section" id="projects">
   <div class="container">
     <h2 class="section-title">Projects</h2>
