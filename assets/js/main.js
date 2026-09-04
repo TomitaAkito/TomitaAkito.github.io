@@ -49,25 +49,29 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  const links = document.querySelectorAll('a[href]');
-  links.forEach(link => {
-    link.addEventListener('click', function(e) {
-      const targetUrl = this.href;
-      const currentUrl = window.location.origin;
-      
-      const isInternal = targetUrl.startsWith(currentUrl) || targetUrl.startsWith('/');
-      const isAnchor = targetUrl.includes('#');
-      const isBlank = this.target === '_blank';
+  document.body.addEventListener('click', function(e) {
+    const link = e.target.closest('a[href]');
+    if (!link) return;
 
-      if (isInternal && !isAnchor && !isBlank) {
+    const targetUrl = link.href;
+    const currentUrl = window.location.origin;
+    
+    const isInternal = targetUrl.startsWith(currentUrl) || targetUrl.startsWith('/');
+    const isAnchor = targetUrl.includes('#');
+    const isBlank = link.target === '_blank';
+
+    if (isInternal && !isAnchor && !isBlank) {
+      e.preventDefault();
+      document.body.classList.add('fade-out');
+      
+      setTimeout(() => {
+        window.location.href = targetUrl;
+      }, 300);
+    } else if (!isInternal && targetUrl.startsWith('http')) {
+      if (!confirm('このサイトから離れますがよろしいですか？\n\n遷移先: ' + targetUrl)) {
         e.preventDefault();
-        document.body.classList.add('fade-out');
-        
-        setTimeout(() => {
-          window.location.href = targetUrl;
-        }, 300);
       }
-    });
+    }
   });
 });
 
