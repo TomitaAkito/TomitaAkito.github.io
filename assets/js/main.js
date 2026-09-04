@@ -49,7 +49,48 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
+  // 外部リンク用モーダルの生成
+  const modalHTML = `
+    <div id="ext-link-modal" class="modal-overlay">
+      <div class="modal-content">
+        <h3 class="modal-title">外部サイトへ移動します</h3>
+        <p class="modal-text">このサイトから離れますがよろしいですか？<br><span id="ext-link-url" class="modal-url"></span></p>
+        <div class="modal-actions">
+          <button id="ext-link-cancel" class="btn btn-outline">キャンセル</button>
+          <button id="ext-link-proceed" class="btn">移動する</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+  const modalOverlay = document.getElementById('ext-link-modal');
+  const modalUrlText = document.getElementById('ext-link-url');
+  const cancelBtn = document.getElementById('ext-link-cancel');
+  const proceedBtn = document.getElementById('ext-link-proceed');
+
+  let pendingUrl = '';
+  let pendingTargetBlank = false;
+
+  cancelBtn.addEventListener('click', () => {
+    modalOverlay.classList.remove('show');
+  });
+
+  proceedBtn.addEventListener('click', () => {
+    modalOverlay.classList.remove('show');
+    if (pendingUrl) {
+      if (pendingTargetBlank) {
+        window.open(pendingUrl, '_blank');
+      } else {
+        window.location.href = pendingUrl;
+      }
+    }
+  });
+
   document.body.addEventListener('click', function(e) {
+    // モーダル内のボタンのクリック時はスキップ
+    if (e.target.closest('#ext-link-modal')) return;
+
     const link = e.target.closest('a[href]');
     if (!link) return;
 
@@ -68,9 +109,11 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = targetUrl;
       }, 300);
     } else if (!isInternal && targetUrl.startsWith('http')) {
-      if (!confirm('このサイトから離れますがよろしいですか？\n\n遷移先: ' + targetUrl)) {
-        e.preventDefault();
-      }
+      e.preventDefault();
+      pendingUrl = targetUrl;
+      pendingTargetBlank = isBlank;
+      modalUrlText.textContent = targetUrl;
+      modalOverlay.classList.add('show');
     }
   });
 });
