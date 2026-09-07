@@ -620,7 +620,6 @@ a:hover {
 .post-body h2 {
   margin-top: 2em;
   padding-bottom: 6px;
-  border-bottom: 2px solid var(--color-border);
 }
 
 .post-body img {

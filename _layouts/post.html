@@ -3,7 +3,16 @@ layout: default
 ---
 <article>
   <div class="post-header">
-    <p class="post-date">{{ page.date | date: "%Y.%m.%d" }}{% if page.category %} ・ <span class="marker">{{ page.category }}</span>{% endif %}</p>
+    <p class="post-date">
+      {{ page.date | date: "%Y.%m.%d" }}
+      {% if page.categories and page.categories.size > 0 %}
+        {% for cat in page.categories %}
+          <span class="news-category" data-cat="{{ cat }}" style="display: inline-block; margin-left: 10px; vertical-align: middle;">{{ cat }}</span>
+        {% endfor %}
+      {% elsif page.category %}
+        <span class="news-category" data-cat="{{ page.category }}" style="display: inline-block; margin-left: 10px; vertical-align: middle;">{{ page.category }}</span>
+      {% endif %}
+    </p>
     <h1 class="post-title">{{ page.title }}</h1>
   </div>
 
