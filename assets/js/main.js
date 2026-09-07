@@ -188,4 +188,126 @@ document.addEventListener('DOMContentLoaded', () => {
       previewBox.classList.remove('show');
     });
   });
+
+  // Reveal Animation Observer
+  const revealObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-active');
+        // 一度アニメーションしたら監視を解除する
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    rootMargin: '0px 0px -50px 0px', // 画面下部から50px入ったところで発火
+    threshold: 0
+  });
+
+  // 記事内の h2タグ (Markdownの ## ) を自動的にリビールアニメーション構造に変換
+  const postBodyH2List = document.querySelectorAll('.post-body h2');
+  postBodyH2List.forEach(h2 => {
+    if (!h2.querySelector('.reveal-wrapper')) {
+      const originalText = h2.innerHTML;
+      h2.innerHTML = `
+        <span class="reveal-wrapper">
+          <span class="reveal-box"></span>
+          <span class="reveal-text">${originalText}</span>
+        </span>
+      `;
+    }
+  });
+
+  // 初期ロード時の監視開始を関数化（フェードアニメーション後に実行するため）
+  window.startScrollAnimations = () => {
+    const revealElements = document.querySelectorAll('.reveal-wrapper, .fade-line-heading');
+    revealElements.forEach(el => {
+      revealObserver.observe(el);
+    });
+
+    document.querySelectorAll('.news-item, .link-category').forEach(setupStagger);
+  };
+
+  // -----------------------------------------------------
+  // Stagger FadeIn Animation (パラパラ出現)
+  // -----------------------------------------------------
+  const staggerObserver = new IntersectionObserver((entries, observer) => {
+    const intersecting = entries.filter(e => e.isIntersecting);
+    intersecting.forEach((entry, index) => {
+      // 少しずつタイミングをずらして表示
+      entry.target.style.transitionDelay = `${index * 0.1}s`;
+      entry.target.classList.add('is-fadein');
+      observer.unobserve(entry.target);
+    });
+  }, {
+    rootMargin: '0px 0px -30px 0px',
+    threshold: 0
+  });
+
+  function setupStagger(element) {
+    element.classList.add('stagger-item');
+    staggerObserver.observe(element);
+  }
+
+  // 初回ロード時の適用は startScrollAnimations() で行うため削除
+
+  // 非同期で追加される要素（Projectsなど）への自動適用
+  const bodyObserver = new MutationObserver((mutations) => {
+    mutations.forEach(mutation => {
+      mutation.addedNodes.forEach(node => {
+        if (node.nodeType === 1) {
+          if (node.classList.contains('project-card')) {
+            setupStagger(node);
+          }
+          if (node.querySelectorAll) {
+            node.querySelectorAll('.project-card').forEach(setupStagger);
+          }
+        }
+      });
+    });
+  });
+  bodyObserver.observe(document.body, { childList: true, subtree: true });
+
+});
+
+// -----------------------------------------------------
+// -----------------------------------------------------
+// Page Transition (Fade Animation)
+// -----------------------------------------------------
+
+// ページロード時：少し待ってからフェードアウトして画面を見せる
+window.addEventListener('load', () => {
+  // ローダーを少し見せるために0.4秒待つ
+  setTimeout(() => {
+    document.body.classList.remove('is-changing');
+    
+    // フェードアウト開始と同時にスクロールアニメーションの監視を開始する
+    if (window.startScrollAnimations) {
+      window.startScrollAnimations();
+    }
+  }, 400);
+});
+
+// リンククリック時：画面を白くフェードインさせてから遷移する
+document.addEventListener('click', (e) => {
+  const target = e.target.closest('a');
+  if (!target) return;
+
+  const href = target.getAttribute('href');
+  const targetAttr = target.getAttribute('target');
+
+  // 以下の場合は通常通りの動作（アニメーションさせない）
+  if (!href || href.startsWith('#') || targetAttr === '_blank' || href.startsWith('mailto:') || href.startsWith('tel:')) {
+    return;
+  }
+
+  // 同一ドメイン内（または相対パス）のリンクならアニメーション発火
+  if (href.startsWith('/') || href.startsWith('./') || href.startsWith('../') || href.includes(window.location.host)) {
+    e.preventDefault(); // デフォルトの遷移をキャンセル
+    document.body.classList.add('is-changing'); // フェードレイヤーを表示
+
+    // フェードインが終わるのを待ってからページ遷移
+    setTimeout(() => {
+      window.location.href = target.href;
+    }, 500); // 0.5秒待つ (CSSのtransition 0.4s + 0.1sの余裕)
+  }
 });

@@ -664,8 +664,6 @@ a:hover {
 .link-category h2 {
   font-size: 1.2rem;
   font-weight: 800;
-  border-left: 5px solid var(--color-accent);
-  padding-left: 12px;
   margin-bottom: 20px;
 }
 
@@ -1254,4 +1252,298 @@ img {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+}
+
+/* -------------------------------------
+ * Reveal Animation (Cover Reveal)
+ * ------------------------------------- */
+.reveal-wrapper {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 5px;
+}
+
+.reveal-text {
+  display: inline-block;
+  position: relative;
+  transform: translateX(-105%);
+  padding-bottom: 6px; /* アンダーライン用の余白 */
+}
+
+/* リッチなグラデーションのアンダーライン（初期状態は幅0） */
+.reveal-text::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 4px; /* ラインの太さ */
+  background: linear-gradient(90deg, var(--color-main, #333), #00d2ff);
+  border-radius: 2px;
+}
+
+.reveal-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1em;
+  height: 100%;
+  background-color: var(--color-main, #333);
+  border-radius: 4px;
+  transform: translateY(100%);
+  z-index: 2;
+}
+
+/* .is-active が付与されたらアニメーション開始 */
+.reveal-wrapper.is-active .reveal-text {
+  animation: textSlideIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.6s forwards;
+}
+
+/* テキスト出現後にアンダーラインが伸びる */
+.reveal-wrapper.is-active .reveal-text::after {
+  animation: lineStretch 0.8s cubic-bezier(0.22, 1, 0.36, 1) 1.2s forwards;
+}
+
+.reveal-wrapper.is-active .reveal-box {
+  animation: 
+    boxPopUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+    boxSlideRight 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.6s forwards;
+}
+
+@keyframes boxPopUp {
+  0% { transform: translateY(100%); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes boxSlideRight {
+  0% { left: 0; }
+  100% { left: 100%; opacity: 0; }
+}
+
+@keyframes textSlideIn {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes lineStretch {
+  0% { width: 0; opacity: 0; }
+  10% { opacity: 1; }
+  100% { width: 100%; opacity: 1; }
+}
+
+/* -------------------------------------
+ * Stagger FadeIn (パラパラ出現)
+ * ------------------------------------- */
+.stagger-item {
+  opacity: 0;
+  transform: translateY(20px);
+  /* JS側で transition-delay を動的に設定してズラす */
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.stagger-item.is-fadein {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* -------------------------------------
+ * ホバー時のリフトアップ & アイコン移動
+ * ------------------------------------- */
+.news-link, .project-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease !important;
+}
+.news-link:hover, .project-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+}
+.project-card .project-icon {
+  transition: transform 0.3s ease;
+}
+.project-card:hover .project-icon {
+  transform: translate(4px, -4px) scale(1.1);
+}
+
+/* -------------------------------------
+ * News 個別のホバーアニメーション強化
+ * ------------------------------------- */
+.news-title {
+  position: relative;
+  display: inline-block;
+  transition: color 0.3s ease;
+}
+
+/* タイトルの右側に矢印を配置（普段は透明＆少し左にずらす） */
+.news-title::after {
+  content: "→";
+  position: absolute;
+  right: -25px;
+  top: 50%;
+  transform: translateY(-50%) translateX(-10px);
+  opacity: 0;
+  color: var(--color-main, #333);
+  font-weight: bold;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+}
+
+/* ホバー時に矢印が右へスライドしながら現れる */
+.news-link:hover .news-title::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* ホバー時にタイトルの色をメインカラーに */
+.news-link:hover .news-title {
+  color: var(--color-main, #333);
+}
+
+/* 日付もホバー時に少し右へスライド */
+.news-date {
+  transition: transform 0.3s ease, color 0.3s ease;
+  display: inline-block;
+}
+.news-link:hover .news-date {
+  transform: translateX(4px);
+  color: var(--color-main, #333);
+}
+
+/* -------------------------------------
+ * 記事ページ（post.html）のアニメーション
+ * ------------------------------------- */
+/* タイトルや日付部分が下からフェードイン */
+.post-header {
+  animation: postFadeUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+/* 本文部分はタイトルより少し遅れてフェードイン */
+.post-body {
+  animation: postFadeUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+@keyframes postFadeUp {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+
+/* 記事前後のナビゲーションリンクのリフトアップ */
+.post-nav a {
+  transition: transform 0.3s ease, opacity 0.3s ease !important;
+}
+.post-nav a:hover {
+  transform: translateY(-4px); /* 少し上に浮き上がる */
+  opacity: 1 !important; /* 既存のインラインopacityを上書きしてくっきり表示 */
+}
+
+/* -------------------------------------
+ * Page Transition (Fade Animation)
+ * ------------------------------------- */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--color-bg, #ffffff); /* 背景色と同じ */
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+/* is-changing クラスがついている時はフェードインして画面を覆う */
+body.is-changing::before {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* -------------------------------------
+ * Page Transition Loader
+ * ------------------------------------- */
+.page-transition-loader {
+  margin: 0 auto;
+  width: 60px;
+  height: 50px;
+  text-align: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  transition-delay: 0s;
+}
+
+body.is-changing .page-transition-loader {
+  opacity: 1;
+  transition-delay: 0.3s; /* シャッターが閉まりきる少し前に現れる */
+}
+
+.page-transition-loader > div {
+  height: 100%;
+  width: 8px;
+  display: inline-block;
+  float: left;
+  margin-left: 2px;
+  background-color: var(--color-main);
+  animation: pageLoaderDelay 0.8s infinite ease-in-out;
+}
+
+/* メインカラーを使いつつ、透明度でグラデーションのようにリッチにする */
+.page-transition-loader .bar1 { background-color: var(--color-main); }
+.page-transition-loader .bar2 { background-color: var(--color-main); opacity: 0.9; animation-delay: -0.7s; }
+.page-transition-loader .bar3 { background-color: var(--color-main); opacity: 0.8; animation-delay: -0.6s; }
+.page-transition-loader .bar4 { background-color: var(--color-main); opacity: 0.7; animation-delay: -0.5s; }
+.page-transition-loader .bar5 { background-color: var(--color-main); opacity: 0.6; animation-delay: -0.4s; }
+.page-transition-loader .bar6 { background-color: var(--color-main); opacity: 0.5; animation-delay: -0.3s; }
+
+@keyframes pageLoaderDelay {
+  0%, 40%, 100% { 
+    transform: scaleY(0.05);
+  }
+  20% { 
+    transform: scaleY(1.0);
+  }
+}
+
+/* -------------------------------------
+ * Fade & Line Heading Animation (link.html 小見出しなど)
+ * ------------------------------------- */
+.fade-line-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  opacity: 0;
+  transform: translateX(-15px);
+  /* 少し長めのイージングで上品にスライドイン */
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.fade-line-heading::before {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 2px; /* 短い横線（アクセント） */
+  background-color: var(--color-accent);
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s; /* テキスト出現の少し後に伸びる */
+}
+
+/* アニメーション発火時 (.is-active) */
+.fade-line-heading.is-active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.fade-line-heading.is-active::before {
+  width: 20px; /* 線がシュッと伸びる */
 }
