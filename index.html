@@ -103,39 +103,47 @@ extra_js:
 
 
     <div class="profile-summary"
-      style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-      <p style="margin-bottom: 20px; line-height: 1.6;">
-        ご覧いただきありがとうございます！<br>
-        詳しい研究業績については、<a href="{{ site.researchmap_url }}" target="_blank" rel="noopener noreferrer"
-          style="color: var(--color-main); font-weight: bold; text-decoration: underline;">researchmap</a> をご覧ください。
-      </p>
+      style="margin-bottom: 40px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; flex-wrap: wrap; gap: 30px; align-items: center;">
 
-      <div style="display: flex; flex-wrap: wrap; gap: 30px;">
+      <!-- プロフィール画像 (左側) -->
+      <div style="flex: 0 0 auto; width: 100%; max-width: 240px; margin: 0 auto;">
+        <img src="{{ '/assets/img/me.jpg' | relative_url }}" alt="Profile"
+          style="width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); object-fit: cover; aspect-ratio: 4/3;">
+      </div>
 
-        <div style="flex: 1 1 300px;">
-          <h3
-            style="font-size: 1.1em; border-bottom: 2px solid var(--color-main); padding-bottom: 5px; margin-bottom: 15px;">
-            資格</h3>
-          <ul style="list-style: none; padding: 0; line-height: 1.8; margin: 0;">
-            <li><span style="display: inline-block; width: 90px; color: #666;">2021/03</span>普通自動車第一種運転免許</li>
-            <li><span style="display: inline-block; width: 90px; color: #666;">2021/04</span>普通自動二輪車免許</li>
-            <li><span style="display: inline-block; width: 90px; color: #666;">2022/12</span>基本情報技術者</li>
-            <li><span style="display: inline-block; width: 90px; color: #666;">2024/04</span>航空無線通信士</li>
-            <li><span style="display: inline-block; width: 90px; color: #666;">2025/05</span>大型自動二輪免許</li>
-          </ul>
-        </div>
+      <!-- テキスト部分 (右側) -->
+      <div style="flex: 1 1 400px;">
+        <p style="margin-bottom: 20px; line-height: 1.6;">
+          ご覧いただきありがとうございます！<br>
+          詳しい研究業績については、<a href="{{ site.researchmap_url }}" target="_blank" rel="noopener noreferrer"
+            style="color: var(--color-main); font-weight: bold; text-decoration: underline;">researchmap</a> をご覧ください。
+        </p>
 
+        <div style="display: flex; flex-wrap: wrap; gap: 30px;">
+          <div style="flex: 1 1 300px;">
+            <h3
+              style="font-size: 1.1em; border-bottom: 2px solid var(--color-main); padding-bottom: 5px; margin-bottom: 15px;">
+              資格</h3>
+            <ul style="list-style: none; padding: 0; line-height: 1.8; margin: 0;">
+              <li><span style="display: inline-block; width: 90px; color: #666;">2021/03</span>普通自動車第一種運転免許</li>
+              <li><span style="display: inline-block; width: 90px; color: #666;">2021/04</span>普通自動二輪車免許</li>
+              <li><span style="display: inline-block; width: 90px; color: #666;">2022/12</span>基本情報技術者</li>
+              <li><span style="display: inline-block; width: 90px; color: #666;">2024/04</span>航空無線通信士</li>
+              <li><span style="display: inline-block; width: 90px; color: #666;">2025/05</span>大型自動二輪免許</li>
+            </ul>
+          </div>
 
-        <div style="flex: 1 1 200px;">
-          <h3
-            style="font-size: 1.1em; border-bottom: 2px solid var(--color-main); padding-bottom: 5px; margin-bottom: 15px;">
-            趣味</h3>
-          <p style="line-height: 1.8; margin: 0;">
-            ツーリング・ドライブ<br>
-            動画編集<br>
-            プログラミング<br>
-            スライド作成
-          </p>
+          <div style="flex: 1 1 150px;">
+            <h3
+              style="font-size: 1.1em; border-bottom: 2px solid var(--color-main); padding-bottom: 5px; margin-bottom: 15px;">
+              趣味</h3>
+            <p style="line-height: 1.8; margin: 0;">
+              ツーリング・ドライブ<br>
+              動画編集<br>
+              プログラミング<br>
+              スライド作成
+            </p>
+          </div>
         </div>
       </div>
     </div>
