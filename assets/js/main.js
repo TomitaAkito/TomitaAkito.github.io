@@ -287,6 +287,14 @@ window.addEventListener('load', () => {
   }, 400);
 });
 
+// BFCache対策（スマホ等のブラウザ「戻る」ボタンで戻ってきた時の処理）
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) {
+    // キャッシュからページが復元された場合は、即座にフェード画面を解除する
+    document.body.classList.remove('is-changing');
+  }
+});
+
 // リンククリック時：画面を白くフェードインさせてから遷移する
 document.addEventListener('click', (e) => {
   const target = e.target.closest('a');
