@@ -5,6 +5,8 @@ layout: default
   <div class="post-header">
     <p class="post-date">
       {{ page.date | date: "%Y.%m.%d" }}
+      {% assign post_time = page.date | date: "%s" %}
+      <span class="news-new-badge js-new-badge" data-post-time="{{ post_time }}" style="display: none; margin-left: 10px; vertical-align: middle;">NEW</span>
       {% if page.categories and page.categories.size > 0 %}
         {% for cat in page.categories %}
           <span class="news-category" data-cat="{{ cat }}" style="display: inline-block; margin-left: 10px; vertical-align: middle;">{{ cat }}</span>

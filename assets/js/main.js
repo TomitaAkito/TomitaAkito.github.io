@@ -267,6 +267,23 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   bodyObserver.observe(document.body, { childList: true, subtree: true });
 
+  // NEWバッジのリアルタイム更新
+  const newBadges = document.querySelectorAll('.js-new-badge');
+  if (newBadges.length > 0) {
+    const nowSec = Math.floor(Date.now() / 1000);
+    newBadges.forEach(badge => {
+      const postTime = parseInt(badge.getAttribute('data-post-time'), 10);
+      if (!isNaN(postTime)) {
+        const diff = nowSec - postTime;
+        // 30 days = 30 * 24 * 60 * 60 = 2592000 seconds
+        // diffがマイナス(未来の日付)の場合も30日経過するまではNEWを表示
+        if (diff <= 2592000) {
+          badge.style.display = '';
+        }
+      }
+    });
+  }
+
 });
 
 // -----------------------------------------------------
