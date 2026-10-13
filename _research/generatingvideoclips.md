@@ -1,7 +1,7 @@
 ---
 title: "卒業アルバム用Video Clip自動生成の一手法"
 published: false   # false->非公開
-hidden: true    # true->一覧・Homeから隠蔽
+hidden: false    # true->一覧・Homeから隠蔽
 title_en: "A Method for Automatically Generating Video Clips for Graduation Albums"
 icon: /assets/img/research/videoclips/icon.png
 color_from: "#ff7a30"

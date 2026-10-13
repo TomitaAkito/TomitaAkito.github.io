@@ -58,18 +58,22 @@
 
 /* ---- カード ---- */
 .research-card {
+  position: relative;
   display: flex;
   flex-direction: column;
-  background: var(--color-surface);
+  background: linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
+              linear-gradient(135deg, var(--h1), var(--h2)) border-box;
+  border: 1.5px solid transparent;
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.06);
   overflow: hidden;
   color: var(--color-text);
-  transition: var(--transition);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .research-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-hover);
+  transform: translateY(-8px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12), 0 0 0 1px var(--h1);
   color: var(--color-text);
 }
 .research-card-thumb {
@@ -113,7 +117,25 @@
   border: 1px solid var(--h1);
   color: var(--h1);
 }
-.research-card-more { margin-top: 8px; font-weight: 700; font-size: .88rem; color: var(--h1); }
+.research-card-more {
+  margin-top: 10px;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--h1);
+  background: color-mix(in srgb, var(--h1) 10%, transparent);
+  padding: 5px 14px;
+  border-radius: 999px;
+  transition: all 0.25s ease;
+}
+.research-card:hover .research-card-more {
+  background: var(--h1);
+  color: #ffffff;
+  transform: translateX(3px);
+}
+
 
 /* ---- 詳細ページ ---- */
 .research-hero {

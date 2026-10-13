@@ -649,78 +649,142 @@ a:hover {
   border-bottom: 1px solid currentColor;
 }
 
+/* ---- 研究テーマカラーパレット（style.css共有） ---- */
+.hue-0, .hue-blue   { --h1: #1e6fd9; --h2: #38bdf8; }
+.hue-1, .hue-orange { --h1: #ff7a30; --h2: #f59e0b; }
+.hue-2, .hue-purple { --h1: #7c3aed; --h2: #ec4899; }
+.hue-3, .hue-green  { --h1: #059669; --h2: #14b8a6; }
+.hue-red    { --h1: #dc2626; --h2: #f97316; }
+.hue-teal   { --h1: #0e7490; --h2: #22d3ee; }
+.hue-pink   { --h1: #db2777; --h2: #f472b6; }
+.hue-navy   { --h1: #1e3a8a; --h2: #6366f1; }
+
 /* 記事内の関連研究カード */
 .post-related-research {
-  margin-top: 48px;
-  padding-top: 24px;
-  border-top: 1px dashed var(--color-border);
+  --h1: var(--color-main);
+  --h2: #38bdf8;
+  margin-top: 52px;
+  padding-top: 28px;
+  border-top: 1px solid var(--color-border);
 }
+
 .post-related-label {
-  font-size: 0.85rem;
-  color: var(--color-text-sub);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--h1, var(--color-main));
   font-weight: 700;
-  display: block;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  letter-spacing: 0.03em;
 }
+
+.post-related-label::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--h1, var(--color-main));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--h1, var(--color-main)) 20%, transparent);
+}
+
 .post-related-card {
+  position: relative;
   display: flex !important;
   align-items: center;
-  gap: 16px;
-  padding: 16px 20px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border) !important;
-  border-left: 5px solid var(--color-main) !important;
+  gap: 18px;
+  padding: 18px 24px;
+  background: linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
+              linear-gradient(135deg, var(--h1, var(--color-main)), var(--h2, #38bdf8)) border-box;
+  border: 1.5px solid transparent !important;
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--h1, var(--color-main)) 12%, transparent);
   text-decoration: none !important;
   color: var(--color-text) !important;
-  transition: var(--transition);
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.3s ease;
 }
+
+.post-related-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--h1, var(--color-main)) 4%, transparent), color-mix(in srgb, var(--h2, #38bdf8)) 4%, transparent);
+  pointer-events: none;
+}
+
 .post-related-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-hover);
-  border-color: var(--color-main) !important;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--h1, var(--color-main)) 22%, transparent), 0 0 0 1px var(--h1, var(--color-main));
   color: var(--color-text) !important;
 }
+
 .post-related-icon {
-  width: 48px;
-  height: 48px;
+  position: relative;
+  z-index: 1;
+  width: 50px;
+  height: 50px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-bg);
-  border-radius: 10px;
-  padding: 4px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
+
 .post-related-icon img {
   width: 100%;
   height: 100%;
   object-fit: contain;
   margin: 0 !important;
-  border-radius: 6px;
+  border-radius: 8px;
 }
+
 .post-related-info {
+  position: relative;
+  z-index: 1;
   flex: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
+
 .post-related-title {
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--color-text);
   line-height: 1.4;
+  transition: color 0.25s ease;
 }
+
 .post-related-card:hover .post-related-title {
-  color: var(--color-main);
+  color: var(--h1, var(--color-main));
 }
+
 .post-related-arrow {
-  font-size: 0.88rem;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
   font-weight: 700;
-  color: var(--color-main);
+  color: var(--h1, var(--color-main));
+  background: color-mix(in srgb, var(--h1, var(--color-main)) 10%, transparent);
+  padding: 6px 14px;
+  border-radius: 999px;
   white-space: nowrap;
+  transition: all 0.25s ease;
+}
+
+.post-related-card:hover .post-related-arrow {
+  background: var(--h1, var(--color-main));
+  color: #ffffff;
+  transform: translateX(3px);
 }
 
 .post-nav {

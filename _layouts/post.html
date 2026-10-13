@@ -24,9 +24,10 @@ layout: default
     {% if page.research %}
       {% assign related_research = site.research | where: "slug", page.research | first %}
       {% if related_research %}
-      <div class="post-related-research">
+      {% include research-hue.html item=related_research %}
+      <div class="post-related-research {{ hue_class }}" style="{{ hue_style }}">
         <span class="post-related-label">このお知らせに関連する研究</span>
-        <a href="{{ related_research.url | relative_url }}" class="post-related-card">
+        <a href="{{ related_research.url | relative_url }}" class="post-related-card {{ hue_class }}" style="{{ hue_style }}">
           {% if related_research.icon %}
           <div class="post-related-icon">
             <img src="{{ related_research.icon | relative_url }}" alt="" aria-hidden="true">
@@ -40,6 +41,7 @@ layout: default
       </div>
       {% endif %}
     {% endif %}
+
   </div>
 
 
