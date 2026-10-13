@@ -1,0 +1,29 @@
+---
+layout: default
+title: RESEARCH
+permalink: /research.html
+description: "Akito Tomita の研究一覧。MRを用いたお絵描き水族館、卒業アルバム用Video Clip自動生成の一手法。"
+extra_css:
+  - /assets/css/research.css
+---
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">
+      <span class="reveal-wrapper">
+        <span class="reveal-box"></span>
+        <span class="reveal-text">Research</span>
+      </span>
+    </h2>
+    <p class="section-lead">これまでに取り組んだ<span class="marker">研究</span>の一覧です。</p>
+
+    {% assign research_list = site.research | where_exp: "i", "i.hidden != true" | sort: "order" %}
+    <div class="research-grid">
+      {% for r in research_list %}
+        {% include research-card.html item=r index=forloop.index0 %}
+      {% else %}
+      <p class="loading-text">まだ研究が登録されていません。</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>

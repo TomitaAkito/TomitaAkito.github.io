@@ -1,0 +1,36 @@
+---
+# ★ 新しい研究を追加するには：このファイルを複製して "xxx.md" にリネームし、
+#    下の項目を書き換えるだけ。_ で始まるファイル名は公開されません（このテンプレート用）。
+title: "研究タイトル"
+published: true        # false にすると完全に非公開（ページ自体が生成されない）
+# hidden: true         # 一覧・Homeから隠す（URLを知っていれば閲覧可。検索には載らない）
+title_en: "English Title"
+icon: /assets/img/research/icons/xxx.svg   # ピクトグラム・アイコン画像（カードと詳細ページに表示）
+color: blue             # blue / orange / purple / green / red / teal / pink / navy（Home・詳細で共通）
+# color_from: "#1e6fd9" # 自由指定（color より優先）
+# color_to: "#38bdf8"   # グラデーション終端（省略時は color_from と同色）
+# image: /assets/img/research/xxx.png   # サムネイル画像（指定するとピクトグラムの代わりに表示）
+year: 2026              # カード表示用の年
+order: 3                # 表示順（小さいほど先頭）
+period: "2025年4月〜2026年3月"
+status: "卒業研究"      # 卒業研究 / 修士研究 / 共同研究 など
+keywords: [キーワード1, キーワード2]
+tags: [タグ1, タグ2]    # カードに表示
+summary: "一覧とページ冒頭に表示される1〜2文の要約。"
+# hidden: true          # 一覧から隠す（URL直打ちでは見られる）
+# links:                # ボタン表示（任意）
+#   - label: "論文"
+#     url: "/assets/files/paper.pdf"
+#   - label: "GitHub"
+#     url: "https://github.com/TomitaAkito/xxx"
+---
+
+## 概要
+
+## 背景と目的
+
+## 提案手法
+
+## 結果・評価
+
+## 発表・業績

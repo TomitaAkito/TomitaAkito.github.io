@@ -20,7 +20,29 @@ layout: default
 
   <div class="post-body">
     {{ content }}
+
+    {% if page.research %}
+      {% assign related_research = site.research | where: "slug", page.research | first %}
+      {% if related_research %}
+      <div class="post-related-research">
+        <span class="post-related-label">このお知らせに関連する研究</span>
+        <a href="{{ related_research.url | relative_url }}" class="post-related-card">
+          {% if related_research.icon %}
+          <div class="post-related-icon">
+            <img src="{{ related_research.icon | relative_url }}" alt="" aria-hidden="true">
+          </div>
+          {% endif %}
+          <div class="post-related-info">
+            <span class="post-related-title">{{ related_research.title }}</span>
+            <span class="post-related-arrow">詳しく見る &rarr;</span>
+          </div>
+        </a>
+      </div>
+      {% endif %}
+    {% endif %}
   </div>
+
+
 
 {% assign visible_posts = site.posts | where_exp: "item", "item.hidden != true" %}
 

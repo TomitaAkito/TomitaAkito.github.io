@@ -25,12 +25,22 @@ plugins:
   - jekyll-sitemap
   - jekyll-seo-tag
 
+collections:
+  research:
+    output: true
+    permalink: /research/:name/
+
 defaults:
   - scope:
       path: ""
       type: "posts"
     values:
       layout: "post"
+  - scope:
+      path: ""
+      type: "research"
+    values:
+      layout: "research"
 
 exclude:
   - README.md

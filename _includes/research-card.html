@@ -1,0 +1,27 @@
+{% comment %}
+  研究カード部品。使い方: {% include research-card.html item=r %}
+{% endcomment %}
+{% assign r = include.item %}
+{% include research-hue.html item=r %}
+<a href="{{ r.url | relative_url }}" class="research-card {{ hue_class }}" style="{{ hue_style }}">
+  <div class="research-card-thumb">
+    {% if r.image %}
+    <img src="{{ r.image | relative_url }}" alt="{{ r.title }}" loading="lazy">
+    {% elsif r.icon %}
+    <span class="picto"><img src="{{ r.icon | relative_url }}" alt="" aria-hidden="true"></span>
+    {% endif %}
+  </div>
+  <div class="research-card-body">
+    <div class="research-card-meta">
+      {% if r.year %}<span class="research-year">{{ r.year }}</span>{% endif %}
+      {% if r.status %}<span class="research-status">{{ r.status }}</span>{% endif %}
+    </div>
+    <h3 class="research-card-title">{{ r.title }}</h3>
+    {% if r.title_en %}<p class="research-card-en">{{ r.title_en }}</p>{% endif %}
+    <p class="research-card-summary">{{ r.summary }}</p>
+    <ul class="research-tags">
+      {% for t in r.tags %}<li>{{ t }}</li>{% endfor %}
+    </ul>
+    <span class="research-card-more">詳しく見る →</span>
+  </div>
+</a>

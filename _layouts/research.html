@@ -1,0 +1,96 @@
+---
+layout: default
+extra_css:
+  - /assets/css/research.css
+---
+
+{% assign all_research = site.research | where_exp: "i", "i.hidden != true" | sort: "order" %}
+{% include research-hue.html item=page %}
+
+<article class="research-detail {{ hue_class }}" style="{{ hue_style }}">
+  <header class="research-hero">
+    <div class="container">
+      <a href="{{ '/research.html' | relative_url }}" class="research-back">← Research 一覧</a>
+      {% if page.icon %}
+      <div class="research-hero-icon"><img src="{{ page.icon | relative_url }}" alt="" aria-hidden="true"></div>
+      {% endif %}
+      <h1 class="research-hero-title">{{ page.title }}</h1>
+      {% if page.title_en %}<p class="research-hero-en">{{ page.title_en }}</p>{% endif %}
+      <dl class="research-info">
+        {% if page.period %}<div><dt>期間</dt><dd>{{ page.period }}</dd></div>{% endif %}
+        {% if page.status %}<div><dt>区分</dt><dd>{{ page.status }}</dd></div>{% endif %}
+        {% if page.keywords %}<div><dt>キーワード</dt><dd>{{ page.keywords | join: " / " }}</dd></div>{% endif %}
+      </dl>
+      {% if page.links %}
+      <ul class="research-links">
+        {% for l in page.links %}
+        <li><a href="{{ l.url | relative_url }}" target="_blank" rel="noopener noreferrer" class="btn">{{ l.label }}</a></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </header>
+
+  <div class="container research-body">
+    {% if page.summary %}
+    <p class="research-lead">{{ page.summary }}</p>
+    {% endif %}
+
+    <div class="research-content">
+      {{ content }}
+    </div>
+
+    {% assign current_slug = page.slug | default: page.title %}
+    {% assign all_posts = site.posts | where_exp: "p", "p.hidden != true" %}
+    {% assign related_posts = "" | split: "" %}
+    {% for p in all_posts %}
+      {% if p.research == current_slug or p.research contains current_slug %}
+        {% assign related_posts = related_posts | push: p %}
+      {% endif %}
+    {% endfor %}
+
+    {% if related_posts.size > 0 %}
+    <section class="research-related-news">
+      <h2>関連するお知らせ</h2>
+      <ul class="news-list">
+        {% for post in related_posts %}
+        <li class="news-item">
+          <a href="{{ post.url | relative_url }}" class="news-link">
+            <div class="news-meta-title">
+              <div class="news-date-col">
+                <span class="news-date">{{ post.date | date: "%Y.%m.%d" }}</span>
+              </div>
+              <div class="news-content-col">
+                <div class="news-category-list">
+                  {% for cat in post.categories %}
+                  <span class="news-category" data-cat="{{ cat }}">{{ cat }}</span>
+                  {% endfor %}
+                </div>
+                <div class="news-title">{{ post.title }}</div>
+              </div>
+            </div>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+
+    <nav class="research-pager" aria-label="他の研究">
+      {% for r in all_research %}
+        {% if r.url == page.url %}
+          {% assign idx = forloop.index0 %}
+        {% endif %}
+      {% endfor %}
+      {% assign prev_i = idx | minus: 1 %}
+      {% assign next_i = idx | plus: 1 %}
+      {% if idx > 0 %}
+      <a class="pager-prev" href="{{ all_research[prev_i].url | relative_url }}">← {{ all_research[prev_i].title }}</a>
+      {% else %}<span></span>{% endif %}
+      {% if next_i < all_research.size %}
+      <a class="pager-next" href="{{ all_research[next_i].url | relative_url }}">{{ all_research[next_i].title }} →</a>
+      {% endif %}
+    </nav>
+  </div>
+</article>

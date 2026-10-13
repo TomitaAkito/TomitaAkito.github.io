@@ -1,6 +1,7 @@
 ---
 title: "IWAIT 2027に研究論文が採択されました"
 categories: ["国際学会"]
+research: generatingvideoclips
 published: true # postで表示するときはtrueにする
 # hidden: true # trueなら非表示
 ---
