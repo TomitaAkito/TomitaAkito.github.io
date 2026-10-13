@@ -12,7 +12,7 @@ extra_css:
     <div class="container">
       <a href="{{ '/research.html' | relative_url }}" class="research-back">← Research 一覧</a>
       {% if page.icon %}
-      <div class="research-hero-picto"><span class="picto picto-lg"><img src="{{ page.icon | relative_url }}" alt="" aria-hidden="true"></span></div>
+      <div class="research-hero-icon"><img src="{{ page.icon | relative_url }}" alt="" aria-hidden="true"></div>
       {% endif %}
       <h1 class="research-hero-title">{{ page.title }}</h1>
       {% if page.title_en %}<p class="research-hero-en">{{ page.title_en }}</p>{% endif %}

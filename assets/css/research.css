@@ -19,7 +19,7 @@
 .hue-pink   { --h1: #db2777; --h2: #f472b6; }
 .hue-navy   { --h1: #1e3a8a; --h2: #6366f1; }
 
-/* ---- ピクトグラム（白い円の上に表示） ---- */
+/* ---- HOME・一覧カードのアイコン（白い丸囲いのピクトグラム表示） ---- */
 .picto {
   display: inline-flex;
   align-items: center;
@@ -28,13 +28,33 @@
   height: 96px;
   border-radius: 50%;
   background: #fff;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, .18);
-  transition: transform .4s ease;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  transition: transform 0.4s ease;
 }
-.picto img { width: 60%; height: 60%; object-fit: contain; margin: 0; }
-.picto-lg { width: 120px; height: 120px; }
-.research-card:hover .picto { transform: scale(1.1) rotate(-4deg); }
-.research-hero-picto { margin-top: 16px; }
+.picto img {
+  width: 62%;
+  height: 62%;
+  object-fit: contain;
+  margin: 0;
+}
+.research-card:hover .picto {
+  transform: scale(1.1) rotate(-4deg);
+}
+
+/* ---- 各研究詳細ページのアイコン（丸囲いなしで大きく鮮明に表示） ---- */
+.research-hero-icon {
+  margin-top: 20px;
+  margin-bottom: 6px;
+}
+.research-hero-icon img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.25));
+  display: block;
+}
+
+
 
 /* ---- カード ---- */
 .research-card {

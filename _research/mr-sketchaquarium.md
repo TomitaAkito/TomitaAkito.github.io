@@ -4,11 +4,11 @@ published: true   # false->非公開
 hidden: false    # true->一覧・Homeから隠蔽
 title_en: "Sketch Aquarium using Mixed Reality"
 icon: /assets/img/research/mr-sketch/icon.png
-color_from: "#1e6fd9"                                      # 自由指定する場合（color より優先）
+color_from: "#1e6fd9"
 color_to: "#38bdf8"
-year: 2026
+year: 2025
 order: 1
-period: "2025年度"
+period: "2024年度"
 status: "卒業研究"
 keywords: [MR, 複合現実, インタラクティブ, お絵描き]
 tags: [MR, インタラクティブ, お絵描き]
@@ -22,7 +22,7 @@ links:
 
 <figure>
   <img src="/assets/img/research/mr-sketch/abstract-img.png" alt="MRを用いたお絵描き水族館 システム概要">
-  <figcaption>図　システム概要</figcaption>
+  <figcaption>システム概要</figcaption>
 </figure>
 
 ## 概要
@@ -56,6 +56,9 @@ MR（複合現実）技術を用いて、現実のさまざまな空間に利用
 
 ### 3. MRでの遊泳・インタラクション（HoloLens 2）
 生成された3DモデルをPCからHoloLens 2へ送信します。HoloLens 2側で魚の自律的な遊泳アルゴリズムや群れの動きを制御し、現実の部屋や空間の中を生き生きと泳ぎ回る様子をMRで体験できます。
+
+構成図については <a href="https://vclabo.com/research/2024-12.pdf">こちら</a>をご覧ください。
+※研究室のサイトへ遷移します
 
 ## デモ・成果
 

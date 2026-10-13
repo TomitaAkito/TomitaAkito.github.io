@@ -5,7 +5,7 @@ title: "研究タイトル"
 published: true        # false にすると完全に非公開（ページ自体が生成されない）
 # hidden: true         # 一覧・Homeから隠す（URLを知っていれば閲覧可。検索には載らない）
 title_en: "English Title"
-icon: /assets/img/research/icons/xxx.svg   # ピクトグラム（白い円の中に表示）
+icon: /assets/img/research/icons/xxx.svg   # ピクトグラム・アイコン画像（カードと詳細ページに表示）
 color: blue             # blue / orange / purple / green / red / teal / pink / navy（Home・詳細で共通）
 # color_from: "#1e6fd9" # 自由指定（color より優先）
 # color_to: "#38bdf8"   # グラデーション終端（省略時は color_from と同色）

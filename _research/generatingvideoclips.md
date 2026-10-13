@@ -1,8 +1,8 @@
 ---
 title: "卒業アルバム用Video Clip自動生成の一手法"
 published: true   # false->非公開
-hidden: true    # true->一覧・Homeから隠蔽
-title_en: "A Method for Automatic Video Clip Generation for Graduation Albums"
+hidden: false    # true->一覧・Homeから隠蔽
+title_en: "A Method for Automaticly Generating Video Clips for Graduation Albums"
 icon: /assets/img/research/videoclips/icon.png
 color_from: "#ff7a30"
 color_to: "#f59e0b"
@@ -10,8 +10,8 @@ year: 2027
 order: 2
 period: "2025-2026年度"
 status: "修士研究"
-keywords: [動画編集, 自動生成, Video Clip, 卒業アルバム]
-tags: [動画生成, 自動編集]
+keywords: [卒業アルバム, 自動生成, Video Clip, 画像処理]
+tags: [卒業アルバム, 自動生成, 画像処理]
 summary: "卒業アルバム向けの動画（Video Clip）を、素材から自動で生成する手法の研究です。"
 # links:
 #   - label: "スライド"
