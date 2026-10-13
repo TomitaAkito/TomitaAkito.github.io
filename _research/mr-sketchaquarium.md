@@ -12,7 +12,7 @@ period: "2024年度"
 status: "卒業研究"
 keywords: [MR, 複合現実, インタラクティブ, お絵描き]
 tags: [MR, インタラクティブ, お絵描き]
-summary: "利用者が描いた魚のイラストを3Dモデルに変換してMR空間で泳がせる、体験型システムの研究です。"
+summary: "利用者が描いた魚のイラストを3Dモデルに変換してMRで泳がせる、体験型システムの研究です。"
 links:
   - label: "学会発表情報"
     url: "https://www.ipsj.or.jp/event/taikai/87/WEB/data/pdf/4S-04.html"
