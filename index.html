@@ -3,6 +3,8 @@ layout: default
 title: HOME
 extra_js:
 - /assets/js/home.js
+extra_css:
+- /assets/css/research.css
 ---
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -97,8 +99,27 @@ extra_js:
   </div>
 </section>
 
+<section class="section section-alt" id="research">
+  <div class="container">
+    <h2 class="section-title">
+      <span class="reveal-wrapper">
+        <span class="reveal-box"></span>
+        <span class="reveal-text">Research</span>
+      </span>
+    </h2>
+    <p class="section-lead">取り組んだ<span class="marker">研究</span>を紹介します。</p>
 
-<section class="section section-alt" id="profile">
+    {% assign research_list = site.research | where_exp: "i", "i.hidden != true" | sort: "order" %}
+    <div class="research-grid">
+      {% for r in research_list %}
+        {% include research-card.html item=r index=forloop.index0 %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="profile">
   <div class="container">
 
     <h2 class="section-title">
@@ -164,7 +185,7 @@ extra_js:
 </section>
 
 
-<section class="section" id="projects">
+<section class="section section-alt" id="projects">
   <div class="container">
     <h2 class="section-title">
       <span class="reveal-wrapper">

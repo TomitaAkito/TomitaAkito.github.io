@@ -1,0 +1,195 @@
+/* 研究ページ専用スタイル（色は style.css の :root 変数を継承） */
+
+.research-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 28px;
+  margin-top: 32px;
+}
+
+/* ---- 配色バリエーション（カード・ヒーロー共通。4色を循環） ---- */
+/* ---- 配色パレット（front matter の color: 色名 で指定。未指定は order から自動） ----
+   自由な色は front matter の color_from / color_to で直接指定できます */
+.hue-0, .hue-blue   { --h1: #1e6fd9; --h2: #38bdf8; }
+.hue-1, .hue-orange { --h1: #ff7a30; --h2: #f59e0b; }
+.hue-2, .hue-purple { --h1: #7c3aed; --h2: #ec4899; }
+.hue-3, .hue-green  { --h1: #059669; --h2: #14b8a6; }
+.hue-red    { --h1: #dc2626; --h2: #f97316; }
+.hue-teal   { --h1: #0e7490; --h2: #22d3ee; }
+.hue-pink   { --h1: #db2777; --h2: #f472b6; }
+.hue-navy   { --h1: #1e3a8a; --h2: #6366f1; }
+
+/* ---- ピクトグラム（白い円の上に表示） ---- */
+.picto {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .18);
+  transition: transform .4s ease;
+}
+.picto img { width: 60%; height: 60%; object-fit: contain; margin: 0; }
+.picto-lg { width: 120px; height: 120px; }
+.research-card:hover .picto { transform: scale(1.1) rotate(-4deg); }
+.research-hero-picto { margin-top: 16px; }
+
+/* ---- カード ---- */
+.research-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  color: var(--color-text);
+  transition: var(--transition);
+}
+.research-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-hover);
+  color: var(--color-text);
+}
+.research-card-thumb {
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--h1), var(--h2));
+  overflow: hidden;
+}
+.research-card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.research-card-body {
+  padding: 20px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+}
+.research-card-meta { display: flex; gap: 8px; font-size: .78rem; }
+.research-year,
+.research-status {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+.research-year { background: var(--h1); color: #fff; }
+.research-status { background: var(--color-border); color: var(--color-text-sub); }
+.research-card-title { margin: 4px 0 0; font-size: 1.15rem; line-height: 1.5; }
+.research-card-en { margin: 0; font-size: .8rem; color: var(--color-text-sub); }
+.research-card-summary { margin: 4px 0; font-size: .9rem; color: var(--color-text-sub); flex: 1; }
+.research-tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.research-tags li {
+  font-size: .75rem;
+  padding: 2px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--h1);
+  color: var(--h1);
+}
+.research-card-more { margin-top: 8px; font-weight: 700; font-size: .88rem; color: var(--h1); }
+
+/* ---- 詳細ページ ---- */
+.research-hero {
+  position: relative;
+  color: #fff;
+  padding: 56px 0 48px;
+  background: linear-gradient(135deg, var(--h1), var(--h2));
+  overflow: hidden;
+}
+.research-hero::after {
+  content: "";
+  position: absolute;
+  right: -80px; top: -80px;
+  width: 320px; height: 320px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.12);
+}
+.research-hero .container { position: relative; z-index: 1; }
+.research-back { color: rgba(255,255,255,.9); font-size: .9rem; }
+.research-back:hover { color: #fff; text-decoration: underline; }
+.research-hero-title { margin: 8px 0 4px; font-size: clamp(1.5rem, 4vw, 2.3rem); line-height: 1.4; }
+.research-hero-en { margin: 0 0 20px; opacity: .9; }
+.research-info { display: flex; flex-wrap: wrap; gap: 8px 32px; margin: 0 0 20px; }
+.research-info dt { font-size: .75rem; opacity: .8; }
+.research-info dd { margin: 0; font-weight: 700; }
+.research-links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 12px; }
+
+.research-body { max-width: 840px; padding-top: 40px; padding-bottom: 64px; }
+.research-lead {
+  font-size: 1.05rem;
+  padding: 18px 22px;
+  background: var(--color-surface);
+  border-left: 5px solid var(--h1, var(--color-main));
+  border-radius: 0 var(--radius) var(--radius) 0;
+  box-shadow: var(--shadow);
+}
+.research-content h2 {
+  margin: 48px 0 16px;
+  padding-bottom: 8px;
+  font-size: 1.4rem;
+  border-bottom: 3px solid var(--color-border);
+  position: relative;
+}
+.research-content h2::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: -3px;
+  width: 80px; height: 3px;
+  background: var(--color-main);
+}
+.research-content h3 { margin: 28px 0 8px; font-size: 1.1rem; }
+.research-content img,
+.research-content video,
+.research-content iframe {
+  max-width: 100%;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  margin: 12px auto;
+}
+.research-content iframe { width: 100%; aspect-ratio: 16 / 9; height: auto; border: 0; }
+.research-content figure { margin: 24px 0; text-align: center; }
+.research-content figure img { margin: 0 auto; display: block; }
+.research-content figcaption { text-align: center; font-size: .85rem; color: var(--color-text-sub); margin-top: 8px; }
+
+/* ツイート・動画埋め込みラッパー */
+.tweet-embed-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 28px 0;
+  width: 100%;
+}
+.tweet-embed-wrap .twitter-tweet {
+  margin: 0 auto !important;
+}
+
+/* 記事内のリスト装飾 */
+.research-content ul {
+  padding-left: 24px;
+  margin: 12px 0 20px;
+}
+.research-content ul li {
+  margin-bottom: 6px;
+  line-height: 1.7;
+}
+
+.research-pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
+}
+.research-pager a { font-weight: 700; }
+
+@media (max-width: 600px) {
+  .research-grid { grid-template-columns: 1fr; }
+  .research-hero { padding: 40px 0 36px; }
+}

@@ -1,0 +1,13 @@
+{% comment %}
+  配色の決定ロジック（一覧カード・Homeカード・詳細ページで共通利用 → 色が必ず一致する）
+  優先順位:
+    1. color_from / color_to  : 任意の色コード（例 "#e11d48"）で自由指定
+    2. color                  : 色名（blue / orange / purple / green / red / teal / pink / navy）
+    3. 指定なし               : order の値から自動（order 1,2,3,4 → blue, orange, purple, green）
+  使い方: {% include research-hue.html item=r %} → hue_class / hue_style が使えるようになる
+{% endcomment %}
+{% assign hr = include.item %}
+{% assign hue_auto = hr.order | default: 1 | minus: 1 | modulo: 4 %}
+{% assign hue_class = "hue-" | append: hue_auto %}
+{% if hr.color %}{% assign hue_class = "hue-" | append: hr.color %}{% endif %}
+{% capture hue_style %}{% if hr.color_from %}--h1:{{ hr.color_from }};--h2:{{ hr.color_to | default: hr.color_from }};{% endif %}{% endcapture %}

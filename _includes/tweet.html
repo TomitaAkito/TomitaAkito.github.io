@@ -1,0 +1,15 @@
+{% comment %}
+  X (Twitter) 埋め込みコンポーネント
+  使い方: {% include tweet.html url="https://twitter.com/VclVisual/status/1893619311446753696" %}
+          {% include tweet.html id="1893619311446753696" %}
+{% endcomment %}
+{% assign tweet_url = include.url %}
+{% if include.id %}
+  {% assign tweet_url = "https://twitter.com/i/status/" | append: include.id %}
+{% endif %}
+<div class="tweet-embed-wrap">
+  <blockquote class="twitter-tweet" data-media-max-width="560" data-dnt="true">
+    <a href="{{ tweet_url }}">{{ tweet_url }}</a>
+  </blockquote>
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>

@@ -51,6 +51,7 @@
 
   <title>{% if page.title %}{{ page.title }} | {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
   <meta name="description" content="{{ dynamic_desc }}">
+  {% if page.hidden == true %}<meta name="robots" content="noindex, nofollow">{% endif %}
   
   <link rel="canonical" href="{{ page.url | absolute_url }}">
 
@@ -67,6 +68,12 @@
   <meta name="twitter:image" content="{{ dynamic_ogp }}">
 
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  {% for css in page.extra_css %}
+  <link rel="stylesheet" href="{{ css | relative_url }}">
+  {% endfor %}
+  {% for css in layout.extra_css %}
+  <link rel="stylesheet" href="{{ css | relative_url }}">
+  {% endfor %}
   <link rel="icon" href="data:,">
 </head>
 <body class="is-changing">
