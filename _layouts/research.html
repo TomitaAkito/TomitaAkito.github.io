@@ -40,6 +40,43 @@ extra_css:
       {{ content }}
     </div>
 
+    {% assign current_slug = page.slug | default: page.title %}
+    {% assign all_posts = site.posts | where_exp: "p", "p.hidden != true" %}
+    {% assign related_posts = "" | split: "" %}
+    {% for p in all_posts %}
+      {% if p.research == current_slug or p.research contains current_slug %}
+        {% assign related_posts = related_posts | push: p %}
+      {% endif %}
+    {% endfor %}
+
+    {% if related_posts.size > 0 %}
+    <section class="research-related-news">
+      <h2>関連するお知らせ</h2>
+      <ul class="news-list">
+        {% for post in related_posts %}
+        <li class="news-item">
+          <a href="{{ post.url | relative_url }}" class="news-link">
+            <div class="news-meta-title">
+              <div class="news-date-col">
+                <span class="news-date">{{ post.date | date: "%Y.%m.%d" }}</span>
+              </div>
+              <div class="news-content-col">
+                <div class="news-category-list">
+                  {% for cat in post.categories %}
+                  <span class="news-category" data-cat="{{ cat }}">{{ cat }}</span>
+                  {% endfor %}
+                </div>
+                <div class="news-title">{{ post.title }}</div>
+              </div>
+            </div>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+
     <nav class="research-pager" aria-label="他の研究">
       {% for r in all_research %}
         {% if r.url == page.url %}

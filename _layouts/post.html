@@ -22,6 +22,17 @@ layout: default
     {{ content }}
   </div>
 
+  {% if page.research %}
+    {% assign related_research = site.research | where: "slug", page.research | first %}
+    {% if related_research %}
+    <div class="post-related-research" style="margin-top: 30px; padding: 16px 20px; background: #ffffff; border: 1px solid var(--color-border); border-left: 5px solid var(--color-main); border-radius: var(--radius); box-shadow: var(--shadow);">
+      <span style="font-size: 0.85rem; color: var(--color-text-sub); display: block; margin-bottom: 4px;">このお知らせに関連する研究：</span>
+      <a href="{{ related_research.url | relative_url }}" style="font-weight: bold; font-size: 1.05rem; color: var(--color-main);">{{ related_research.title }} &rarr;</a>
+    </div>
+    {% endif %}
+  {% endif %}
+
+
 {% assign visible_posts = site.posts | where_exp: "item", "item.hidden != true" %}
 
 {% for post in visible_posts %}

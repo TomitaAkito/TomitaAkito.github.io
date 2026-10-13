@@ -1,8 +1,8 @@
 ---
 title: "卒業アルバム用Video Clip自動生成の一手法"
-published: true   # false->非公開
-hidden: false    # true->一覧・Homeから隠蔽
-title_en: "A Method for Automaticly Generating Video Clips for Graduation Albums"
+published: false   # false->非公開
+hidden: true    # true->一覧・Homeから隠蔽
+title_en: "A Method for Automatically Generating Video Clips for Graduation Albums"
 icon: /assets/img/research/videoclips/icon.png
 color_from: "#ff7a30"
 color_to: "#f59e0b"
@@ -14,8 +14,8 @@ keywords: [卒業アルバム, 自動生成, Video Clip, 画像処理]
 tags: [卒業アルバム, 自動生成, 画像処理]
 summary: "卒業アルバム向けの動画（Video Clip）を、素材から自動で生成する手法の研究です。"
 # links:
-#   - label: "スライド"
-#     url: "/assets/files/video-clip-slides.pdf"
+#   - label: "Researchmap"
+#     url: "https://researchmap.jp/akitotomita"
 ---
 
 ## 概要
@@ -38,4 +38,12 @@ summary: "卒業アルバム向けの動画（Video Clip）を、素材から自
 
 ## 発表・業績
 
-<!-- 【追記してください】学会発表・論文など -->
+### 国際会議
+- **Akito Tomita**, Koichi Nishimura, Nobutaka Hayama, Masahiro Oga, Yuta Muraki, "A Method for Automatically Generating Video Clips for Graduation Albums Using Visual Features and Appearance Times", In Proceedings of the NICOGRAPH International 2026, (2026).
+- **Akito Tomita**, Koichi Nishimura, Yuta Muraki, "A Method for Automatically Generating Video Clips for Graduation Albums Based on Subject Extraction and Grouping", In Proceedings of the 2026 IEEE 15th Global Conference on Consumer Electronics (GCCE 2026), (2026).
+- **Akito Tomita**, Koichi Nishimura, Yuta Muraki, "A Method for Automatically Generating Video Clips for Graduation Albums Based on Speech Activity Detection and Audio Event Detection", In Proceedings of the International Workshop on Advanced Image Technology 2027 (IWAIT 2027), (2027).
+
+### 国内学会
+- **冨田 暁翔**，西村 晃一，村木 祐太，"被写体抽出とグループ化に基づく卒業アルバム用Video Clips自動生成の一手法", 2026年度 第54回 画像電子学会年次大会，(2026)．
+- **冨田 暁翔**，西村 晃一，村木 祐太，"顕著性と登場時間を考慮した被写体抽出に基づく卒業アルバム用Movie Clipの一手法", 情報処理学会 第88回全国大会 講演論文集，(2026)．
+

@@ -199,6 +199,31 @@
   line-height: 1.7;
 }
 
+/* 関連ニュースセクション */
+.research-related-news {
+  margin-top: 56px;
+  padding-top: 10px;
+}
+.research-related-news h2 {
+  margin: 0 0 20px;
+  padding-bottom: 8px;
+  font-size: 1.35rem;
+  border-bottom: 3px solid var(--color-border);
+  position: relative;
+}
+.research-related-news h2::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: -3px;
+  width: 80px; height: 3px;
+  background: var(--color-main);
+}
+.research-related-news .news-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 .research-pager {
   display: flex;
   justify-content: space-between;
