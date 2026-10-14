@@ -23,6 +23,13 @@ layout: default
 
     {% if page.research %}
       {% assign related_research = site.research | where: "slug", page.research | first %}
+      {% if related_research == nil %}
+        {% if page.research == "mr-sketchaquarium" %}
+          {% assign related_research = site.research | where: "slug", "mr-aquarium" | first %}
+        {% elsif page.research == "generatingvideoclips" %}
+          {% assign related_research = site.research | where: "slug", "videoclips" | first %}
+        {% endif %}
+      {% endif %}
       {% if related_research %}
       {% include research-hue.html item=related_research %}
       <div class="post-related-research {{ hue_class }}" style="{{ hue_style }}">

@@ -44,7 +44,15 @@ extra_css:
     {% assign all_posts = site.posts | where_exp: "p", "p.hidden != true" %}
     {% assign related_posts = "" | split: "" %}
     {% for p in all_posts %}
+      {% assign is_match = false %}
       {% if p.research == current_slug or p.research contains current_slug %}
+        {% assign is_match = true %}
+      {% elsif current_slug == "mr-aquarium" and p.research contains "mr-sketchaquarium" %}
+        {% assign is_match = true %}
+      {% elsif current_slug == "videoclips" and p.research contains "generatingvideoclips" %}
+        {% assign is_match = true %}
+      {% endif %}
+      {% if is_match %}
         {% assign related_posts = related_posts | push: p %}
       {% endif %}
     {% endfor %}
@@ -62,6 +70,8 @@ extra_css:
               </div>
               <div class="news-content-col">
                 <div class="news-category-list">
+                  {% assign post_time = post.date | date: "%s" %}
+                  <span class="news-new-badge js-new-badge" data-post-time="{{ post_time }}" style="display: none;">NEW</span>
                   {% for cat in post.categories %}
                   <span class="news-category" data-cat="{{ cat }}">{{ cat }}</span>
                   {% endfor %}

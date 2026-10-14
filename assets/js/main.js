@@ -49,6 +49,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
+  // 外部サイトへのリンクはすべて自動で別タブ・安全設定にする
+  document.querySelectorAll('a[href^="http"]').forEach(link => {
+    if (!link.href.startsWith(window.location.origin)) {
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener noreferrer');
+    }
+  });
+
   // 外部リンク用モーダルの生成
   const modalHTML = `
     <div id="ext-link-modal" class="modal-overlay">
@@ -70,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const proceedBtn = document.getElementById('ext-link-proceed');
 
   let pendingUrl = '';
-  let pendingTargetBlank = false;
+  let pendingTargetBlank = true;
 
   cancelBtn.addEventListener('click', () => {
     modalOverlay.classList.remove('show');
@@ -80,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
     modalOverlay.classList.remove('show');
     if (pendingUrl) {
       if (pendingTargetBlank) {
-        window.open(pendingUrl, '_blank');
+        window.open(pendingUrl, '_blank', 'noopener,noreferrer');
       } else {
         window.location.href = pendingUrl;
       }
@@ -111,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (!isInternal && targetUrl.startsWith('http')) {
       e.preventDefault();
       pendingUrl = targetUrl;
-      pendingTargetBlank = isBlank;
+      pendingTargetBlank = true; // 外部サイトは原則として別タブで開く
       modalUrlText.textContent = targetUrl;
       modalOverlay.classList.add('show');
     }
