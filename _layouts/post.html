@@ -22,15 +22,16 @@ layout: default
     {{ content }}
 
     {% if page.research %}
-      {% assign related_research = site.research | where: "slug", page.research | first %}
+      {% assign visible_research = site.research | where_exp: "r", "r.hidden != true" %}
+      {% assign related_research = visible_research | where: "slug", page.research | first %}
       {% if related_research == nil %}
         {% if page.research == "mr-sketchaquarium" %}
-          {% assign related_research = site.research | where: "slug", "mr-aquarium" | first %}
+          {% assign related_research = visible_research | where: "slug", "mr-aquarium" | first %}
         {% elsif page.research == "generatingvideoclips" %}
-          {% assign related_research = site.research | where: "slug", "videoclips" | first %}
+          {% assign related_research = visible_research | where: "slug", "videoclips" | first %}
         {% endif %}
       {% endif %}
-      {% if related_research %}
+      {% if related_research and related_research.hidden != true %}
       {% include research-hue.html item=related_research %}
       <div class="post-related-research {{ hue_class }}" style="{{ hue_style }}">
         <span class="post-related-label">このお知らせに関連する研究</span>

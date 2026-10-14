@@ -36,8 +36,14 @@
     visibility: visible !important;
   }
 
-  #page-top:hover {
-    transform: translateY(-5px);
-    background-color: #ff7a30;
+  @media (hover: hover) {
+    #page-top:hover {
+      transform: translateY(-5px);
+      background-color: #ff7a30;
+    }
+  }
+
+  #page-top:active {
+    transform: scale(0.95);
   }
 </style>

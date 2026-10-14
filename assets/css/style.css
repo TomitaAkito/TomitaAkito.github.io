@@ -907,9 +907,15 @@ html {
   visibility: visible;
 }
 
-#page-top:hover {
-  transform: translateY(-5px); 
-  background-color: var(--color-accent, #ff7a30); 
+@media (hover: hover) {
+  #page-top:hover {
+    transform: translateY(-5px); 
+    background-color: var(--color-accent, #ff7a30); 
+  }
+}
+
+#page-top:active {
+  transform: scale(0.95);
 }
 
 
@@ -1684,3 +1690,48 @@ body.is-changing .page-transition-loader {
 .fade-line-heading.is-active::before {
   width: 20px; /* 線がシュッと伸びる */
 }
+
+/* -------------------------------------
+ * Notion風 コールアウトブロック (.callout)
+ * ------------------------------------- */
+.callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background-color: #f7f7f5;
+  border: 1px solid #e9e9e7;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 20px 0;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--color-text, #37352f);
+}
+
+.callout-icon {
+  font-size: 1.25rem;
+  line-height: 1.3;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.callout-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.callout-title {
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--color-text, #212529);
+}
+
+.callout-content p {
+  margin: 0;
+  color: var(--color-text-sub, #4b5563);
+}
+
+.callout-content p + p {
+  margin-top: 6px;
+}
+

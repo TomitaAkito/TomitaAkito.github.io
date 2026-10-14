@@ -47,6 +47,15 @@ document.addEventListener('DOMContentLoaded', function() {
         pageTopBtn.classList.remove('show');
       }
     });
+
+    pageTopBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+      pageTopBtn.blur();
+    });
   }
 
   // 外部サイトへのリンクはすべて自動で別タブ・安全設定にする
