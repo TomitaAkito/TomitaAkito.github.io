@@ -1,0 +1,407 @@
+---
+layout: default
+title: DEMO
+permalink: /video-demo.html
+description: "Webカメラを用いたリアルタイム映像解析デモ。"
+extra_css:
+  - /assets/css/video-demo.css
+---
+
+<section class="section demo-section">
+  <div class="container">
+    
+    <!-- Section Title matching site theme -->
+    <h2 class="section-title">
+      <span class="reveal-wrapper">
+        <span class="reveal-box"></span>
+        <span class="reveal-text">Video Demo</span>
+      </span>
+    </h2>
+    <p class="section-lead">Webカメラを使用したリアルタイム<span class="marker">映像解析デモ</span>です。ブラウザ完結で動作し、映像は端末内でのみ処理されます。</p>
+
+    <!-- Task Navigation Tabs -->
+    <div class="demo-tabs-nav" role="tablist">
+      <button class="demo-tab-btn active" data-task="object">
+        <span>📦</span> 物体検出
+      </button>
+      <button class="demo-tab-btn" data-task="face">
+        <span>😊</span> 表情検出
+      </button>
+      <button class="demo-tab-btn" data-task="depth">
+        <span>🔮</span> 深度推定
+      </button>
+      <button class="demo-tab-btn" data-task="saliency">
+        <span>🧠</span> 顕著性マップ
+      </button>
+      <button class="demo-tab-btn" data-task="flow">
+        <span>🌊</span> オプティカルフロー
+      </button>
+      <button class="demo-tab-btn" data-task="segmentation">
+        <span>✂️</span> セグメンテーション
+      </button>
+    </div>
+
+    <!-- Main Grid: Viewport + Controls -->
+    <div class="demo-grid">
+
+      <!-- Viewport Card -->
+      <div class="demo-viewport-card">
+        
+        <!-- Toolbar -->
+        <div class="demo-toolbar">
+          <div class="demo-toolbar-group">
+            <button id="vs-btn-start" class="demo-btn demo-btn-primary">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              カメラ起動
+            </button>
+            <button id="vs-btn-stop" class="demo-btn demo-btn-danger" style="display: none;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="6" y="6" width="12" height="12"/></svg>
+              停止
+            </button>
+            <button id="vs-btn-mirror" class="demo-btn demo-btn-primary" title="鏡像反転の切り替え">
+              左右反転 (ミラー)
+            </button>
+          </div>
+
+          <div class="demo-toolbar-group">
+            <select id="vs-select-view" class="demo-select" title="表示モード">
+              <option value="single">単一表示</option>
+              <option value="split">左右比較 (元映像 / 処理後)</option>
+            </select>
+
+            <select id="vs-select-res" class="demo-select" title="解像度">
+              <option value="640x480">480p (推奨)</option>
+              <option value="1280x720">720p</option>
+            </select>
+
+            <button id="vs-btn-snapshot" class="demo-btn demo-btn-outline demo-btn-icon" title="スナップショット保存" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Stage Area -->
+        <div class="demo-stage">
+          <video id="vs-video-raw" playsinline muted></video>
+
+          <!-- Main Canvas -->
+          <div class="demo-canvas-wrap">
+            <canvas id="vs-canvas-main"></canvas>
+          </div>
+
+          <!-- Split Container -->
+          <div id="vs-split-container" class="demo-split-container">
+            <div class="demo-split-box">
+              <span class="demo-split-badge">ORIGINAL</span>
+              <canvas id="vs-split-orig"></canvas>
+            </div>
+            <div class="demo-split-box">
+              <span class="demo-split-badge">PROCESSED</span>
+              <canvas id="vs-split-proc"></canvas>
+            </div>
+          </div>
+
+          <!-- HUD Layer -->
+          <div class="demo-hud-layer">
+            <div class="demo-hud-stats">
+              <span>FPS: <strong class="val" id="vs-stat-fps">0</strong></span>
+              <span>DELAY: <strong class="val" id="vs-stat-latency">0ms</strong></span>
+              <span id="vs-stat-res">--</span>
+            </div>
+            <div class="demo-hud-badge" id="vs-stat-mode-badge">
+              物体検出 (Object Detection)
+            </div>
+          </div>
+
+          <!-- Placeholder -->
+          <div id="vs-placeholder" class="demo-placeholder">
+            <div class="demo-placeholder-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+            <h3>カメラが停止しています</h3>
+            <p>「カメラ起動」ボタンを押すと映像解析が開始されます。映像データは外部に送信されず、お使いのブラウザ内でのみ安全に処理されます。</p>
+          </div>
+
+          <!-- Loading Overlay -->
+          <div id="vs-loading-overlay" class="demo-loading-overlay hidden">
+            <div class="demo-spinner"></div>
+            <div class="demo-loading-text" id="vs-loading-text">モデル読込中...</div>
+            <div class="demo-loading-progress-bar">
+              <div class="demo-loading-progress-fill" id="vs-loading-progress-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Bar -->
+        <div class="demo-viewport-footer">
+          <span>Client-Side Local Inference</span>
+          <span>WebAssembly / WebGL 加速</span>
+        </div>
+      </div>
+
+      <!-- Settings Sidebar -->
+      <div class="demo-control-card">
+        
+        <!-- 1. Object Detection -->
+        <div class="demo-task-panel" id="demo-panel-object" style="display: flex; flex-direction: column; gap: 16px;">
+          <h3 class="demo-panel-title">📦 物体検出 設定</h3>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">
+              <span>信頼度しきい値</span>
+              <span class="val-tag" id="demo-obj-score-val">50%</span>
+            </label>
+            <input type="range" id="demo-obj-score" class="demo-range" min="0.2" max="0.9" step="0.05" value="0.5">
+          </div>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">検出中の物体</label>
+            <div class="demo-detected-list" id="demo-detected-tags">
+              <span style="color:var(--color-text-sub);font-size:0.8rem;">待機中</span>
+            </div>
+          </div>
+
+          <p style="font-size:0.82rem; color:var(--color-text-sub); line-height:1.6; margin:0;">
+            TensorFlow.js (COCO-SSD) により、日常の物体（人物、PC、スマートフォン、カップなど80種類）をリアルタイムに検出します。
+          </p>
+        </div>
+
+        <!-- 2. Face Expression -->
+        <div class="demo-task-panel" id="demo-panel-face" style="display: none; flex-direction: column; gap: 16px;">
+          <h3 class="demo-panel-title">😊 表情検出 設定</h3>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">
+              <span>検出感度</span>
+              <span class="val-tag" id="demo-face-score-val">50%</span>
+            </label>
+            <input type="range" id="demo-face-score" class="demo-range" min="0.2" max="0.8" step="0.05" value="0.5">
+          </div>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">7表情スコア</label>
+            <div class="demo-emotion-bars">
+              <div class="demo-emotion-row">
+                <span class="demo-emotion-name">😊 幸福</span>
+                <div class="demo-emotion-track"><div id="demo-emo-fill-happy" class="demo-emotion-fill" style="background:#10b981;"></div></div>
+                <span class="demo-emotion-score" id="demo-emo-score-happy">0%</span>
+              </div>
+              <div class="demo-emotion-row">
+                <span class="demo-emotion-name">😲 驚き</span>
+                <div class="demo-emotion-track"><div id="demo-emo-fill-surprised" class="demo-emotion-fill" style="background:#f59e0b;"></div></div>
+                <span class="demo-emotion-score" id="demo-emo-score-surprised">0%</span>
+              </div>
+              <div class="demo-emotion-row">
+                <span class="demo-emotion-name">😐 平常</span>
+                <div class="demo-emotion-track"><div id="demo-emo-fill-neutral" class="demo-emotion-fill" style="background:#1e6fd9;"></div></div>
+                <span class="demo-emotion-score" id="demo-emo-score-neutral">0%</span>
+              </div>
+              <div class="demo-emotion-row">
+                <span class="demo-emotion-name">😢 悲哀</span>
+                <div class="demo-emotion-track"><div id="demo-emo-fill-sad" class="demo-emotion-fill" style="background:#6366f1;"></div></div>
+                <span class="demo-emotion-score" id="demo-emo-score-sad">0%</span>
+              </div>
+              <div class="demo-emotion-row">
+                <span class="demo-emotion-name">😠 怒り</span>
+                <div class="demo-emotion-track"><div id="demo-emo-fill-angry" class="demo-emotion-fill" style="background:#ef4444;"></div></div>
+                <span class="demo-emotion-score" id="demo-emo-score-angry">0%</span>
+              </div>
+              <div class="demo-emotion-row">
+                <span class="demo-emotion-name">😨 恐怖</span>
+                <div class="demo-emotion-track"><div id="demo-emo-fill-fearful" class="demo-emotion-fill" style="background:#8b5cf6;"></div></div>
+                <span class="demo-emotion-score" id="demo-emo-score-fearful">0%</span>
+              </div>
+              <div class="demo-emotion-row">
+                <span class="demo-emotion-name">🤢 嫌悪</span>
+                <div class="demo-emotion-track"><div id="demo-emo-fill-disgusted" class="demo-emotion-fill" style="background:#ea580c;"></div></div>
+                <span class="demo-emotion-score" id="demo-emo-score-disgusted">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Depth Estimation -->
+        <div class="demo-task-panel" id="demo-panel-depth" style="display: none; flex-direction: column; gap: 16px;">
+          <h3 class="demo-panel-title">🔮 深度推定 設定</h3>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">カラー表現</label>
+            <select id="demo-depth-colormap" class="demo-select">
+              <option value="grayscale" selected>グレースケール (標準: 手前=白 / 奥=黒)</option>
+              <option value="inferno">Inferno</option>
+              <option value="turbo">Turbo (虹色)</option>
+              <option value="viridis">Viridis</option>
+            </select>
+          </div>
+
+          <div class="demo-control-group">
+            <label class="demo-toggle-label">
+              <span>明暗反転 (手前=黒 / 奥=白)</span>
+              <input type="checkbox" id="demo-depth-invert">
+            </label>
+          </div>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">
+              <span>コントラスト強調</span>
+              <span class="val-tag" id="demo-depth-gamma-val">1.2x</span>
+            </label>
+            <input type="range" id="demo-depth-gamma" class="demo-range" min="0.5" max="2.5" step="0.1" value="1.2">
+          </div>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">処理負荷・更新頻度</label>
+            <select id="demo-depth-throttle" class="demo-select">
+              <option value="eco">エコ (超軽量・省電力)</option>
+              <option value="balanced" selected>バランス (標準推奨)</option>
+              <option value="fast">高速更新 (高負荷)</option>
+            </select>
+          </div>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">推定モード</label>
+            <select id="demo-depth-mode" class="demo-select">
+              <option value="ai" selected>Depth Anything (ニューラル深度)</option>
+              <option value="ultralight">超軽量ハイブリッド (CPU負荷ゼロ)</option>
+            </select>
+          </div>
+
+          <div class="demo-control-group">
+            <div id="demo-depth-status" style="background:#f0f7ff; border:1px solid #cce3ff; color:var(--color-main); padding:8px 12px; border-radius:6px; font-size:0.82rem; font-weight:600;">
+              高精度AI (Depth Anything)
+            </div>
+            <p style="font-size:0.75rem; color:var(--color-text-sub); margin:4px 0 0;">
+              入力を160x120に最適化し、UI描画（60FPS）と完全非同期で推論を実行するため、軽快に動作します。
+            </p>
+          </div>
+        </div>
+
+        <!-- 4. Saliency Map -->
+        <div class="demo-task-panel" id="demo-panel-saliency" style="display: none; flex-direction: column; gap: 16px;">
+          <h3 class="demo-panel-title">🧠 顕著性マップ 設定</h3>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">
+              <span>透過度</span>
+              <span class="val-tag" id="demo-sal-opacity-val">60%</span>
+            </label>
+            <input type="range" id="demo-sal-opacity" class="demo-range" min="0.1" max="1.0" step="0.05" value="0.6">
+          </div>
+
+          <div class="demo-control-group">
+            <label class="demo-toggle-label">
+              <span>注視エリア表示</span>
+              <input type="checkbox" id="demo-sal-reticle" checked>
+            </label>
+          </div>
+
+          <p style="font-size:0.82rem; color:var(--color-text-sub); line-height:1.6; margin:0;">
+            多重解像度カラーコントラストに基づき、視線が自然に吸い寄せられる特徴的な領域をリアルタイムに抽出します。
+          </p>
+        </div>
+
+        <!-- 5. Optical Flow -->
+        <div class="demo-task-panel" id="demo-panel-flow" style="display: none; flex-direction: column; gap: 16px;">
+          <h3 class="demo-panel-title">🌊 オプティカルフロー 設定</h3>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">表示形式</label>
+            <select id="demo-flow-mode" class="demo-select">
+              <option value="arrows">運動ベクトル矢印</option>
+              <option value="heatmap">モーションヒートマップ</option>
+              <option value="combined">複合表示</option>
+            </select>
+          </div>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">
+              <span>感度</span>
+              <span class="val-tag" id="demo-flow-sens-val">3.5x</span>
+            </label>
+            <input type="range" id="demo-flow-sens" class="demo-range" min="1.0" max="8.0" step="0.5" value="3.5">
+          </div>
+
+          <p style="font-size:0.82rem; color:var(--color-text-sub); line-height:1.6; margin:0;">
+            Lucas-Kanade法により、フレーム間の物体の移動速度と方向（色相）を追跡・描画します。
+          </p>
+        </div>
+
+        <!-- 6. Segmentation -->
+        <div class="demo-task-panel" id="demo-panel-segmentation" style="display: none; flex-direction: column; gap: 16px;">
+          <h3 class="demo-panel-title">✂️ セグメンテーション 設定</h3>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">エフェクト</label>
+            <select id="demo-seg-effect" class="demo-select">
+              <option value="blur">背景ぼかし (バーチャル背景)</option>
+              <option value="grayscale">背景モノクロ (人物強調)</option>
+              <option value="mask">カラーマスク</option>
+            </select>
+          </div>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">
+              <span>ぼかし強度</span>
+              <span class="val-tag" id="demo-seg-blur-val">12px</span>
+            </label>
+            <input type="range" id="demo-seg-blur" class="demo-range" min="2" max="28" step="2" value="12">
+          </div>
+
+          <p style="font-size:0.82rem; color:var(--color-text-sub); line-height:1.6; margin:0;">
+            BodyPix により人物領域をリアルタイムに分離し、背景ぼかしなどを合成します。
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CV Info Cards -->
+    <div class="demo-info-section">
+      <h3 class="section-title" style="font-size:1.4rem; margin-bottom: 6px;">各機能の解説・概要</h3>
+      <p style="color:var(--color-text-sub); font-size:0.9rem; margin-bottom:20px;">本デモで実装されているコンピュータビジョン技術の概要です。</p>
+
+      <div class="demo-info-grid">
+        <div class="demo-card-item">
+          <div class="demo-card-header">📦 物体検出 (Object Detection)</div>
+          <p class="demo-card-desc">画像内の複数オブジェクトの領域（バウンディングボックス）とカテゴリを同時に推定します。</p>
+        </div>
+        <div class="demo-card-item">
+          <div class="demo-card-header">😊 表情検出 (Facial Expression)</div>
+          <p class="demo-card-desc">顔の幾何学的ランドマークから感情認識ネットワークを用いて7つの基本感情確率を算出します。</p>
+        </div>
+        <div class="demo-card-item">
+          <div class="demo-card-header">🔮 深度推定 (Depth Estimation)</div>
+          <p class="demo-card-desc">単眼画像から手前・奥の3次元距離関係を計算し、カラーマップで可視化します。</p>
+        </div>
+        <div class="demo-card-item">
+          <div class="demo-card-header">🧠 顕著性マップ (Saliency Map)</div>
+          <p class="demo-card-desc">人間が無意識に注目するコントラストや色・エッジの特異領域をヒートマップとして抽出します。</p>
+        </div>
+        <div class="demo-card-item">
+          <div class="demo-card-header">🌊 オプティカルフロー (Optical Flow)</div>
+          <p class="demo-card-desc">時間的に連続する画像フレームのピクセル移動速度と方向ベクトルを推定します。</p>
+        </div>
+        <div class="demo-card-item">
+          <div class="demo-card-header">✂️ セグメンテーション (Segmentation)</div>
+          <p class="demo-card-desc">ピクセル単位で人物領域をマスクし、背景ぼかしや置換処理をリアルタイムに実行します。</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- AI CDN Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.2.1/dist/body-pix.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.12/dist/face-api.js"></script>
+
+<!-- Processing Engines -->
+<script src="{{ '/assets/js/video-demo/optical-flow.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/video-demo/saliency.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/video-demo/depth-estimation.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/video-demo/object-detection.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/video-demo/face-expression.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/video-demo/segmentation.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/video-demo/app.js' | relative_url }}"></script>

@@ -1,0 +1,457 @@
+/**
+ * Vision Demo - Main Controller
+ * Coordinates webcam, task engines, clean UI controls, and performance meters.
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  const video = document.getElementById('vs-video-raw');
+  const mainCanvas = document.getElementById('vs-canvas-main');
+  const mainCtx = mainCanvas.getContext('2d');
+
+  const splitContainer = document.getElementById('vs-split-container');
+  const splitOriginalCanvas = document.getElementById('vs-split-orig');
+  const splitOrigCtx = splitOriginalCanvas.getContext('2d');
+  const splitProcessedCanvas = document.getElementById('vs-split-proc');
+  const splitProcCtx = splitProcessedCanvas.getContext('2d');
+
+  const startCamBtn = document.getElementById('vs-btn-start');
+  const stopCamBtn = document.getElementById('vs-btn-stop');
+  const mirrorToggleBtn = document.getElementById('vs-btn-mirror');
+  const snapshotBtn = document.getElementById('vs-btn-snapshot');
+  const resolutionSelect = document.getElementById('vs-select-res');
+  const viewModeSelect = document.getElementById('vs-select-view');
+
+  const placeholderOverlay = document.getElementById('vs-placeholder');
+  const loadingOverlay = document.getElementById('vs-loading-overlay');
+  const loadingText = document.getElementById('vs-loading-text');
+  const loadingProgressFill = document.getElementById('vs-loading-progress-fill');
+
+  const statFps = document.getElementById('vs-stat-fps');
+  const statLatency = document.getElementById('vs-stat-latency');
+  const statRes = document.getElementById('vs-stat-res');
+  const statModeBadge = document.getElementById('vs-stat-mode-badge');
+
+  const tabButtons = document.querySelectorAll('.demo-tab-btn');
+  const controlPanels = document.querySelectorAll('.demo-task-panel');
+
+  // State
+  let stream = null;
+  let isRunning = false;
+  let currentTask = 'object';
+  let isMirrored = true; // Natural mirror view by default
+  let viewMode = 'single';
+
+  // FPS tracking
+  let frameCount = 0;
+  let lastFpsUpdateTime = performance.now();
+
+  // Engine Instances
+  const engines = {
+    object: new window.ObjectDetectionEngine(),
+    face: new window.FaceExpressionEngine(),
+    depth: new window.DepthEstimationEngine(),
+    saliency: new window.SaliencyEngine(),
+    flow: new window.OpticalFlowEngine(),
+    segmentation: new window.SegmentationEngine()
+  };
+
+  function showLoading(msg, progress = 0) {
+    if (loadingText) loadingText.textContent = msg;
+    if (loadingProgressFill) loadingProgressFill.style.width = `${progress}%`;
+    if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+  }
+
+  function hideLoading() {
+    if (loadingOverlay) loadingOverlay.classList.add('hidden');
+  }
+
+  async function startCamera() {
+    showLoading('カメラを初期化中...');
+    const [w, h] = resolutionSelect.value.split('x').map(Number);
+
+    try {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          width: { ideal: w },
+          height: { ideal: h },
+          facingMode: 'user'
+        }
+      });
+
+      video.srcObject = stream;
+      await video.play();
+
+      const actualW = video.videoWidth || w;
+      const actualH = video.videoHeight || h;
+
+      mainCanvas.width = actualW;
+      mainCanvas.height = actualH;
+      splitOriginalCanvas.width = actualW;
+      splitOriginalCanvas.height = actualH;
+      splitProcessedCanvas.width = actualW;
+      splitProcessedCanvas.height = actualH;
+
+      if (statRes) statRes.textContent = `${actualW}x${actualH}`;
+
+      if (placeholderOverlay) placeholderOverlay.classList.add('hidden');
+      if (startCamBtn) startCamBtn.style.display = 'none';
+      if (stopCamBtn) stopCamBtn.style.display = 'inline-flex';
+      if (snapshotBtn) snapshotBtn.disabled = false;
+
+      isRunning = true;
+      hideLoading();
+
+      await prepareActiveTask(currentTask);
+      requestAnimationFrame(renderLoop);
+    } catch (err) {
+      console.error('Camera access error:', err);
+      hideLoading();
+      alert(`カメラの起動に失敗しました: ${err.name} - ${err.message}\nカメラの利用許可を確認してください。`);
+    }
+  }
+
+  function stopCamera() {
+    isRunning = false;
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      stream = null;
+    }
+    video.srcObject = null;
+    if (placeholderOverlay) placeholderOverlay.classList.remove('hidden');
+    if (startCamBtn) startCamBtn.style.display = 'inline-flex';
+    if (stopCamBtn) stopCamBtn.style.display = 'none';
+    if (snapshotBtn) snapshotBtn.disabled = true;
+    if (statFps) statFps.textContent = '0';
+    if (statLatency) statLatency.textContent = '0ms';
+  }
+
+  async function prepareActiveTask(taskKey) {
+    if (taskKey === 'object' && !engines.object.isLoaded) {
+      showLoading('物体検出モデル (COCO-SSD) 読込中...', 30);
+      try {
+        await engines.object.loadModel((pct) => showLoading('物体検出モデル読込中...', pct));
+      } catch (err) {
+        alert('物体検出モデルの読込に失敗しました。');
+      } finally {
+        hideLoading();
+      }
+    } else if (taskKey === 'face' && !engines.face.isLoaded) {
+      showLoading('表情検出モデル (Face-API) 読込中...', 30);
+      try {
+        await engines.face.loadModel((pct) => showLoading('表情検出モデル読込中...', pct));
+      } catch (err) {
+        alert('表情検出モデルの読込に失敗しました。');
+      } finally {
+        hideLoading();
+      }
+    } else if (taskKey === 'segmentation' && !engines.segmentation.isLoaded) {
+      showLoading('セグメンテーションモデル (BodyPix) 読込中...', 30);
+      try {
+        await engines.segmentation.loadModel((pct) => showLoading('BodyPixモデル読込中...', pct));
+      } catch (err) {
+        alert('セグメンテーションモデルの読込に失敗しました。');
+      } finally {
+        hideLoading();
+      }
+    } else if (taskKey === 'depth' && !engines.depth.aiLoaded) {
+      showLoading('深度推定AI (Depth Anything) モデルを準備中...', 15);
+      try {
+        await engines.depth.loadAIModel((pct) => showLoading(`深度推定モデル読込中 (${pct}%)...`, pct));
+        const statusEl = document.getElementById('demo-depth-status');
+        if (statusEl && engines.depth.aiLoaded) {
+          statusEl.textContent = '高精度AI (Depth Anything) 稼働中';
+          statusEl.style.background = '#e6f9f0';
+          statusEl.style.borderColor = '#b7edd2';
+          statusEl.style.color = '#0e9f6e';
+        }
+      } catch (err) {
+        console.warn('Depth Anything load error, running enhanced gradient:', err);
+      } finally {
+        hideLoading();
+      }
+    }
+  }
+
+  async function switchTask(taskKey) {
+    currentTask = taskKey;
+
+    tabButtons.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.task === taskKey);
+    });
+
+    controlPanels.forEach(panel => {
+      panel.style.display = panel.id === `demo-panel-${taskKey}` ? 'flex' : 'none';
+    });
+
+    const taskNames = {
+      object: '物体検出 (Object Detection)',
+      face: '表情検出 (Facial Expression)',
+      depth: '深度推定 (Depth Estimation)',
+      saliency: '顕著性 (Saliency Map)',
+      flow: 'オプティカルフロー (Optical Flow)',
+      segmentation: 'セグメンテーション (Segmentation)'
+    };
+    if (statModeBadge) statModeBadge.textContent = taskNames[taskKey] || taskKey;
+
+    // Always preload models when switching tab so it is ready immediately
+    prepareActiveTask(taskKey);
+  }
+
+  function renderLoop() {
+    if (!isRunning) return;
+
+    const startPerf = performance.now();
+    let targetCtx = mainCtx;
+    let targetCanvas = mainCanvas;
+
+    if (viewMode === 'split') {
+      targetCtx = splitProcCtx;
+      targetCanvas = splitProcessedCanvas;
+      // Original frame on left
+      splitOrigCtx.save();
+      if (isMirrored) {
+        splitOrigCtx.translate(splitOriginalCanvas.width, 0);
+        splitOrigCtx.scale(-1, 1);
+      }
+      splitOrigCtx.drawImage(video, 0, 0, splitOriginalCanvas.width, splitOriginalCanvas.height);
+      splitOrigCtx.restore();
+    }
+
+    const cw = targetCanvas.width;
+    const ch = targetCanvas.height;
+
+    try {
+      if (currentTask === 'object') {
+        engines.object.process(targetCtx, video, cw, ch, updateDetectedList, isMirrored);
+      } else if (currentTask === 'face') {
+        engines.face.process(targetCtx, video, cw, ch, updateEmotionsMeter, isMirrored);
+      } else if (currentTask === 'depth') {
+        engines.depth.process(targetCtx, video, cw, ch, isMirrored);
+      } else if (currentTask === 'saliency') {
+        engines.saliency.process(targetCtx, video, cw, ch, isMirrored);
+      } else if (currentTask === 'flow') {
+        engines.flow.process(targetCtx, video, cw, ch, isMirrored);
+      } else if (currentTask === 'segmentation') {
+        engines.segmentation.process(targetCtx, video, cw, ch, isMirrored);
+      }
+    } catch (err) {
+      console.warn('Render loop engine error:', err);
+    }
+
+    const endPerf = performance.now();
+    const latency = Math.round(endPerf - startPerf);
+    if (statLatency) statLatency.textContent = `${latency}ms`;
+
+    frameCount++;
+    if (endPerf - lastFpsUpdateTime >= 1000) {
+      const fps = Math.round((frameCount * 1000) / (endPerf - lastFpsUpdateTime));
+      if (statFps) statFps.textContent = fps.toString();
+      frameCount = 0;
+      lastFpsUpdateTime = endPerf;
+    }
+
+    requestAnimationFrame(renderLoop);
+  }
+
+  const detectedListContainer = document.getElementById('demo-detected-tags');
+  function updateDetectedList(predictions) {
+    if (!detectedListContainer) return;
+    if (!predictions || predictions.length === 0) {
+      detectedListContainer.innerHTML = '<span style="color:var(--color-text-sub);font-size:0.8rem;">検出なし</span>';
+      return;
+    }
+    detectedListContainer.innerHTML = predictions.map(p => `
+      <span class="demo-detected-tag">
+        ${p.class} <small>(${p.score}%)</small>
+      </span>
+    `).join('');
+  }
+
+  function updateEmotionsMeter(expressions) {
+    const emotionKeys = ['happy', 'surprised', 'neutral', 'sad', 'angry', 'fearful', 'disgusted'];
+    emotionKeys.forEach(key => {
+      const fillEl = document.getElementById(`demo-emo-fill-${key}`);
+      const scoreEl = document.getElementById(`demo-emo-score-${key}`);
+      if (fillEl && scoreEl) {
+        if (expressions && expressions[key] !== undefined) {
+          const pct = Math.round(expressions[key] * 100);
+          fillEl.style.width = `${pct}%`;
+          scoreEl.textContent = `${pct}%`;
+        } else {
+          fillEl.style.width = '0%';
+          scoreEl.textContent = '0%';
+        }
+      }
+    });
+  }
+
+  function takeSnapshot() {
+    const canvasToExport = viewMode === 'split' ? splitProcessedCanvas : mainCanvas;
+    const dataUrl = canvasToExport.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.download = `video-demo-${currentTask}-${Date.now()}.png`;
+    link.href = dataUrl;
+    link.click();
+  }
+
+  // Event Listeners
+  startCamBtn.addEventListener('click', startCamera);
+  stopCamBtn.addEventListener('click', stopCamera);
+  snapshotBtn.addEventListener('click', takeSnapshot);
+
+  if (mirrorToggleBtn) {
+    mirrorToggleBtn.addEventListener('click', () => {
+      isMirrored = !isMirrored;
+      mirrorToggleBtn.classList.toggle('demo-btn-primary', isMirrored);
+      mirrorToggleBtn.classList.toggle('demo-btn-outline', !isMirrored);
+    });
+  }
+
+  resolutionSelect.addEventListener('change', () => {
+    if (isRunning) startCamera();
+  });
+
+  viewModeSelect.addEventListener('change', (e) => {
+    viewMode = e.target.value;
+    if (viewMode === 'split') {
+      mainCanvas.style.display = 'none';
+      splitContainer.style.display = 'grid';
+    } else {
+      mainCanvas.style.display = 'block';
+      splitContainer.style.display = 'none';
+    }
+  });
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      switchTask(btn.dataset.task);
+    });
+  });
+
+  // Sliders & controls
+  const objScoreSlider = document.getElementById('demo-obj-score');
+  const objScoreVal = document.getElementById('demo-obj-score-val');
+  if (objScoreSlider) {
+    objScoreSlider.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      engines.object.minScore = val;
+      objScoreVal.textContent = `${Math.round(val * 100)}%`;
+    });
+  }
+
+  const faceScoreSlider = document.getElementById('demo-face-score');
+  const faceScoreVal = document.getElementById('demo-face-score-val');
+  if (faceScoreSlider) {
+    faceScoreSlider.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      engines.face.minConfidence = val;
+      faceScoreVal.textContent = `${Math.round(val * 100)}%`;
+    });
+  }
+
+  const depthColormapSelect = document.getElementById('demo-depth-colormap');
+  const depthInvertCheck = document.getElementById('demo-depth-invert');
+  const depthGammaSlider = document.getElementById('demo-depth-gamma');
+  const depthGammaVal = document.getElementById('demo-depth-gamma-val');
+  const depthThrottleSelect = document.getElementById('demo-depth-throttle');
+  const depthModeSelect = document.getElementById('demo-depth-mode');
+
+  if (depthColormapSelect) {
+    depthColormapSelect.addEventListener('change', (e) => {
+      engines.depth.colormapName = e.target.value;
+    });
+  }
+  if (depthInvertCheck) {
+    depthInvertCheck.addEventListener('change', (e) => {
+      engines.depth.invert = e.target.checked;
+    });
+  }
+  if (depthGammaSlider) {
+    depthGammaSlider.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      engines.depth.contrastGamma = val;
+      if (depthGammaVal) depthGammaVal.textContent = `${val.toFixed(1)}x`;
+    });
+  }
+  if (depthThrottleSelect) {
+    depthThrottleSelect.addEventListener('change', (e) => {
+      const mode = e.target.value;
+      if (mode === 'eco') engines.depth.throttleInterval = 320;
+      else if (mode === 'fast') engines.depth.throttleInterval = 80;
+      else engines.depth.throttleInterval = 180;
+    });
+  }
+  if (depthModeSelect) {
+    depthModeSelect.addEventListener('change', (e) => {
+      engines.depth.mode = e.target.value;
+      const statusEl = document.getElementById('demo-depth-status');
+      if (statusEl) {
+        if (e.target.value === 'ultralight') {
+          statusEl.textContent = '超軽量ハイブリッド (CPU負荷ゼロ)';
+          statusEl.style.background = '#fef3c7';
+          statusEl.style.borderColor = '#fde68a';
+          statusEl.style.color = '#92400e';
+        } else {
+          statusEl.textContent = engines.depth.isLoaded ? '高精度AI (Depth Anything) 稼働中' : 'モデル読込中...';
+          statusEl.style.background = '#f0f7ff';
+          statusEl.style.borderColor = '#cce3ff';
+          statusEl.style.color = 'var(--color-main)';
+        }
+      }
+    });
+  }
+
+  const salOpacitySlider = document.getElementById('demo-sal-opacity');
+  const salOpacityVal = document.getElementById('demo-sal-opacity-val');
+  const salReticleCheck = document.getElementById('demo-sal-reticle');
+  if (salOpacitySlider) {
+    salOpacitySlider.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      engines.saliency.opacity = val;
+      salOpacityVal.textContent = `${Math.round(val * 100)}%`;
+    });
+  }
+  if (salReticleCheck) {
+    salReticleCheck.addEventListener('change', (e) => {
+      engines.saliency.showReticle = e.target.checked;
+    });
+  }
+
+  const flowModeSelect = document.getElementById('demo-flow-mode');
+  const flowSensSlider = document.getElementById('demo-flow-sens');
+  const flowSensVal = document.getElementById('demo-flow-sens-val');
+  if (flowModeSelect) {
+    flowModeSelect.addEventListener('change', (e) => {
+      engines.flow.mode = e.target.value;
+    });
+  }
+  if (flowSensSlider) {
+    flowSensSlider.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      engines.flow.scale = val;
+      flowSensVal.textContent = `${val.toFixed(1)}x`;
+    });
+  }
+
+  const segEffectSelect = document.getElementById('demo-seg-effect');
+  const segBlurSlider = document.getElementById('demo-seg-blur');
+  const segBlurVal = document.getElementById('demo-seg-blur-val');
+  if (segEffectSelect) {
+    segEffectSelect.addEventListener('change', (e) => {
+      engines.segmentation.effect = e.target.value;
+    });
+  }
+  if (segBlurSlider) {
+    segBlurSlider.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value, 10);
+      engines.segmentation.blurAmount = val;
+      segBlurVal.textContent = `${val}px`;
+    });
+  }
+
+  switchTask('object');
+});
