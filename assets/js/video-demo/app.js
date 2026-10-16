@@ -5,6 +5,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const video = document.getElementById('vs-video-raw');
   const mainCanvas = document.getElementById('vs-canvas-main');
+  const mainCanvasWrap = document.getElementById('vs-canvas-wrap') || (mainCanvas ? mainCanvas.parentElement : null);
   const mainCtx = mainCanvas.getContext('2d');
 
   const splitContainer = document.getElementById('vs-split-container');
@@ -371,9 +372,11 @@ document.addEventListener('DOMContentLoaded', () => {
   viewModeSelect.addEventListener('change', (e) => {
     viewMode = e.target.value;
     if (viewMode === 'split') {
+      if (mainCanvasWrap) mainCanvasWrap.style.display = 'none';
       mainCanvas.style.display = 'none';
       splitContainer.style.display = 'grid';
     } else {
+      if (mainCanvasWrap) mainCanvasWrap.style.display = 'flex';
       mainCanvas.style.display = 'block';
       splitContainer.style.display = 'none';
     }
