@@ -39,9 +39,6 @@ extra_css:
       <button class="demo-tab-btn" data-task="flow">
         オプティカルフロー
       </button>
-      <button class="demo-tab-btn" data-task="segmentation">
-        セグメンテーション
-      </button>
     </div>
 
     <!-- Main Grid: Viewport + Controls -->
@@ -179,12 +176,11 @@ extra_css:
               上部のタブから試したい解析機能を選択してください。機能を選択するまで、モデルデータのダウンロードは開始されません。
             </p>
             <ul style="padding-left:18px; margin:0 0 12px; color:var(--color-text-sub);">
-              <li><strong>物体検出:</strong> 日常の物体（80種）を検出</li>
+              <li><strong>物体検出:</strong> 日常の物体（80種）を検出（枠線 / 輪郭セグメンテーション選択可）</li>
               <li><strong>表情検出:</strong> 顔の表情と感情確率を推定</li>
               <li><strong>深度推定:</strong> 手前と奥の相対深度を計算</li>
               <li><strong>顕著性マップ:</strong> 視覚的注意の集中度を可視化</li>
               <li><strong>オプティカルフロー:</strong> 動きの速度と方向を追跡</li>
-              <li><strong>セグメンテーション:</strong> 人物領域を分離・ぼかし</li>
             </ul>
             <p style="font-size:0.8rem; color:var(--color-text-sub); margin:0;">
               ※「カメラ起動」ボタンを押すと、お使いの端末のWebカメラでリアルタイム解析が始まります。
@@ -195,6 +191,25 @@ extra_css:
         <!-- 1. Object Detection -->
         <div class="demo-task-panel" id="demo-panel-object" style="display: none; flex-direction: column; gap: 16px;">
           <h3 class="demo-panel-title">物体検出 設定</h3>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">表示形式</label>
+            <select id="demo-obj-mode" class="demo-select">
+              <option value="boxes" selected>バウンディングボックスのみ</option>
+              <option value="yolo_seg">セグメンテーション (マスク ＋ 枠)</option>
+              <option value="mask_only">セグメンテーション (マスクのみ)</option>
+              <option value="contour">輪郭境界線のみ</option>
+            </select>
+          </div>
+
+          <div class="demo-control-group" id="demo-obj-opacity-group" style="display: none;">
+            <label class="demo-control-label">
+              <span>マスク不透明度</span>
+              <span class="val-tag" id="demo-obj-opacity-val">50%</span>
+            </label>
+            <input type="range" id="demo-obj-opacity" class="demo-range" min="0.2" max="0.85" step="0.05" value="0.5">
+          </div>
+
 
           <div class="demo-control-group">
             <label class="demo-control-label">
@@ -212,7 +227,7 @@ extra_css:
           </div>
 
           <p style="font-size:0.82rem; color:var(--color-text-sub); line-height:1.6; margin:0;">
-            COCO-SSDモデルにより、日常的な物体（人物、PC、スマートフォン等）をリアルタイムに検出します。
+            EfficientDet-Lite（MediaPipe）による物体検出と、各物体の輪郭に沿ったリアルタイム・インスタンスセグメンテーション（マスク表示）に対応しています。
           </p>
         </div>
 
@@ -402,32 +417,6 @@ extra_css:
           </p>
         </div>
 
-        <!-- 6. Segmentation -->
-        <div class="demo-task-panel" id="demo-panel-segmentation" style="display: none; flex-direction: column; gap: 16px;">
-          <h3 class="demo-panel-title">セグメンテーション 設定</h3>
-
-          <div class="demo-control-group">
-            <label class="demo-control-label">エフェクト</label>
-            <select id="demo-seg-effect" class="demo-select">
-              <option value="blur">背景ぼかし</option>
-              <option value="grayscale">背景モノクロ</option>
-              <option value="mask">カラーマスク</option>
-            </select>
-          </div>
-
-          <div class="demo-control-group">
-            <label class="demo-control-label">
-              <span>ぼかし強度</span>
-              <span class="val-tag" id="demo-seg-blur-val">12px</span>
-            </label>
-            <input type="range" id="demo-seg-blur" class="demo-range" min="2" max="28" step="2" value="12">
-          </div>
-
-          <p style="font-size:0.82rem; color:var(--color-text-sub); line-height:1.6; margin:0;">
-            BodyPixモデルにより人物領域をピクセル単位で分離し、背景効果を合成します。
-          </p>
-        </div>
-
       </div>
     </div>
 
@@ -439,7 +428,7 @@ extra_css:
       <div class="demo-info-grid">
         <div class="demo-card-item">
           <div class="demo-card-header">物体検出 (Object Detection)</div>
-          <p class="demo-card-desc">画像内の複数オブジェクトの領域（バウンディングボックス）とカテゴリを同時に推定します。</p>
+          <p class="demo-card-desc">画像内の複数オブジェクトの領域（バウンディングボックス）および各物体の輪郭セグメンテーションをリアルタイムに推定します。</p>
         </div>
         <div class="demo-card-item">
           <div class="demo-card-header">表情検出 (Facial Expression)</div>
@@ -457,10 +446,6 @@ extra_css:
           <div class="demo-card-header">オプティカルフロー (Optical Flow)</div>
           <p class="demo-card-desc">時間的に連続する画像フレームのピクセル移動速度と方向ベクトルを推定します。</p>
         </div>
-        <div class="demo-card-item">
-          <div class="demo-card-header">セグメンテーション (Segmentation)</div>
-          <p class="demo-card-desc">ピクセル単位で人物領域をマスクし、背景ぼかし等の処理をリアルタイムに実行します。</p>
-        </div>
       </div>
     </div>
 
@@ -468,7 +453,7 @@ extra_css:
 </section>
 
 <!-- External Libraries -->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.21.0/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.2.1/dist/body-pix.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.12/dist/face-api.js"></script>

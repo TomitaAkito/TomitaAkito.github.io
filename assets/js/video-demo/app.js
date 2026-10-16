@@ -54,6 +54,31 @@ document.addEventListener('DOMContentLoaded', () => {
     segmentation: new window.SegmentationEngine()
   };
 
+  // Lightweight person silhouette (BodyPix) used only as a prior for the saliency map
+  const saliencyPerson = {
+    model: null,
+    loading: null,
+    busy: false,
+    lastTime: 0,
+    last: null,
+    load() {
+      if (this.model || this.loading || typeof bodyPix === 'undefined') return;
+      this.loading = bodyPix.load({ architecture: 'MobileNetV1', outputStride: 16, multiplier: 0.5, quantBytes: 2 })
+        .then(m => { this.model = m; })
+        .catch(err => console.warn('BodyPix load failed:', err))
+        .finally(() => { this.loading = null; });
+    },
+    tick(video) {
+      if (!this.model || this.busy || performance.now() - this.lastTime < 200) return;
+      this.busy = true;
+      this.lastTime = performance.now();
+      this.model.segmentPerson(video, { internalResolution: 'low', segmentationThreshold: 0.65, maxDetections: 1 })
+        .then(seg => { this.last = seg; })
+        .catch(() => {})
+        .finally(() => { this.busy = false; });
+    }
+  };
+
   function showLoading(msg, progress = 0) {
     if (loadingText) loadingText.textContent = msg;
     if (loadingProgressFill) loadingProgressFill.style.width = `${progress}%`;
@@ -130,33 +155,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function prepareActiveTask(taskKey) {
-    if (taskKey === 'object' && !engines.object.isLoaded) {
-      showLoading('物体検出モデル (COCO-SSD) 読込中...', 30);
-      try {
-        await engines.object.loadModel((pct) => showLoading('物体検出モデル読込中...', pct));
-      } catch (err) {
-        alert('物体検出モデルの読込に失敗しました。');
-      } finally {
-        hideLoading();
+    if (taskKey === 'object') {
+      const needSeg = engines.object.displayMode !== 'boxes' && !engines.segmentation.isLoaded;
+      if (!engines.object.isLoaded || needSeg) {
+        showLoading('物体検出モデル読込中...', 20);
+        try {
+          await engines.object.loadModel((pct) => showLoading('物体検出モデル読込中...', pct));
+          if (needSeg) {
+            await engines.segmentation.loadModel((pct) => showLoading('セグメンテーションモデル読込中...', pct));
+          }
+        } catch (err) {
+          console.error(err);
+          alert('モデルの読込に失敗しました。');
+        } finally {
+          hideLoading();
+        }
       }
     } else if (taskKey === 'face' && !engines.face.isLoaded) {
-      showLoading('表情検出モデル (Face-API) 読込中...', 30);
-      try {
-        await engines.face.loadModel((pct) => showLoading('表情検出モデル読込中...', pct));
-      } catch (err) {
-        alert('表情検出モデルの読込に失敗しました。');
-      } finally {
-        hideLoading();
-      }
-    } else if (taskKey === 'segmentation' && !engines.segmentation.isLoaded) {
-      showLoading('セグメンテーションモデル (BodyPix) 読込中...', 30);
-      try {
-        await engines.segmentation.loadModel((pct) => showLoading('BodyPixモデル読込中...', pct));
-      } catch (err) {
-        alert('セグメンテーションモデルの読込に失敗しました。');
-      } finally {
-        hideLoading();
-      }
     } else if (taskKey === 'depth' && !engines.depth.aiLoaded) {
       showLoading('深度推定AI (Depth Anything) モデルを準備中...', 15);
       try {
@@ -173,9 +188,9 @@ document.addEventListener('DOMContentLoaded', () => {
       } finally {
         hideLoading();
       }
-    } else if (taskKey === 'saliency' && !engines.segmentation.isLoaded) {
+    } else if (taskKey === 'saliency') {
       // Background load BodyPix for region contour prior
-      engines.segmentation.loadModel().catch(() => {});
+      saliencyPerson.load();
     }
   }
 
@@ -196,8 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
       face: '表情検出 (Facial Expression)',
       depth: '深度推定 (Depth Estimation)',
       saliency: '顕著性 (Saliency Map)',
-      flow: 'オプティカルフロー (Optical Flow)',
-      segmentation: 'セグメンテーション (Segmentation)'
+      flow: 'オプティカルフロー (Optical Flow)'
     };
     if (statModeBadge) {
       statModeBadge.textContent = taskKey === 'guide' ? '機能を選択してください' : (taskNames[taskKey] || taskKey);
@@ -243,7 +257,15 @@ document.addEventListener('DOMContentLoaded', () => {
         targetCtx.drawImage(video, 0, 0, cw, ch);
         targetCtx.restore();
       } else if (currentTask === 'object') {
-        engines.object.process(targetCtx, video, cw, ch, updateDetectedList, isMirrored);
+        if (engines.object.displayMode === 'boxes') {
+          engines.object.process(targetCtx, video, cw, ch, updateDetectedList, isMirrored);
+        } else {
+          engines.object.tick(video, updateDetectedList);
+          engines.segmentation.process(targetCtx, video, cw, ch, isMirrored, {
+            objects: engines.object.lastPredictions,
+            effect: engines.object.displayMode
+          });
+        }
       } else if (currentTask === 'face') {
         engines.face.process(targetCtx, video, cw, ch, updateEmotionsMeter, isMirrored);
       } else if (currentTask === 'depth') {
@@ -258,29 +280,16 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(() => { engines.face.isDetecting = false; });
         }
 
-        // Run lightweight segmentation update for subject region contour
-        if (engines.segmentation.isLoaded && !engines.segmentation.isSegmenting && performance.now() - engines.segmentation.lastSegmentTime > 200) {
-          engines.segmentation.isSegmenting = true;
-          engines.segmentation.lastSegmentTime = performance.now();
-          engines.segmentation.model.segmentPerson(video, {
-            internalResolution: 'low',
-            segmentationThreshold: 0.65,
-            maxDetections: 1
-          }).then(seg => {
-            engines.segmentation.lastSegmentation = seg;
-            engines.segmentation.isSegmenting = false;
-          }).catch(() => { engines.segmentation.isSegmenting = false; });
-        }
+        // Run lightweight person segmentation update for subject region contour
+        saliencyPerson.tick(video);
 
         engines.saliency.process(targetCtx, video, cw, ch, isMirrored, {
           faces: engines.face.lastDetections,
           objects: engines.object.lastPredictions,
-          segmentation: engines.segmentation.lastSegmentation
+          segmentation: saliencyPerson.last
         });
       } else if (currentTask === 'flow') {
         engines.flow.process(targetCtx, video, cw, ch, isMirrored);
-      } else if (currentTask === 'segmentation') {
-        engines.segmentation.process(targetCtx, video, cw, ch, isMirrored);
       }
     } catch (err) {
       console.warn('Render loop engine error:', err);
@@ -377,6 +386,36 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Sliders & controls
+  const objModeSelect = document.getElementById('demo-obj-mode');
+  const objOpacityGroup = document.getElementById('demo-obj-opacity-group');
+  const objOpacitySlider = document.getElementById('demo-obj-opacity');
+  const objOpacityVal = document.getElementById('demo-obj-opacity-val');
+
+  if (objModeSelect) {
+    objModeSelect.addEventListener('change', (e) => {
+      const mode = e.target.value;
+      engines.object.displayMode = mode;
+      const isSeg = mode !== 'boxes';
+      if (objOpacityGroup) {
+        objOpacityGroup.style.display = isSeg ? 'flex' : 'none';
+      }
+      if (isSeg && !engines.segmentation.isLoaded) {
+        showLoading('セグメンテーションモデル読込中...', 30);
+        engines.segmentation.loadModel((pct) => showLoading('セグメンテーションモデル読込中...', pct))
+          .catch(err => { console.error(err); alert('セグメンテーションモデルの読込に失敗しました。'); })
+          .finally(() => hideLoading());
+      }
+    });
+  }
+
+  if (objOpacitySlider) {
+    objOpacitySlider.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      engines.segmentation.opacity = val;
+      if (objOpacityVal) objOpacityVal.textContent = `${Math.round(val * 100)}%`;
+    });
+  }
+
   const objScoreSlider = document.getElementById('demo-obj-score');
   const objScoreVal = document.getElementById('demo-obj-score-val');
   if (objScoreSlider) {
@@ -451,6 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const salModeSelect = document.getElementById('demo-sal-mode');
   const salOpacitySlider = document.getElementById('demo-sal-opacity');
+  const salOpacityVal = document.getElementById('demo-sal-opacity-val');
   const salBoostSlider = document.getElementById('demo-sal-boost');
   const salBoostVal = document.getElementById('demo-sal-boost-val');
   const salContrastSlider = document.getElementById('demo-sal-contrast');
@@ -503,22 +543,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const val = parseFloat(e.target.value);
       engines.flow.scale = val;
       flowSensVal.textContent = `${val.toFixed(1)}x`;
-    });
-  }
-
-  const segEffectSelect = document.getElementById('demo-seg-effect');
-  const segBlurSlider = document.getElementById('demo-seg-blur');
-  const segBlurVal = document.getElementById('demo-seg-blur-val');
-  if (segEffectSelect) {
-    segEffectSelect.addEventListener('change', (e) => {
-      engines.segmentation.effect = e.target.value;
-    });
-  }
-  if (segBlurSlider) {
-    segBlurSlider.addEventListener('input', (e) => {
-      const val = parseInt(e.target.value, 10);
-      engines.segmentation.blurAmount = val;
-      segBlurVal.textContent = `${val}px`;
     });
   }
 
