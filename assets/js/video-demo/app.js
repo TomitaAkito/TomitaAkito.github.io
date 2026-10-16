@@ -173,6 +173,9 @@ document.addEventListener('DOMContentLoaded', () => {
       } finally {
         hideLoading();
       }
+    } else if (taskKey === 'saliency' && !engines.segmentation.isLoaded) {
+      // Background load BodyPix for region contour prior
+      engines.segmentation.loadModel().catch(() => {});
     }
   }
 
@@ -232,7 +235,34 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (currentTask === 'depth') {
         engines.depth.process(targetCtx, video, cw, ch, isMirrored);
       } else if (currentTask === 'saliency') {
-        engines.saliency.process(targetCtx, video, cw, ch, isMirrored);
+        // Run lightweight face tracking in background if loaded
+        if (engines.face.isLoaded && !engines.face.isDetecting && performance.now() - engines.face.lastDetectTime > 250) {
+          engines.face.lastDetectTime = performance.now();
+          engines.face.isDetecting = true;
+          faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.45 }))
+            .then(dets => { engines.face.lastDetections = dets; engines.face.isDetecting = false; })
+            .catch(() => { engines.face.isDetecting = false; });
+        }
+
+        // Run lightweight segmentation update for subject region contour
+        if (engines.segmentation.isLoaded && !engines.segmentation.isSegmenting && performance.now() - engines.segmentation.lastSegmentTime > 200) {
+          engines.segmentation.isSegmenting = true;
+          engines.segmentation.lastSegmentTime = performance.now();
+          engines.segmentation.model.segmentPerson(video, {
+            internalResolution: 'low',
+            segmentationThreshold: 0.65,
+            maxDetections: 1
+          }).then(seg => {
+            engines.segmentation.lastSegmentation = seg;
+            engines.segmentation.isSegmenting = false;
+          }).catch(() => { engines.segmentation.isSegmenting = false; });
+        }
+
+        engines.saliency.process(targetCtx, video, cw, ch, isMirrored, {
+          faces: engines.face.lastDetections,
+          objects: engines.object.lastPredictions,
+          segmentation: engines.segmentation.lastSegmentation
+        });
       } else if (currentTask === 'flow') {
         engines.flow.process(targetCtx, video, cw, ch, isMirrored);
       } else if (currentTask === 'segmentation') {
@@ -405,14 +435,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const salModeSelect = document.getElementById('demo-sal-mode');
   const salOpacitySlider = document.getElementById('demo-sal-opacity');
-  const salOpacityVal = document.getElementById('demo-sal-opacity-val');
+  const salBoostSlider = document.getElementById('demo-sal-boost');
+  const salBoostVal = document.getElementById('demo-sal-boost-val');
+  const salContrastSlider = document.getElementById('demo-sal-contrast');
+  const salContrastVal = document.getElementById('demo-sal-contrast-val');
   const salReticleCheck = document.getElementById('demo-sal-reticle');
+
+  if (salModeSelect) {
+    salModeSelect.addEventListener('change', (e) => {
+      engines.saliency.displayMode = e.target.value;
+    });
+  }
   if (salOpacitySlider) {
     salOpacitySlider.addEventListener('input', (e) => {
       const val = parseFloat(e.target.value);
       engines.saliency.opacity = val;
-      salOpacityVal.textContent = `${Math.round(val * 100)}%`;
+      if (salOpacityVal) salOpacityVal.textContent = `${Math.round(val * 100)}%`;
+    });
+  }
+  if (salBoostSlider) {
+    salBoostSlider.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      engines.saliency.silhouetteBoost = val;
+      engines.saliency.samSilhouetteBoost = val;
+      if (salBoostVal) salBoostVal.textContent = `${Math.round((val / 1.0) * 100)}%`;
+    });
+  }
+  if (salContrastSlider) {
+    salContrastSlider.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      engines.saliency.contrastPower = val;
+      if (salContrastVal) salContrastVal.textContent = `${val.toFixed(1)}x`;
     });
   }
   if (salReticleCheck) {

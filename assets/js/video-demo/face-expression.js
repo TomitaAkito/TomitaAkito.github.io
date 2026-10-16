@@ -13,13 +13,13 @@ class FaceExpressionEngine {
     this.lastDetectTime = 0;
     this.modelsUrl = 'https://vladmandic.github.io/face-api/model/';
     this.emotionsMeta = {
-      happy: { label: '笑顔 (Happy)', emoji: '😊', color: '#10b981' },
-      surprised: { label: '驚き (Surprised)', emoji: '😲', color: '#f59e0b' },
-      neutral: { label: '平常 (Neutral)', emoji: '😐', color: '#1e6fd9' },
-      sad: { label: '悲哀 (Sad)', emoji: '😢', color: '#6366f1' },
-      angry: { label: '怒り (Angry)', emoji: '😠', color: '#ef4444' },
-      fearful: { label: '恐怖 (Fearful)', emoji: '😨', color: '#8b5cf6' },
-      disgusted: { label: '嫌悪 (Disgusted)', emoji: '🤢', color: '#ea580c' }
+      happy: { label: '幸福 (Happy)', color: '#10b981' },
+      surprised: { label: '驚き (Surprise)', color: '#f59e0b' },
+      neutral: { label: '平常 (Neutral)', color: '#1e6fd9' },
+      sad: { label: '悲哀 (Sad)', color: '#6366f1' },
+      angry: { label: '怒り (Angry)', color: '#ef4444' },
+      fearful: { label: '恐怖 (Fear)', color: '#8b5cf6' },
+      disgusted: { label: '嫌悪 (Disgust)', color: '#ea580c' }
     };
   }
 
@@ -128,7 +128,7 @@ class FaceExpressionEngine {
       const badgeH = 26;
       const badgeY = y - badgeH - 4 >= 0 ? y - badgeH - 4 : y + 4;
       const scorePct = Math.round(maxScore * 100);
-      const labelText = `${meta.emoji} ${meta.label} ${scorePct}%`;
+      const labelText = `${meta.label} ${scorePct}%`;
 
       ctx.font = '600 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
       const textW = ctx.measureText(labelText).width + 16;
