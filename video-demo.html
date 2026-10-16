@@ -21,7 +21,10 @@ extra_css:
 
     <!-- Task Navigation Tabs -->
     <div class="demo-tabs-nav" role="tablist">
-      <button class="demo-tab-btn active" data-task="object">
+      <button class="demo-tab-btn active" data-task="guide">
+        使い方
+      </button>
+      <button class="demo-tab-btn" data-task="object">
         物体検出
       </button>
       <button class="demo-tab-btn" data-task="face">
@@ -109,17 +112,42 @@ extra_css:
               <span id="vs-stat-res">--</span>
             </div>
             <div class="demo-hud-badge" id="vs-stat-mode-badge">
-              物体検出 (Object Detection)
+              機能を選択してください
             </div>
           </div>
 
-          <!-- Placeholder -->
+          <!-- Placeholder: Usage Guide on Canvas -->
           <div id="vs-placeholder" class="demo-placeholder">
-            <div class="demo-placeholder-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <h3 style="margin: 0 0 6px; font-size: 1.2rem; font-weight: 700; color: var(--color-text, #212529);">リアルタイム映像解析デモ</h3>
+            <p style="font-size: 0.86rem; color: var(--color-text-sub, #6c757d); margin: 0 0 16px; max-width: 480px; line-height: 1.6;">
+              Webカメラの映像から、物体検出や深度推定、オプティカルフローなどを端末内（ブラウザ）でリアルタイムに実行します。
+            </p>
+            <div class="demo-guide-steps">
+              <div class="demo-guide-step">
+                <span class="step-num">1</span>
+                <div>
+                  <strong>カメラ起動:</strong>
+                  <p>左上のボタンを押してカメラを起動します。</p>
+                </div>
+              </div>
+              <div class="demo-guide-step">
+                <span class="step-num">2</span>
+                <div>
+                  <strong>機能を選択:</strong>
+                  <p>上部のタブから試したい解析機能をクリックします。</p>
+                </div>
+              </div>
+              <div class="demo-guide-step">
+                <span class="step-num">3</span>
+                <div>
+                  <strong>リアルタイム解析:</strong>
+                  <p>右側の設定パネルで感度や表示方法を調整できます。</p>
+                </div>
+              </div>
             </div>
-            <h3>カメラが停止しています</h3>
-            <p>「カメラ起動」ボタンを押すと映像解析が開始されます。映像データは外部に送信されず、お使いのブラウザ内でのみ安全に処理されます。</p>
+            <div style="font-size: 0.78rem; color: var(--color-text-sub, #6c757d); margin-top: 14px;">
+              ※ 映像データは外部サーバーに送信されず、端末内でのみ安全に処理されます。
+            </div>
           </div>
 
           <!-- Loading Overlay -->
@@ -142,8 +170,30 @@ extra_css:
       <!-- Settings Sidebar -->
       <div class="demo-control-card">
         
+        <!-- 0. Guide Panel (Initial state: no model loaded) -->
+        <div class="demo-task-panel" id="demo-panel-guide" style="display: flex; flex-direction: column; gap: 16px;">
+          <h3 class="demo-panel-title">使い方ガイド</h3>
+          
+          <div style="font-size:0.85rem; color:var(--color-text); line-height:1.7;">
+            <p style="margin:0 0 10px;">
+              上部のタブから試したい解析機能を選択してください。機能を選択するまで、モデルデータのダウンロードは開始されません。
+            </p>
+            <ul style="padding-left:18px; margin:0 0 12px; color:var(--color-text-sub);">
+              <li><strong>物体検出:</strong> 日常の物体（80種）を検出</li>
+              <li><strong>表情検出:</strong> 顔の表情と感情確率を推定</li>
+              <li><strong>深度推定:</strong> 手前と奥の相対深度を計算</li>
+              <li><strong>顕著性マップ:</strong> 視覚的注意の集中度を可視化</li>
+              <li><strong>オプティカルフロー:</strong> 動きの速度と方向を追跡</li>
+              <li><strong>セグメンテーション:</strong> 人物領域を分離・ぼかし</li>
+            </ul>
+            <p style="font-size:0.8rem; color:var(--color-text-sub); margin:0;">
+              ※「カメラ起動」ボタンを押すと、お使いの端末のWebカメラでリアルタイム解析が始まります。
+            </p>
+          </div>
+        </div>
+
         <!-- 1. Object Detection -->
-        <div class="demo-task-panel" id="demo-panel-object" style="display: flex; flex-direction: column; gap: 16px;">
+        <div class="demo-task-panel" id="demo-panel-object" style="display: none; flex-direction: column; gap: 16px;">
           <h3 class="demo-panel-title">物体検出 設定</h3>
 
           <div class="demo-control-group">
@@ -332,9 +382,10 @@ extra_css:
           <div class="demo-control-group">
             <label class="demo-control-label">表示形式</label>
             <select id="demo-flow-mode" class="demo-select">
-              <option value="arrows">運動ベクトル</option>
-              <option value="heatmap">動きヒートマップ</option>
-              <option value="combined">複合表示</option>
+              <option value="arrows" selected>運動ベクトル (矢印)</option>
+              <option value="color">カラーフロー (移動なし: 黒)</option>
+              <option value="overlay">半透明カラー重畳 (映像 ＋ カラーフロー)</option>
+              <option value="combined">カラーフロー ＋ ベクトル</option>
             </select>
           </div>
 
@@ -347,7 +398,7 @@ extra_css:
           </div>
 
           <p style="font-size:0.82rem; color:var(--color-text-sub); line-height:1.6; margin:0;">
-            Lucas-Kanade法により、フレーム間の物体の移動速度と方向を追跡・描画します。
+            Lucas-Kanade法により、フレーム間の移動速度と方向を追跡します。静止領域は黒、動きがある領域は進行方向に応じた色で可視化されます。
           </p>
         </div>
 

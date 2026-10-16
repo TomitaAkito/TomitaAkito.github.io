@@ -335,6 +335,57 @@
   line-height: 1.6;
 }
 
+/* Guide Steps in Placeholder */
+.demo-guide-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 480px;
+  text-align: left;
+  margin-top: 6px;
+}
+
+.demo-guide-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid var(--color-border, #e9ecef);
+  border-radius: 8px;
+  padding: 10px 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.demo-guide-step .step-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-main, #1e6fd9);
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.demo-guide-step strong {
+  display: inline;
+  font-size: 0.88rem;
+  color: var(--color-text, #212529);
+  margin-right: 6px;
+}
+
+.demo-guide-step p {
+  display: inline;
+  font-size: 0.82rem;
+  color: var(--color-text-sub, #6c757d);
+  margin: 0;
+  line-height: 1.4;
+}
+
 /* Loading Overlay */
 .demo-loading-overlay {
   position: absolute;

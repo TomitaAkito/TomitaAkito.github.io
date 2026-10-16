@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // State
   let stream = null;
   let isRunning = false;
-  let currentTask = 'object';
+  let currentTask = 'guide';
   let isMirrored = true; // Natural mirror view by default
   let viewMode = 'single';
 
@@ -191,6 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const taskNames = {
+      guide: '使い方',
       object: '物体検出 (Object Detection)',
       face: '表情検出 (Facial Expression)',
       depth: '深度推定 (Depth Estimation)',
@@ -198,10 +199,14 @@ document.addEventListener('DOMContentLoaded', () => {
       flow: 'オプティカルフロー (Optical Flow)',
       segmentation: 'セグメンテーション (Segmentation)'
     };
-    if (statModeBadge) statModeBadge.textContent = taskNames[taskKey] || taskKey;
+    if (statModeBadge) {
+      statModeBadge.textContent = taskKey === 'guide' ? '機能を選択してください' : (taskNames[taskKey] || taskKey);
+    }
 
-    // Always preload models when switching tab so it is ready immediately
-    prepareActiveTask(taskKey);
+    // Only preload models for actual processing tasks
+    if (taskKey !== 'guide') {
+      prepareActiveTask(taskKey);
+    }
   }
 
   function renderLoop() {
@@ -228,7 +233,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const ch = targetCanvas.height;
 
     try {
-      if (currentTask === 'object') {
+      if (currentTask === 'guide') {
+        // Draw raw camera feed directly
+        targetCtx.save();
+        if (isMirrored) {
+          targetCtx.translate(cw, 0);
+          targetCtx.scale(-1, 1);
+        }
+        targetCtx.drawImage(video, 0, 0, cw, ch);
+        targetCtx.restore();
+      } else if (currentTask === 'object') {
         engines.object.process(targetCtx, video, cw, ch, updateDetectedList, isMirrored);
       } else if (currentTask === 'face') {
         engines.face.process(targetCtx, video, cw, ch, updateEmotionsMeter, isMirrored);
@@ -508,5 +522,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  switchTask('object');
+  switchTask('guide');
 });
