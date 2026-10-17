@@ -52,21 +52,35 @@ extra_css:
           <div class="demo-toolbar-group">
             <button id="vs-btn-start" class="demo-btn demo-btn-primary">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              カメラ起動
+              <span>カメラ起動</span>
             </button>
             <button id="vs-btn-stop" class="demo-btn demo-btn-danger" style="display: none;">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="6" y="6" width="12" height="12"/></svg>
-              停止
+              <span>停止</span>
+            </button>
+            <button id="vs-btn-flip-cam" class="demo-btn demo-btn-outline" title="カメラの向きを切り替え (前面 / 背面)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 16.5c-1.5 2-3.8 3.5-6.5 3.5a9 9 0 0 1-9-9c0-1.6.4-3.1 1.2-4.5"/>
+                <polyline points="4 20 4 15 9 15"/>
+                <path d="M4 7.5C5.5 5.5 7.8 4 10.5 4a9 9 0 0 1 9 9c0 1.6-.4 3.1-1.2 4.5"/>
+                <polyline points="20 4 20 9 15 9"/>
+              </svg>
+              <span class="btn-text">カメラ切替</span>
             </button>
             <button id="vs-btn-mirror" class="demo-btn demo-btn-primary" title="鏡像反転の切り替え">
-              左右反転 (ミラー)
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="3" x2="12" y2="21" stroke-dasharray="2 2"/>
+                <polyline points="4 16 8 12 4 8"/>
+                <polyline points="20 16 16 12 20 8"/>
+              </svg>
+              <span class="btn-text">ミラー</span>
             </button>
           </div>
 
           <div class="demo-toolbar-group">
             <select id="vs-select-view" class="demo-select" title="表示モード">
               <option value="single">単一表示</option>
-              <option value="split">左右比較 (元映像 / 処理後)</option>
+              <option value="split">左右比較</option>
             </select>
 
             <select id="vs-select-res" class="demo-select" title="解像度">
@@ -81,8 +95,8 @@ extra_css:
         </div>
 
         <!-- Stage Area -->
-        <div class="demo-stage">
-          <video id="vs-video-raw" playsinline muted></video>
+        <div class="demo-stage" id="vs-stage">
+          <video id="vs-video-raw" playsinline webkit-playsinline muted></video>
 
           <!-- Main Canvas -->
           <div class="demo-canvas-wrap" id="vs-canvas-wrap">
@@ -115,35 +129,37 @@ extra_css:
 
           <!-- Placeholder: Usage Guide on Canvas -->
           <div id="vs-placeholder" class="demo-placeholder">
-            <h3 style="margin: 0 0 6px; font-size: 1.2rem; font-weight: 700; color: var(--color-text, #212529);">リアルタイム映像解析デモ</h3>
-            <p style="font-size: 0.86rem; color: var(--color-text-sub, #6c757d); margin: 0 0 16px; max-width: 480px; line-height: 1.6;">
-              Webカメラの映像から、物体検出や深度推定、オプティカルフローなどを端末内（ブラウザ）でリアルタイムに実行します。
-            </p>
-            <div class="demo-guide-steps">
-              <div class="demo-guide-step">
-                <span class="step-num">1</span>
-                <div>
-                  <strong>カメラ起動:</strong>
-                  <p>左上のボタンを押してカメラを起動します。</p>
+            <div class="demo-placeholder-inner">
+              <h3 class="demo-placeholder-title">リアルタイム映像解析デモ</h3>
+              <p class="demo-placeholder-desc">
+                Webカメラ映像からAI物体検出や深度推定、顕著性マップなどをブラウザ端末内でリアルタイム実行します。
+              </p>
+              <div class="demo-guide-steps">
+                <div class="demo-guide-step">
+                  <span class="step-num">1</span>
+                  <div class="step-content">
+                    <strong class="step-title">カメラ起動:</strong>
+                    <span class="step-desc">上部の「カメラ起動」ボタンを押します。スマホでは切替ボタンで前面/背面カメラを選べます。</span>
+                  </div>
+                </div>
+                <div class="demo-guide-step">
+                  <span class="step-num">2</span>
+                  <div class="step-content">
+                    <strong class="step-title">機能を選択:</strong>
+                    <span class="step-desc">上部のタブ（物体検出・表情検出・深度推定・顕著性など）から試したい機能を選択します。</span>
+                  </div>
+                </div>
+                <div class="demo-guide-step">
+                  <span class="step-num">3</span>
+                  <div class="step-content">
+                    <strong class="step-title">リアルタイム解析:</strong>
+                    <span class="step-desc">映像が解析され、設定パネルで感度や表示方法をリアルタイムに調整できます。</span>
+                  </div>
                 </div>
               </div>
-              <div class="demo-guide-step">
-                <span class="step-num">2</span>
-                <div>
-                  <strong>機能を選択:</strong>
-                  <p>上部のタブから試したい解析機能をクリックします。</p>
-                </div>
+              <div class="demo-placeholder-note">
+                ※ 映像データは外部サーバーに送信されず、端末内（ブラウザ）でのみ安全に処理されます。
               </div>
-              <div class="demo-guide-step">
-                <span class="step-num">3</span>
-                <div>
-                  <strong>リアルタイム解析:</strong>
-                  <p>右側の設定パネルで感度や表示方法を調整できます。</p>
-                </div>
-              </div>
-            </div>
-            <div style="font-size: 0.78rem; color: var(--color-text-sub, #6c757d); margin-top: 14px;">
-              ※ 映像データは外部サーバーに送信されず、端末内でのみ安全に処理されます。
             </div>
           </div>
 

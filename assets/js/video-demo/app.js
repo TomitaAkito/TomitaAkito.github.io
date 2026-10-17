@@ -16,11 +16,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const startCamBtn = document.getElementById('vs-btn-start');
   const stopCamBtn = document.getElementById('vs-btn-stop');
+  const flipCamBtn = document.getElementById('vs-btn-flip-cam');
   const mirrorToggleBtn = document.getElementById('vs-btn-mirror');
   const snapshotBtn = document.getElementById('vs-btn-snapshot');
   const resolutionSelect = document.getElementById('vs-select-res');
   const viewModeSelect = document.getElementById('vs-select-view');
 
+  const stageEl = document.getElementById('vs-stage') || document.querySelector('.demo-stage');
   const placeholderOverlay = document.getElementById('vs-placeholder');
   const loadingOverlay = document.getElementById('vs-loading-overlay');
   const loadingText = document.getElementById('vs-loading-text');
@@ -39,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let isRunning = false;
   let currentTask = 'guide';
   let isMirrored = true; // Natural mirror view by default
+  let currentFacingMode = 'user'; // 'user' (前面・インカメ) or 'environment' (背面・アウトカメ)
   let viewMode = 'single';
 
   // FPS tracking
@@ -55,6 +58,17 @@ document.addEventListener('DOMContentLoaded', () => {
     segmentation: new window.SegmentationEngine()
   };
 
+  function updateFlipCamButtonUI() {
+    if (!flipCamBtn) return;
+    const isBack = currentFacingMode === 'environment';
+    const textSpan = flipCamBtn.querySelector('.btn-text');
+    if (textSpan) {
+      textSpan.textContent = isBack ? '背面' : '前面';
+    }
+    flipCamBtn.title = isBack ? '前面カメラ（インカメラ）に切り替え' : '背面カメラ（アウトカメラ）に切り替え';
+    flipCamBtn.classList.toggle('demo-btn-primary', isBack);
+    flipCamBtn.classList.toggle('demo-btn-outline', !isBack);
+  }
 
   function showLoading(msg, progress = 0) {
     if (loadingText) loadingText.textContent = msg;
@@ -75,14 +89,16 @@ document.addEventListener('DOMContentLoaded', () => {
         stream.getTracks().forEach(track => track.stop());
       }
 
-      stream = await navigator.mediaDevices.getUserMedia({
+      const constraints = {
         audio: false,
         video: {
           width: { ideal: w },
           height: { ideal: h },
-          facingMode: 'user'
+          facingMode: { ideal: currentFacingMode }
         }
-      });
+      };
+
+      stream = await navigator.mediaDevices.getUserMedia(constraints);
 
       video.srcObject = stream;
       await video.play();
@@ -99,10 +115,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (statRes) statRes.textContent = `${actualW}x${actualH}`;
 
+      if (stageEl) stageEl.classList.add('is-active');
       if (placeholderOverlay) placeholderOverlay.classList.add('hidden');
       if (startCamBtn) startCamBtn.style.display = 'none';
       if (stopCamBtn) stopCamBtn.style.display = 'inline-flex';
       if (snapshotBtn) snapshotBtn.disabled = false;
+
+      updateFlipCamButtonUI();
 
       isRunning = true;
       hideLoading();
@@ -123,6 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
       stream = null;
     }
     video.srcObject = null;
+    if (stageEl) stageEl.classList.remove('is-active');
     if (placeholderOverlay) placeholderOverlay.classList.remove('hidden');
     if (startCamBtn) startCamBtn.style.display = 'inline-flex';
     if (stopCamBtn) stopCamBtn.style.display = 'none';
@@ -349,6 +369,33 @@ document.addEventListener('DOMContentLoaded', () => {
   startCamBtn.addEventListener('click', startCamera);
   stopCamBtn.addEventListener('click', stopCamera);
   snapshotBtn.addEventListener('click', takeSnapshot);
+
+  if (flipCamBtn) {
+    flipCamBtn.addEventListener('click', async () => {
+      currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+
+      // 背面カメラ選択時は通常ミラー（鏡像反転）をOFF、前面カメラ時はON
+      if (currentFacingMode === 'environment') {
+        isMirrored = false;
+        if (mirrorToggleBtn) {
+          mirrorToggleBtn.classList.remove('demo-btn-primary');
+          mirrorToggleBtn.classList.add('demo-btn-outline');
+        }
+      } else {
+        isMirrored = true;
+        if (mirrorToggleBtn) {
+          mirrorToggleBtn.classList.add('demo-btn-primary');
+          mirrorToggleBtn.classList.remove('demo-btn-outline');
+        }
+      }
+
+      updateFlipCamButtonUI();
+
+      if (isRunning) {
+        await startCamera();
+      }
+    });
+  }
 
   if (mirrorToggleBtn) {
     mirrorToggleBtn.addEventListener('click', () => {
