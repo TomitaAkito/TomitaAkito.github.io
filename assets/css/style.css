@@ -125,7 +125,7 @@ a:hover {
 .nav {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 20px;
 }
 
 .nav-list {
@@ -133,7 +133,7 @@ a:hover {
   list-style: none;
   margin: 0;
   padding: 0;
-  gap: 28px;
+  gap: 24px;
 }
 
 .nav-list a {
@@ -156,6 +156,47 @@ a:hover {
 
 .nav-list a:hover::after {
   width: 100%;
+}
+
+.nav-divider {
+  width: 1px;
+  height: 18px;
+  background-color: var(--color-border);
+}
+
+.nav-social {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.social-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--color-text-sub);
+  background: transparent;
+  transition: color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
+}
+
+.social-icon-btn:hover {
+  color: var(--color-text);
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.social-icon-btn:active {
+  transform: scale(0.94);
+}
+
+.social-icon-btn .icon-svg {
+  display: block;
+}
+
+.social-label-mobile {
+  display: none;
 }
 
 
@@ -209,6 +250,7 @@ a:hover {
     padding: 100px 32px 32px;
     transform: translateX(100%);
     transition: transform 0.3s ease;
+    gap: 0;
   }
 
   .nav.open {
@@ -217,12 +259,48 @@ a:hover {
 
   .nav-list {
     flex-direction: column;
-    gap: 24px;
+    gap: 20px;
     width: 100%;
   }
 
   .nav-list a {
     font-size: 1.1rem;
+  }
+
+  .nav-divider {
+    width: 100%;
+    height: 1px;
+    background-color: var(--color-border);
+    margin: 20px 0 16px;
+  }
+
+  .nav-social {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .social-icon-btn {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    justify-content: flex-start;
+    gap: 12px;
+    border-radius: 8px;
+    color: var(--color-text);
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .social-icon-btn:hover {
+    color: var(--color-main);
+    background-color: rgba(30, 111, 217, 0.08);
+  }
+
+  .social-label-mobile {
+    display: inline;
+    letter-spacing: 0.02em;
   }
 
   .nav-overlay {
