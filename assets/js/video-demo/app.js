@@ -56,7 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
     saliency: new window.SaliencyEngine(),
     flow: new window.OpticalFlowEngine(),
     segmentation: new window.SegmentationEngine(),
-    edge: new window.EdgeDetectionEngine()
+    edge: new window.EdgeDetectionEngine(),
+    ar: new window.ARInteractionEngine()
   };
 
   function updateFlipCamButtonUI() {
@@ -222,6 +223,34 @@ document.addEventListener('DOMContentLoaded', () => {
           hideLoading();
         }
       }
+    } else if (taskKey === 'ar') {
+      if (engines.ar.mode === 'tabletop_ar') {
+        engines.ar.initTabletopObjects(mainCanvas.width || 640, mainCanvas.height || 480);
+      }
+      if (!engines.ar.isHandModelLoaded && !engines.ar.isHandModelLoading) {
+        showLoading('MediaPipe 手検出モデル読込中...', 20);
+        engines.ar.loadHandModel((pct) => showLoading(`手検出モデル読込中 (${pct}%)...`, pct))
+          .then(() => {
+            const statusEl = document.getElementById('demo-ar-status');
+            if (statusEl) {
+              statusEl.textContent = 'MediaPipe Hands (高精度AI骨格) 稼働中';
+              statusEl.style.background = '#e6f9f0';
+              statusEl.style.borderColor = '#b7edd2';
+              statusEl.style.color = '#0e9f6e';
+            }
+          })
+          .catch((err) => {
+            console.warn('Hand model load error, falling back to motion:', err);
+            const statusEl = document.getElementById('demo-ar-status');
+            if (statusEl) {
+              statusEl.textContent = '動体・タッチ検知モード 稼働中';
+              statusEl.style.background = '#fef3c7';
+              statusEl.style.borderColor = '#fde68a';
+              statusEl.style.color = '#92400e';
+            }
+          })
+          .finally(() => hideLoading());
+      }
     }
   }
 
@@ -264,6 +293,26 @@ document.addEventListener('DOMContentLoaded', () => {
     'エッジ検出': 'edge',
     '線画': 'edge',
     'スケッチ': 'edge',
+    // AR・MR
+    'ar': 'ar',
+    'mr': 'ar',
+    'aquarium': 'ar',
+    'fish': 'ar',
+    '水族館': 'ar',
+    'mr水族館': 'ar',
+    'air_draw': 'ar',
+    'draw': 'ar',
+    'paint': 'ar',
+    'エアドロー': 'ar',
+    '空間ペイント': 'ar',
+    'tabletop': 'ar',
+    'tabletop_ar': 'ar',
+    '卓上': 'ar',
+    '卓上ar': 'ar',
+    '物理': 'ar',
+    '拡張現実': 'ar',
+    '複合現実': 'ar',
+    'バーチャル': 'ar',
     // 使い方・ガイド
     'guide': 'guide',
     '使い方': 'guide',
@@ -327,7 +376,8 @@ document.addEventListener('DOMContentLoaded', () => {
       depth: '深度推定 (Depth Estimation)',
       saliency: '顕著性 (Saliency Map)',
       flow: 'オプティカルフロー (Optical Flow)',
-      edge: 'エッジ検出 (Edge Detection)'
+      edge: 'エッジ検出 (Edge Detection)',
+      ar: 'AR・MR体験 (Mixed Reality)'
     };
     if (statModeBadge) {
       statModeBadge.textContent = taskKey === 'guide' ? '機能を選択してください' : (taskNames[taskKey] || taskKey);
@@ -340,6 +390,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Only preload models for actual processing tasks
     if (taskKey !== 'guide') {
       prepareActiveTask(taskKey);
+      if (taskKey === 'ar' && typeof updateARModePanels === 'function') {
+        updateARModePanels(engines.ar.mode);
+      }
     }
   }
 
@@ -396,6 +449,8 @@ document.addEventListener('DOMContentLoaded', () => {
         engines.flow.process(targetCtx, video, cw, ch, isMirrored);
       } else if (currentTask === 'edge') {
         engines.edge.process(targetCtx, video, cw, ch, isMirrored);
+      } else if (currentTask === 'ar') {
+        engines.ar.process(targetCtx, video, cw, ch, isMirrored);
       }
     } catch (err) {
       console.warn('Render loop engine error:', err);
@@ -716,6 +771,154 @@ document.addEventListener('DOMContentLoaded', () => {
       engines.edge.invert = e.target.checked;
     });
   }
+
+  // AR / MR Controls
+  const arModeSelect = document.getElementById('demo-ar-mode');
+  const arDensitySelect = document.getElementById('demo-ar-density');
+  const arRipplesCheck = document.getElementById('demo-ar-ripples');
+
+  const arOptsAquarium = document.getElementById('demo-ar-opts-aquarium');
+  const arOptsDraw = document.getElementById('demo-ar-opts-draw');
+  const arOptsTabletop = document.getElementById('demo-ar-opts-tabletop');
+  const arDescBox = document.getElementById('demo-ar-desc-box');
+
+  const arDrawColorSelect = document.getElementById('demo-ar-draw-color');
+  const arDrawWidthSlider = document.getElementById('demo-ar-draw-width');
+  const arDrawWidthVal = document.getElementById('demo-ar-draw-width-val');
+  const arDrawFadeSelect = document.getElementById('demo-ar-draw-fade');
+  const arDrawClearBtn = document.getElementById('demo-ar-draw-clear');
+
+  const arTabletopTypeSelect = document.getElementById('demo-ar-tabletop-type');
+  const arGravitySelect = document.getElementById('demo-ar-gravity');
+  const arTabletopRespawnBtn = document.getElementById('demo-ar-tabletop-respawn');
+
+  function updateARModePanels(mode) {
+    if (arOptsAquarium) arOptsAquarium.style.display = (mode === 'aquarium') ? 'flex' : 'none';
+    if (arOptsDraw) arOptsDraw.style.display = (mode === 'air_draw') ? 'flex' : 'none';
+    if (arOptsTabletop) arOptsTabletop.style.display = (mode === 'tabletop_ar') ? 'flex' : 'none';
+
+    if (arDescBox) {
+      if (mode === 'aquarium') {
+        arDescBox.innerHTML = `<strong>MR水族館:</strong><br>Boidsアルゴリズムによる魚群シミュレーションです。カメラに手の平を向けると給餌し、手を閉じると自律群泳に戻ります。`;
+      } else if (mode === 'air_draw') {
+        arDescBox.innerHTML = `<strong>空中描画:</strong><br>手指のピンチ操作で空間に線を描画します。色や太さの変更、クリアが可能です。`;
+      } else if (mode === 'tabletop_ar') {
+        arDescBox.innerHTML = `<strong>卓上AR:</strong><br>剛体物理シミュレーションによる3Dオブジェクトです。手やポインタで押す、掴んで投げるなどの操作が可能です。`;
+      }
+    }
+  }
+
+  if (arModeSelect) {
+    arModeSelect.addEventListener('change', (e) => {
+      const mode = e.target.value;
+      engines.ar.mode = mode;
+      updateARModePanels(mode);
+
+      if (mode === 'tabletop_ar') {
+        engines.ar.initTabletopObjects(mainCanvas.width || 640, mainCanvas.height || 480);
+      }
+    });
+  }
+
+  const arFishSpeedSelect = document.getElementById('demo-ar-fish-speed');
+  if (arFishSpeedSelect) {
+    arFishSpeedSelect.addEventListener('change', (e) => {
+      engines.ar.fishSpeedMultiplier = parseFloat(e.target.value);
+    });
+  }
+
+  if (arDensitySelect) {
+    arDensitySelect.addEventListener('change', (e) => {
+      engines.ar.density = e.target.value;
+      engines.ar.initEntities();
+    });
+  }
+  if (arRipplesCheck) {
+    arRipplesCheck.addEventListener('change', (e) => {
+      engines.ar.waterRipples = e.target.checked;
+    });
+  }
+
+  // Air Draw events
+  if (arDrawColorSelect) {
+    arDrawColorSelect.addEventListener('change', (e) => {
+      engines.ar.drawColor = e.target.value;
+    });
+  }
+  if (arDrawWidthSlider) {
+    arDrawWidthSlider.addEventListener('input', (e) => {
+      const w = parseInt(e.target.value, 10);
+      engines.ar.drawWidth = w;
+      if (arDrawWidthVal) arDrawWidthVal.textContent = `${w}px`;
+    });
+  }
+  if (arDrawFadeSelect) {
+    arDrawFadeSelect.addEventListener('change', (e) => {
+      engines.ar.drawFade = e.target.value;
+    });
+  }
+  if (arDrawClearBtn) {
+    arDrawClearBtn.addEventListener('click', () => {
+      engines.ar.clearDrawing();
+    });
+  }
+
+  // Tabletop AR events
+  if (arTabletopTypeSelect) {
+    arTabletopTypeSelect.addEventListener('change', (e) => {
+      engines.ar.tabletopType = e.target.value;
+      engines.ar.initTabletopObjects(mainCanvas.width || 640, mainCanvas.height || 480);
+    });
+  }
+  if (arGravitySelect) {
+    arGravitySelect.addEventListener('change', (e) => {
+      engines.ar.gravityLevel = e.target.value;
+    });
+  }
+  if (arTabletopRespawnBtn) {
+    arTabletopRespawnBtn.addEventListener('click', () => {
+      engines.ar.initTabletopObjects(mainCanvas.width || 640, mainCanvas.height || 480);
+    });
+  }
+
+  // Pointer / Touch interaction with canvas for AR
+  function handleCanvasPointer(e) {
+    if (currentTask !== 'ar') return;
+    const rect = mainCanvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const scaleX = mainCanvas.width / rect.width;
+    const scaleY = mainCanvas.height / rect.height;
+
+    let clientX = e.clientX;
+    let clientY = e.clientY;
+    if (e.touches && e.touches.length > 0) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    }
+
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
+    engines.ar.setPointer(x, y, true, true);
+  }
+
+  mainCanvas.addEventListener('pointerdown', (e) => {
+    handleCanvasPointer(e);
+  });
+  mainCanvas.addEventListener('pointermove', (e) => {
+    if (e.buttons > 0) handleCanvasPointer(e);
+  });
+  mainCanvas.addEventListener('pointerup', () => {
+    if (currentTask === 'ar') engines.ar.setPointer(-1000, -1000, false, false);
+  });
+  mainCanvas.addEventListener('touchstart', (e) => {
+    handleCanvasPointer(e);
+  }, { passive: true });
+  mainCanvas.addEventListener('touchmove', (e) => {
+    handleCanvasPointer(e);
+  }, { passive: true });
+  mainCanvas.addEventListener('touchend', () => {
+    if (currentTask === 'ar') engines.ar.setPointer(-1000, -1000, false, false);
+  }, { passive: true });
 
   // Initialize task from URL (e.g. ?task=saliency or #物体検出) or default to 'guide'
   const initialTask = getTaskFromUrl() || 'guide';

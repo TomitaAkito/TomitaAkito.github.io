@@ -44,6 +44,30 @@ class FaceExpressionEngine {
     }
   }
 
+  tick(video) {
+    if (!this.isLoaded || this.isDetecting || !video || video.readyState < 2) return;
+    const now = performance.now();
+    if (now - this.lastDetectTime < this.detectInterval) return;
+
+    this.isDetecting = true;
+    this.lastDetectTime = now;
+
+    try {
+      const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: this.minConfidence });
+      faceapi.detectAllFaces(video, options)
+        .then((detections) => {
+          this.lastDetections = detections || [];
+          this.isDetecting = false;
+        })
+        .catch((err) => {
+          console.warn('Face detection tick error:', err);
+          this.isDetecting = false;
+        });
+    } catch (err) {
+      this.isDetecting = false;
+    }
+  }
+
   async process(ctx, video, canvasWidth, canvasHeight, onEmotionsUpdate, isMirrored = false) {
     // 1. Draw raw video
     ctx.save();

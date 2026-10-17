@@ -42,6 +42,9 @@ extra_css:
       <button class="demo-tab-btn" data-task="edge">
         エッジ検出
       </button>
+      <button class="demo-tab-btn" data-task="ar">
+        AR・MR体験
+      </button>
     </div>
 
     <!-- Main Grid: Viewport + Controls -->
@@ -201,6 +204,7 @@ extra_css:
               <li><strong>顕著性マップ:</strong> 視覚的注意の集中度を可視化</li>
               <li><strong>オプティカルフロー:</strong> 動きの速度と方向を追跡</li>
               <li><strong>エッジ検出:</strong> 輪郭抽出（Canny/Sobel）と線画・ネオンアート化</li>
+              <li><strong>AR・MR体験:</strong> 現実空間に泳ぐMR水族館や空間パーティクルとの手指インタラクション</li>
             </ul>
             <p style="font-size:0.8rem; color:var(--color-text-sub); margin:0;">
               ※「カメラ起動」ボタンを押すと、お使いの端末のWebカメラでリアルタイム解析が始まります。
@@ -503,6 +507,127 @@ extra_css:
           </div>
         </div>
 
+        <!-- 7. AR / MR Interaction -->
+        <div class="demo-task-panel" id="demo-panel-ar" style="display: none; flex-direction: column; gap: 16px;">
+          <h3 class="demo-panel-title">AR・MR空間インタラクション 設定</h3>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">ARワールド</label>
+            <select id="demo-ar-mode" class="demo-select">
+              <option value="aquarium" selected>MR水族館 (Boids魚群シミュレーション)</option>
+              <option value="air_draw">空中描画 (Air Draw)</option>
+              <option value="tabletop_ar">卓上AR (物理オブジェクト)</option>
+            </select>
+          </div>
+
+          <div class="demo-control-group">
+            <div id="demo-ar-status" style="background:#e6f9f0; border:1px solid #b7edd2; color:#0e9f6e; padding:8px 12px; border-radius:6px; font-size:0.82rem; font-weight:600;">
+              MediaPipe Hands: 初期化中...
+            </div>
+            <p style="font-size:0.75rem; color:var(--color-text-sub); margin:4px 0 0;">
+              カメラ映像から21点の手指関節ランドマークを検出します。
+            </p>
+          </div>
+
+          <!-- Sub-options for Aquarium -->
+          <div id="demo-ar-opts-aquarium" style="display: flex; flex-direction: column; gap: 14px;">
+            <div class="demo-control-group">
+              <label class="demo-control-label">泳ぐスピード</label>
+              <select id="demo-ar-fish-speed" class="demo-select">
+                <option value="1.0">1.0x (標準)</option>
+                <option value="1.6" selected>1.6x (高速)</option>
+                <option value="2.4">2.4x (超高速)</option>
+              </select>
+            </div>
+
+            <div class="demo-control-group">
+              <label class="demo-control-label">魚の数 (密度)</label>
+              <select id="demo-ar-density" class="demo-select">
+                <option value="low">低 (8匹)</option>
+                <option value="medium" selected>中 (18匹)</option>
+                <option value="high">高 (30匹)</option>
+              </select>
+            </div>
+
+            <div class="demo-control-group">
+              <label class="demo-toggle-label">
+                <span>水面の波紋エフェクト</span>
+                <input type="checkbox" id="demo-ar-ripples" checked>
+              </label>
+            </div>
+
+            <div style="background: rgba(0, 245, 212, 0.08); border-left: 3px solid #00f5d4; padding: 8px 10px; font-size: 0.76rem; color: var(--color-text-sub); border-radius: 4px; line-height: 1.5;">
+              ※ カメラに手の平を向けると給餌を行い、手を閉じるとBoids自律群泳に戻ります。
+            </div>
+          </div>
+
+          <!-- Sub-options for Air Draw -->
+          <div id="demo-ar-opts-draw" style="display: none; flex-direction: column; gap: 14px;">
+            <div class="demo-control-group">
+              <label class="demo-control-label">描画色</label>
+              <select id="demo-ar-draw-color" class="demo-select">
+                <option value="neon_cyan" selected>シアン</option>
+                <option value="neon_pink">ピンク</option>
+                <option value="cyber_gold">ゴールド</option>
+                <option value="rainbow">レインボー</option>
+              </select>
+            </div>
+
+            <div class="demo-control-group">
+              <label class="demo-control-label">
+                <span>線の太さ</span>
+                <span class="val-tag" id="demo-ar-draw-width-val">8px</span>
+              </label>
+              <input type="range" id="demo-ar-draw-width" class="demo-range" min="3" max="22" step="1" value="8">
+            </div>
+
+            <div class="demo-control-group">
+              <label class="demo-control-label">残光フェードアウト</label>
+              <select id="demo-ar-draw-fade" class="demo-select">
+                <option value="fade" selected>自動フェード (7秒)</option>
+                <option value="persist">残す</option>
+              </select>
+            </div>
+
+            <button id="demo-ar-draw-clear" class="demo-btn demo-btn-outline" style="width: 100%; justify-content: center;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              <span>描いた線をすべてクリア</span>
+            </button>
+          </div>
+
+          <!-- Sub-options for Tabletop AR -->
+          <div id="demo-ar-opts-tabletop" style="display: none; flex-direction: column; gap: 14px;">
+            <div class="demo-control-group">
+              <label class="demo-control-label">オブジェクト形状</label>
+              <select id="demo-ar-tabletop-type" class="demo-select">
+                <option value="mixed" selected>ミックス (キューブ / ボール / クリスタル)</option>
+                <option value="cube">キューブ</option>
+                <option value="ball">ボール</option>
+                <option value="crystal">クリスタル</option>
+              </select>
+            </div>
+
+            <div class="demo-control-group">
+              <label class="demo-control-label">重力設定</label>
+              <select id="demo-ar-gravity" class="demo-select">
+                <option value="light">低重力</option>
+                <option value="normal" selected>標準</option>
+                <option value="heavy">高重力</option>
+              </select>
+            </div>
+
+            <button id="demo-ar-tabletop-respawn" class="demo-btn demo-btn-outline" style="width: 100%; justify-content: center;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              <span>オブジェクトを再配置</span>
+            </button>
+          </div>
+
+          <div id="demo-ar-desc-box" style="font-size:0.8rem; color:var(--color-text-sub); line-height:1.6; background:#f8f9fa; border:1px solid #e9ecef; border-radius:6px; padding:10px;">
+            <strong>MR水族館:</strong><br>
+            Boidsアルゴリズムによる魚群シミュレーションです。カメラに手の平を向けると給餌し、手を閉じると自律群泳に戻ります。
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -534,7 +659,11 @@ extra_css:
         </div>
         <div class="demo-card-item">
           <div class="demo-card-header">エッジ検出・線画化 (Edge Detection)</div>
-          <p class="demo-card-desc">Canny法やSobelフィルタによる勾配計算から物体の輪郭を抽出し、鉛筆スケッチやサイバーネオン調にリアルタイム描画します。</p>
+          <p class="demo-card-desc">Canny法やSobelフィルタによる勾配計算から物体の輪郭を抽出し、学会標準の白黒・赤線重畳や鉛筆スケッチ等でリアルタイム描画します。</p>
+        </div>
+        <div class="demo-card-item">
+          <div class="demo-card-header">AR空間インタラクション (Mixed Reality)</div>
+          <p class="demo-card-desc">Webカメラ映像上に仮想オブジェクトを重畳し、手指姿勢推定や物理演算を用いたインタラクションを行います（Boids魚群シミュレーション、空間描画、卓上オブジェクト操作）。</p>
         </div>
       </div>
     </div>
@@ -556,4 +685,5 @@ extra_css:
 <script src="{{ '/assets/js/video-demo/face-expression.js' | relative_url }}"></script>
 <script src="{{ '/assets/js/video-demo/segmentation.js' | relative_url }}"></script>
 <script src="{{ '/assets/js/video-demo/edge-detection.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/video-demo/ar-interaction.js' | relative_url }}"></script>
 <script src="{{ '/assets/js/video-demo/app.js' | relative_url }}"></script>
