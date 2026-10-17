@@ -55,7 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
     depth: new window.DepthEstimationEngine(),
     saliency: new window.SaliencyEngine(),
     flow: new window.OpticalFlowEngine(),
-    segmentation: new window.SegmentationEngine()
+    segmentation: new window.SegmentationEngine(),
+    edge: new window.EdgeDetectionEngine()
   };
 
   function updateFlipCamButtonUI() {
@@ -253,6 +254,16 @@ document.addEventListener('DOMContentLoaded', () => {
     'optical-flow': 'flow',
     'オプティカルフロー': 'flow',
     'フロー': 'flow',
+    // エッジ検出
+    'edge': 'edge',
+    'edges': 'edge',
+    'canny': 'edge',
+    'sobel': 'edge',
+    'laplacian': 'edge',
+    'エッジ': 'edge',
+    'エッジ検出': 'edge',
+    '線画': 'edge',
+    'スケッチ': 'edge',
     // 使い方・ガイド
     'guide': 'guide',
     '使い方': 'guide',
@@ -315,7 +326,8 @@ document.addEventListener('DOMContentLoaded', () => {
       face: '表情検出 (Facial Expression)',
       depth: '深度推定 (Depth Estimation)',
       saliency: '顕著性 (Saliency Map)',
-      flow: 'オプティカルフロー (Optical Flow)'
+      flow: 'オプティカルフロー (Optical Flow)',
+      edge: 'エッジ検出 (Edge Detection)'
     };
     if (statModeBadge) {
       statModeBadge.textContent = taskKey === 'guide' ? '機能を選択してください' : (taskNames[taskKey] || taskKey);
@@ -382,6 +394,8 @@ document.addEventListener('DOMContentLoaded', () => {
         engines.saliency.process(targetCtx, video, cw, ch, isMirrored);
       } else if (currentTask === 'flow') {
         engines.flow.process(targetCtx, video, cw, ch, isMirrored);
+      } else if (currentTask === 'edge') {
+        engines.edge.process(targetCtx, video, cw, ch, isMirrored);
       }
     } catch (err) {
       console.warn('Render loop engine error:', err);
@@ -664,6 +678,42 @@ document.addEventListener('DOMContentLoaded', () => {
       const val = parseFloat(e.target.value);
       engines.flow.scale = val;
       flowSensVal.textContent = `${val.toFixed(1)}x`;
+    });
+  }
+
+  // Edge Detection Controls
+  const edgeAlgoSelect = document.getElementById('demo-edge-algo');
+  const edgeStyleSelect = document.getElementById('demo-edge-style');
+  const edgeSensSlider = document.getElementById('demo-edge-sens');
+  const edgeSensVal = document.getElementById('demo-edge-sens-val');
+  const edgeBlurSelect = document.getElementById('demo-edge-blur');
+  const edgeInvertCheck = document.getElementById('demo-edge-invert');
+
+  if (edgeAlgoSelect) {
+    edgeAlgoSelect.addEventListener('change', (e) => {
+      engines.edge.algorithm = e.target.value;
+    });
+  }
+  if (edgeStyleSelect) {
+    edgeStyleSelect.addEventListener('change', (e) => {
+      engines.edge.style = e.target.value;
+    });
+  }
+  if (edgeSensSlider) {
+    edgeSensSlider.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value, 10);
+      engines.edge.sensitivity = val;
+      if (edgeSensVal) edgeSensVal.textContent = `${val}%`;
+    });
+  }
+  if (edgeBlurSelect) {
+    edgeBlurSelect.addEventListener('change', (e) => {
+      engines.edge.blurLevel = e.target.value;
+    });
+  }
+  if (edgeInvertCheck) {
+    edgeInvertCheck.addEventListener('change', (e) => {
+      engines.edge.invert = e.target.checked;
     });
   }
 

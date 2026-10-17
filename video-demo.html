@@ -39,6 +39,9 @@ extra_css:
       <button class="demo-tab-btn" data-task="flow">
         オプティカルフロー
       </button>
+      <button class="demo-tab-btn" data-task="edge">
+        エッジ検出
+      </button>
     </div>
 
     <!-- Main Grid: Viewport + Controls -->
@@ -197,6 +200,7 @@ extra_css:
               <li><strong>深度推定:</strong> 手前と奥の相対深度を計算</li>
               <li><strong>顕著性マップ:</strong> 視覚的注意の集中度を可視化</li>
               <li><strong>オプティカルフロー:</strong> 動きの速度と方向を追跡</li>
+              <li><strong>エッジ検出:</strong> 輪郭抽出（Canny/Sobel）と線画・ネオンアート化</li>
             </ul>
             <p style="font-size:0.8rem; color:var(--color-text-sub); margin:0;">
               ※「カメラ起動」ボタンを押すと、お使いの端末のWebカメラでリアルタイム解析が始まります。
@@ -443,6 +447,62 @@ extra_css:
           </p>
         </div>
 
+        <!-- 6. Edge Detection -->
+        <div class="demo-task-panel" id="demo-panel-edge" style="display: none; flex-direction: column; gap: 16px;">
+          <h3 class="demo-panel-title">エッジ検出 設定</h3>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">アルゴリズム</label>
+            <select id="demo-edge-algo" class="demo-select">
+              <option value="canny" selected>Canny法 (推奨・極細輪郭)</option>
+              <option value="sobel">Sobelフィルタ (1次微分勾配)</option>
+              <option value="laplacian">ラプラシアン (2次微分)</option>
+            </select>
+          </div>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">表現スタイル</label>
+            <select id="demo-edge-style" class="demo-select">
+              <option value="classic" selected>標準白黒 (Classic B&W / 学会・論文標準)</option>
+              <option value="overlay_red">輪郭重畳・赤 (Red Contour Overlay / 抽出評価用)</option>
+              <option value="color_dir">勾配方向カラー (Directional HSV / 法線可視化)</option>
+              <option value="neon">サイバー・ネオン (Cyber Neon)</option>
+              <option value="sketch">鉛筆スケッチ (Pencil Sketch)</option>
+              <option value="blueprint">設計図 (Technical Blueprint)</option>
+              <option value="comic_overlay">コミック輪郭重畳 (Toon Overlay)</option>
+            </select>
+          </div>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">
+              <span>エッジ感度</span>
+              <span class="val-tag" id="demo-edge-sens-val">50%</span>
+            </label>
+            <input type="range" id="demo-edge-sens" class="demo-range" min="5" max="95" step="1" value="50">
+          </div>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">ノイズ除去 (平滑化)</label>
+            <select id="demo-edge-blur" class="demo-select">
+              <option value="none">なし (シャープ)</option>
+              <option value="weak" selected>弱 (3x3 ガウシアン)</option>
+              <option value="strong">強 (5x5 ガウシアン)</option>
+            </select>
+          </div>
+
+          <div class="demo-control-group">
+            <label class="demo-toggle-label">
+              <span>背景 / 輪郭の白黒反転</span>
+              <input type="checkbox" id="demo-edge-invert">
+            </label>
+          </div>
+
+          <div style="font-size:0.8rem; color:var(--color-text-sub); line-height:1.6; background:#f8f9fa; border:1px solid #e9ecef; border-radius:6px; padding:10px;">
+            <strong>エッジ検出 & リアルタイム線画化:</strong><br>
+            画素の明暗勾配（微分）を計算し、物体の境界や形状輪郭を抽出します。ヒステリシス閾値処理によるCanny法や、サイバー調発光・鉛筆デッサンなど多彩なスタイル表現がブラウザ内で高速に動作します。
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -472,6 +532,10 @@ extra_css:
           <div class="demo-card-header">オプティカルフロー (Optical Flow)</div>
           <p class="demo-card-desc">時間的に連続する画像フレームのピクセル移動速度と方向ベクトルを推定します。</p>
         </div>
+        <div class="demo-card-item">
+          <div class="demo-card-header">エッジ検出・線画化 (Edge Detection)</div>
+          <p class="demo-card-desc">Canny法やSobelフィルタによる勾配計算から物体の輪郭を抽出し、鉛筆スケッチやサイバーネオン調にリアルタイム描画します。</p>
+        </div>
       </div>
     </div>
 
@@ -491,4 +555,5 @@ extra_css:
 <script src="{{ '/assets/js/video-demo/object-detection.js' | relative_url }}"></script>
 <script src="{{ '/assets/js/video-demo/face-expression.js' | relative_url }}"></script>
 <script src="{{ '/assets/js/video-demo/segmentation.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/video-demo/edge-detection.js' | relative_url }}"></script>
 <script src="{{ '/assets/js/video-demo/app.js' | relative_url }}"></script>
