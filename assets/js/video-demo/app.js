@@ -149,6 +149,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     } else if (taskKey === 'face' && !engines.face.isLoaded) {
+      showLoading('表情検出モデル (Face-API) 読込中...', 30);
+      try {
+        await engines.face.loadModel((pct) => showLoading('表情検出モデル読込中...', pct));
+      } catch (err) {
+        console.error('表情検出モデルの読込に失敗しました:', err);
+        alert('表情検出モデルの読込に失敗しました。ネットワーク接続を確認してください。');
+      } finally {
+        hideLoading();
+      }
     } else if (taskKey === 'depth' && !engines.depth.aiLoaded) {
       showLoading('深度推定AI (Depth Anything) モデルを準備中...', 15);
       try {
