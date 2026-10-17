@@ -346,10 +346,28 @@ extra_css:
           <h3 class="demo-panel-title">顕著性マップ 設定</h3>
 
           <div class="demo-control-group">
+            <div id="demo-sal-status" style="background:#f8f9fa; border:1px solid #e9ecef; color:var(--color-text); padding:8px 12px; border-radius:6px; font-size:0.82rem; font-weight:600;">
+              深層学習AI (IS-Net / Saliency Model) 初期化中...
+            </div>
+            <p style="font-size:0.75rem; color:var(--color-text-sub); margin:4px 0 0;">
+              End-to-End深層学習モデルにより、人物・文書・手元物体への視線注視確率場を推論します。
+            </p>
+          </div>
+
+          <div class="demo-control-group">
             <label class="demo-control-label">表示形式</label>
             <select id="demo-sal-mode" class="demo-select">
               <option value="overlay" selected>半透明オーバーレイ (映像 ＋ JETヒートマップ)</option>
               <option value="pure_map">ヒートマップ単体 (青〜赤)</option>
+            </select>
+          </div>
+
+          <div class="demo-control-group">
+            <label class="demo-control-label">更新頻度 (推論間引き)</label>
+            <select id="demo-sal-throttle" class="demo-select">
+              <option value="eco">省電力 (300ms)</option>
+              <option value="balanced" selected>標準 (180ms)</option>
+              <option value="fast">高頻度 (90ms)</option>
             </select>
           </div>
 
@@ -363,30 +381,22 @@ extra_css:
 
           <div class="demo-control-group">
             <label class="demo-control-label">
-              <span>被写体領域への適応度</span>
-              <span class="val-tag" id="demo-sal-boost-val">100%</span>
-            </label>
-            <input type="range" id="demo-sal-boost" class="demo-range" min="0.0" max="1.5" step="0.1" value="1.0">
-          </div>
-
-          <div class="demo-control-group">
-            <label class="demo-control-label">
               <span>注視コントラスト感度</span>
-              <span class="val-tag" id="demo-sal-contrast-val">1.6x</span>
+              <span class="val-tag" id="demo-sal-contrast-val">1.35x</span>
             </label>
-            <input type="range" id="demo-sal-contrast" class="demo-range" min="1.0" max="3.0" step="0.1" value="1.6">
+            <input type="range" id="demo-sal-contrast" class="demo-range" min="1.0" max="3.0" step="0.05" value="1.35">
           </div>
 
           <div class="demo-control-group">
             <label class="demo-toggle-label">
-              <span>最注視点のマーカー表示</span>
+              <span>最注視点のマーカー表示 (Peak Fixation)</span>
               <input type="checkbox" id="demo-sal-reticle">
             </label>
           </div>
 
           <div style="font-size:0.8rem; color:var(--color-text-sub); line-height:1.6; background:#f8f9fa; border:1px solid #e9ecef; border-radius:6px; padding:10px;">
-            <strong>顕著性マップ (Saliency Map):</strong><br>
-            画像内の色・輝度コントラストや動き、および被写体領域の情報を統合し、視覚的に注目されやすい領域をJETカラーマップ（青: 低 〜 赤: 高）で可視化します。
+            <strong>深層学習 視覚的注意・顕著性マップ (Deep Saliency / SUM):</strong><br>
+            SOTA顕著性モデル（IS-Net / RMBG-1.4）の畳み込み・アテンション層によって、画像内の人物（顔・身体）や文書・持ち物への注視確率密度をEnd-to-Endで推論。人間の視線傾向（SUM）に準拠した有機的なJETカラーマップ（青: 低 〜 赤: 高）で可視化します。
           </div>
         </div>
 
@@ -440,7 +450,7 @@ extra_css:
         </div>
         <div class="demo-card-item">
           <div class="demo-card-header">顕著性マップ (Saliency Map)</div>
-          <p class="demo-card-desc">視覚的に注目されやすいコントラストや色・エッジの領域をヒートマップとして抽出します。</p>
+          <p class="demo-card-desc">深層学習（Transformers.js）による視覚的注意推定と周波数スペクトル残差法を融合し、背景ノイズのない高精度な注視ヒートマップを生成します。</p>
         </div>
         <div class="demo-card-item">
           <div class="demo-card-header">オプティカルフロー (Optical Flow)</div>

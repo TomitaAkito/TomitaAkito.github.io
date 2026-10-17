@@ -55,30 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
     segmentation: new window.SegmentationEngine()
   };
 
-  // Lightweight person silhouette (BodyPix) used only as a prior for the saliency map
-  const saliencyPerson = {
-    model: null,
-    loading: null,
-    busy: false,
-    lastTime: 0,
-    last: null,
-    load() {
-      if (this.model || this.loading || typeof bodyPix === 'undefined') return;
-      this.loading = bodyPix.load({ architecture: 'MobileNetV1', outputStride: 16, multiplier: 0.5, quantBytes: 2 })
-        .then(m => { this.model = m; })
-        .catch(err => console.warn('BodyPix load failed:', err))
-        .finally(() => { this.loading = null; });
-    },
-    tick(video) {
-      if (!this.model || this.busy || performance.now() - this.lastTime < 200) return;
-      this.busy = true;
-      this.lastTime = performance.now();
-      this.model.segmentPerson(video, { internalResolution: 'low', segmentationThreshold: 0.65, maxDetections: 1 })
-        .then(seg => { this.last = seg; })
-        .catch(() => {})
-        .finally(() => { this.busy = false; });
-    }
-  };
 
   function showLoading(msg, progress = 0) {
     if (loadingText) loadingText.textContent = msg;
@@ -190,8 +166,32 @@ document.addEventListener('DOMContentLoaded', () => {
         hideLoading();
       }
     } else if (taskKey === 'saliency') {
-      // Background load BodyPix for region contour prior
-      saliencyPerson.load();
+      if (!engines.saliency.isLoaded && !engines.saliency.isLoading) {
+        showLoading('顕著性AIモデルを初期化中...', 0);
+        try {
+          await engines.saliency.loadAIModel((pct) => {
+            showLoading(`顕著性AIモデルをダウンロード中... ${pct}%`, pct);
+          });
+          const statusEl = document.getElementById('demo-sal-status');
+          if (statusEl && engines.saliency.isLoaded) {
+            statusEl.textContent = '深層学習AI (IS-Net Saliency) 稼働中';
+            statusEl.style.background = '#e6f9f0';
+            statusEl.style.borderColor = '#b7edd2';
+            statusEl.style.color = '#0e9f6e';
+          }
+        } catch (err) {
+          console.warn('Saliency AI load error, running enhanced fallback:', err);
+          const statusEl = document.getElementById('demo-sal-status');
+          if (statusEl) {
+            statusEl.textContent = '軽量注意モデル 稼働中';
+            statusEl.style.background = '#fef3c7';
+            statusEl.style.borderColor = '#fde68a';
+            statusEl.style.color = '#92400e';
+          }
+        } finally {
+          hideLoading();
+        }
+      }
     }
   }
 
@@ -272,23 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (currentTask === 'depth') {
         engines.depth.process(targetCtx, video, cw, ch, isMirrored);
       } else if (currentTask === 'saliency') {
-        // Run lightweight face tracking in background if loaded
-        if (engines.face.isLoaded && !engines.face.isDetecting && performance.now() - engines.face.lastDetectTime > 250) {
-          engines.face.lastDetectTime = performance.now();
-          engines.face.isDetecting = true;
-          faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.45 }))
-            .then(dets => { engines.face.lastDetections = dets; engines.face.isDetecting = false; })
-            .catch(() => { engines.face.isDetecting = false; });
-        }
-
-        // Run lightweight person segmentation update for subject region contour
-        saliencyPerson.tick(video);
-
-        engines.saliency.process(targetCtx, video, cw, ch, isMirrored, {
-          faces: engines.face.lastDetections,
-          objects: engines.object.lastPredictions,
-          segmentation: saliencyPerson.last
-        });
+        engines.saliency.process(targetCtx, video, cw, ch, isMirrored);
       } else if (currentTask === 'flow') {
         engines.flow.process(targetCtx, video, cw, ch, isMirrored);
       }
@@ -491,14 +475,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const salThrottleSelect = document.getElementById('demo-sal-throttle');
   const salModeSelect = document.getElementById('demo-sal-mode');
   const salOpacitySlider = document.getElementById('demo-sal-opacity');
   const salOpacityVal = document.getElementById('demo-sal-opacity-val');
-  const salBoostSlider = document.getElementById('demo-sal-boost');
-  const salBoostVal = document.getElementById('demo-sal-boost-val');
   const salContrastSlider = document.getElementById('demo-sal-contrast');
   const salContrastVal = document.getElementById('demo-sal-contrast-val');
   const salReticleCheck = document.getElementById('demo-sal-reticle');
+
+  if (salThrottleSelect) {
+    salThrottleSelect.addEventListener('change', (e) => {
+      const mode = e.target.value;
+      if (mode === 'eco') engines.saliency.throttleInterval = 300;
+      else if (mode === 'fast') engines.saliency.throttleInterval = 90;
+      else engines.saliency.throttleInterval = 180;
+    });
+  }
 
   if (salModeSelect) {
     salModeSelect.addEventListener('change', (e) => {
@@ -510,14 +502,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const val = parseFloat(e.target.value);
       engines.saliency.opacity = val;
       if (salOpacityVal) salOpacityVal.textContent = `${Math.round(val * 100)}%`;
-    });
-  }
-  if (salBoostSlider) {
-    salBoostSlider.addEventListener('input', (e) => {
-      const val = parseFloat(e.target.value);
-      engines.saliency.silhouetteBoost = val;
-      engines.saliency.samSilhouetteBoost = val;
-      if (salBoostVal) salBoostVal.textContent = `${Math.round((val / 1.0) * 100)}%`;
     });
   }
   if (salContrastSlider) {
