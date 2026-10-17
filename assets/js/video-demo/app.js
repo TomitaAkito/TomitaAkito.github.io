@@ -224,7 +224,81 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  async function switchTask(taskKey) {
+  const TASK_ALIASES = {
+    // 顕著性
+    'saliency': 'saliency',
+    'sal': 'saliency',
+    '顕著性': 'saliency',
+    '顕著性マップ': 'saliency',
+    'けんちょせい': 'saliency',
+    // 物体検出
+    'object': 'object',
+    'obj': 'object',
+    'detection': 'object',
+    '物体検出': 'object',
+    '物体': 'object',
+    // 表情検出
+    'face': 'face',
+    'expression': 'face',
+    'emotion': 'face',
+    '表情検出': 'face',
+    '表情': 'face',
+    // 深度推定
+    'depth': 'depth',
+    '深度推定': 'depth',
+    '深度': 'depth',
+    // オプティカルフロー
+    'flow': 'flow',
+    'opticalflow': 'flow',
+    'optical-flow': 'flow',
+    'オプティカルフロー': 'flow',
+    'フロー': 'flow',
+    // 使い方・ガイド
+    'guide': 'guide',
+    '使い方': 'guide',
+    'ヘルプ': 'guide'
+  };
+
+  function getTaskFromUrl() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const queryVal = params.get('task') || params.get('mode') || params.get('fn');
+      if (queryVal) {
+        const decoded = decodeURIComponent(queryVal).trim().toLowerCase();
+        if (TASK_ALIASES[decoded]) return TASK_ALIASES[decoded];
+      }
+
+      if (window.location.hash) {
+        const hash = decodeURIComponent(window.location.hash.replace(/^#/, '')).trim().toLowerCase();
+        if (TASK_ALIASES[hash]) return TASK_ALIASES[hash];
+      }
+    } catch (e) {
+      console.warn('URL parsing error:', e);
+    }
+    return null;
+  }
+
+  function updateUrlForTask(taskKey) {
+    try {
+      const url = new URL(window.location.href);
+      if (taskKey === 'guide') {
+        url.searchParams.delete('task');
+        url.searchParams.delete('mode');
+        url.searchParams.delete('fn');
+        url.hash = '';
+      } else {
+        url.searchParams.set('task', taskKey);
+        url.searchParams.delete('mode');
+        url.searchParams.delete('fn');
+        url.hash = '';
+      }
+      window.history.replaceState({ task: taskKey }, '', url.toString());
+    } catch (e) {
+      console.warn('URL update error:', e);
+    }
+  }
+
+  async function switchTask(taskKey, updateUrl = true) {
     currentTask = taskKey;
 
     tabButtons.forEach(btn => {
@@ -245,6 +319,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     if (statModeBadge) {
       statModeBadge.textContent = taskKey === 'guide' ? '機能を選択してください' : (taskNames[taskKey] || taskKey);
+    }
+
+    if (updateUrl) {
+      updateUrlForTask(taskKey);
     }
 
     // Only preload models for actual processing tasks
@@ -589,5 +667,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  switchTask('guide');
+  // Initialize task from URL (e.g. ?task=saliency or #物体検出) or default to 'guide'
+  const initialTask = getTaskFromUrl() || 'guide';
+  switchTask(initialTask, false);
+
+  window.addEventListener('popstate', (e) => {
+    const task = (e.state && e.state.task) || getTaskFromUrl() || 'guide';
+    switchTask(task, false);
+  });
+
+  window.addEventListener('hashchange', () => {
+    const task = getTaskFromUrl();
+    if (task && task !== currentTask) {
+      switchTask(task, false);
+    }
+  });
 });

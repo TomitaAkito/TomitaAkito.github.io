@@ -1,14 +1,14 @@
 /**
- * Deep Learning Salient Visual Attention Engine (SUM / IS-Net Architecture)
+ * Deep Learning Salient Visual Attention Engine (IS-Net Architecture)
  * 
- * Powered by State-of-the-Art Deep Learning (RMBG-1.4 / IS-Net via Transformers.js):
+ * Powered by Deep Learning (RMBG-1.4 / IS-Net via Transformers.js):
  * 1. End-to-End Deep Salient Attention Extraction:
  *    - Deep convolutional & attention layers naturally segment and prioritize
  *      humans (faces, hands, body), documents/books/screens, and foreground objects.
  *    - Absolutely ZERO artificial bounding box stamps or synthetic ID circles.
- * 2. Academic Saliency Post-Processing (SUM / Fixation Density Formulation):
+ * 2. Visual Saliency Post-Processing:
  *    - Continuous Gaussian Spatial Diffusion converts discrete subject activations into
- *      organic human eye fixation probability densities (SUM standard).
+ *      smooth fixation probability densities.
  *    - Center-prior modulation conforming to MIT Saliency Benchmark principles.
  * 3. Decoupled Non-Blocking Async Inference:
  *    - Operates at 160x120 (optimized patch count for rapid inference)
@@ -365,7 +365,7 @@ class SaliencyEngine {
     }
 
     // 5. Continuous Fixation Density Diffusion (Exact Separable Gaussian)
-    // Converts discrete neural masks into an organic human fixation heat field (SUM formulation)
+    // Converts discrete neural masks into an organic human fixation heat field
     this.separableGaussianBlur(this.smoothedBuffer, this.diffusedBuffer, w, h);
 
     // 6. Dynamic Min-Max Normalization with Absolute Noise Floor
