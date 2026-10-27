@@ -40,8 +40,8 @@ summary: "デジタル卒業アルバム向けの動画（Video Clip）を、素
 
 ### 国際会議
 - **Akito Tomita**, Koichi Nishimura, Nobutaka Hayama, Masahiro Oga, Yuta Muraki, "A Method for Automatically Generating Video Clips for Graduation Albums Using Visual Features and Appearance Times", In Proceedings of the NICOGRAPH International 2026, (2026). [[学会サイト ↗](https://www.art-science.org/nicograph/nicoint2026/)]
-- **Akito Tomita**, Koichi Nishimura, Yuta Muraki, "A Method for Automatically Generating Video Clips for Graduation Albums Based on Subject Extraction and Grouping", In Proceedings of the 2026 IEEE 15th Global Conference on Consumer Electronics (GCCE 2026), (2026). [[学会サイト ↗](https://www.ieee-gcce.org/2026/index.html)]
-- **Akito Tomita**, Koichi Nishimura, Yuta Muraki, "A Method for Automatically Generating Video Clips for Graduation Albums Based on Speech Activity Detection and Audio Event Detection", In Proceedings of the International Workshop on Advanced Image Technology 2027 (IWAIT 2027), (2027), to appear. [[学会サイト ↗](https://iwait.online/)]
+- **Akito Tomita**, Koichi Nishimura, Nobutaka Hayama, Masahiro Oga, Yuta Muraki, "A Method for Automatically Generating Video Clips for Graduation Albums Based on Subject Extraction and Grouping", In Proceedings of the 2026 IEEE 15th Global Conference on Consumer Electronics (GCCE 2026), (2026). [[学会サイト ↗](https://www.ieee-gcce.org/2026/index.html)]
+- **Akito Tomita**, Koichi Nishimura, Nobutaka Hayama, Masahiro Oga, Yuta Muraki, "A Method for Automatically Generating Video Clips for Graduation Albums Based on Speech Activity Detection and Audio Event Detection", In Proceedings of the International Workshop on Advanced Image Technology 2027 (IWAIT 2027), (2027), to appear. [[学会サイト ↗](https://iwait.online/)]
 
 ### 国内学会
 - **冨田 暁翔**，西村 晃一，村木 祐太，“被写体抽出とグループ化に基づく卒業アルバム用Video Clips自動生成の一手法”, 2026年度 第54回 画像電子学会年次大会，(2026)．[[学会サイト ↗](https://www.iieej.org/annualconf/2026nenji-top/)]
