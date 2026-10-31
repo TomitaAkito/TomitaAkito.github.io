@@ -915,7 +915,7 @@ a:hover {
 
 .post-related-card:hover .post-related-arrow {
   background: var(--h1, var(--color-main));
-  color: #ffffff;
+  color: #ffffff !important;
   transform: translateX(3px);
 }
 
@@ -1184,69 +1184,27 @@ body {
 
 
 
-[data-cat="国際学会"],
-[data-filter="国際学会"] {
-  --cat-bg: #e3f2fd;
-  --cat-color: #1e6fd9;
+/* =========================================
+   ニュースカテゴリ 配色 ＆ 並び順 (order) 設定
+   ※ 並び順を変えたい場合は order の数値を変更してください。
+   ※ 新規カテゴリは自動で末尾（order: 99）に並びます。
+========================================= */
+/* フィルターボタン群のFlexbox配置（orderによる並び替えを有効化） */
+.category-filter {
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
 }
 
-[data-cat="国内学会"],
-[data-filter="国内学会"] {
-  --cat-bg: #fce4ec;
-  --cat-color: #d81b60;
-}
-
-[data-cat="受賞"],
-[data-filter="受賞"],
-[data-cat="表彰"],
-[data-filter="表彰"] {
-  --cat-bg: #fff8e1;
-  --cat-color: #ff8f00;
-}
-
-[data-cat="メディア掲載"],
-[data-filter="メディア掲載"] {
-  --cat-bg: #f3e5f5;
-  --cat-color: #6a1b9a;
-}
-
-[data-cat="学術論文"],
-[data-filter="学術論文"] {
-  --cat-bg: #e8f5e9;
-  --cat-color: #2e7d32;
-}
-
-[data-cat="研究発表会"],
-[data-filter="研究発表会"] {
-  --cat-bg: #fff3e0;
-  /* ラベルの背景色 */
-  --cat-color: #e65100;
-  /* 文字色・ボタン枠線色 */
-}
-
-[data-cat="その他"],
-[data-filter="その他"] {
-  --cat-bg: #e0f7fa;
-  --cat-color: #00796b;
-}
-
-
-.news-category {
-  display: inline-block;
-  padding: 3px 8px;
-  margin-right: 8px;
-  border-radius: 4px;
-  font-size: 0.8em;
-  font-weight: bold;
-
-  background-color: var(--cat-bg, #eee);
-  color: var(--cat-color, #333);
-}
-
-
+/* フィルターボタンの基本設定 */
 .filter-btn {
+  order: 99;
+  /* 未指定の新規カテゴリは自動的に末尾へ */
   padding: 6px 16px;
-  margin: 0 5px 10px;
+  margin: 0;
   border-radius: 20px;
   cursor: pointer;
   font-size: 0.9em;
@@ -1258,13 +1216,87 @@ body {
   color: var(--cat-color, #333);
 }
 
-
 .filter-btn:hover,
 .filter-btn.active {
-
   background-color: var(--cat-color, #333);
   border-color: var(--cat-color, #333);
   color: #fff;
+}
+
+/* 先頭固定: All ボタン */
+.filter-btn[data-filter="all"] {
+  order: 0;
+}
+
+/* 1. 学術論文 */
+[data-cat="学術論文"],
+[data-filter="学術論文"] {
+  order: 1;
+  --cat-bg: #e8f5e9;
+  --cat-color: #2e7d32;
+}
+
+/* 2. 国際学会 */
+[data-cat="国際学会"],
+[data-filter="国際学会"] {
+  order: 2;
+  --cat-bg: #e3f2fd;
+  --cat-color: #1e6fd9;
+}
+
+/* 3. 国内学会 */
+[data-cat="国内学会"],
+[data-filter="国内学会"] {
+  order: 3;
+  --cat-bg: #fce4ec;
+  --cat-color: #d81b60;
+}
+
+/* 4. 研究発表会 */
+[data-cat="研究発表会"],
+[data-filter="研究発表会"] {
+  order: 4;
+  --cat-bg: #fff3e0;
+  --cat-color: #2cb4ad;
+}
+
+/* 5. 受賞・表彰 */
+[data-cat="受賞"],
+[data-filter="受賞"],
+[data-cat="表彰"],
+[data-filter="表彰"] {
+  order: 5;
+  --cat-bg: #fff8e1;
+  --cat-color: #ff8f00;
+}
+
+/* 6. メディア掲載 */
+[data-cat="メディア掲載"],
+[data-filter="メディア掲載"] {
+  order: 6;
+  --cat-bg: #f3e5f5;
+  --cat-color: #6a1b9a;
+}
+
+/* 7. その他 */
+[data-cat="その他"],
+[data-filter="その他"] {
+  order: 10;
+  --cat-bg: #e0f7fa;
+  --cat-color: #05b6a1;
+}
+
+/* カテゴリラベル（枠線・文字色・背景色を同期） */
+.news-category {
+  display: inline-block;
+  padding: 3px 8px;
+  margin-right: 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  font-weight: bold;
+  border: 1px solid var(--cat-color, transparent) !important;
+  background-color: var(--cat-bg, #eee);
+  color: var(--cat-color, #333) !important;
 }
 
 
@@ -1488,8 +1520,8 @@ img {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: #ff3b30;
-  color: #ffffff;
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
   font-size: 0.75rem;
   font-weight: bold;
   font-family: 'Helvetica Neue', Arial, sans-serif;
