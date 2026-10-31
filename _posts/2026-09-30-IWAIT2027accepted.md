@@ -9,7 +9,8 @@ published: true # postで表示するときはtrueにする
 <img src="/assets/img/post/videoclip/poster4.png" alt="画像">
 </div>
 
-2027年01月に韓国で開催されるIWAITに論文が採択されました。また<span class="marker">Strong Accept</span>を頂きました！<br>
+2027年01月に韓国で開催される国際学会、IWAITに論文が採択されました。<br>
+また<span class="marker">Strong Accept</span>を頂きました！<br>
 当日は<span class="marker">ポスター発表</span>を行う予定です。
 
 ## 学会情報
