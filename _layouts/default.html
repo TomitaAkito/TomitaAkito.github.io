@@ -95,7 +95,11 @@
 
   {% include footer.html %}
 
+  <!-- サイト内検索モーダル -->
+  {% include search-modal.html %}
+
   <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
+  <script src="{{ '/assets/js/search.js' | relative_url }}"></script>
   {% if page.extra_js %}
     {% for js in page.extra_js %}
       <script src="{{ js | relative_url }}"></script>

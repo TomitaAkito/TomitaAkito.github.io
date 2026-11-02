@@ -14,24 +14,47 @@ permalink: /news.html
     </h2>
     <p class="section-lead">これまでの<span class="marker">お知らせ</span>を一覧表示しています。</p>
 
-    
+    <!-- 検索バー -->
+    <div class="news-search-bar-wrap">
+      <div class="news-search-input-box">
+        <svg class="news-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="news-search-input" class="news-search-input" placeholder="キーワードでお知らせを絞り込み... (例: 学会名、ポスター、論文題目)" autocomplete="off">
+        <button type="button" id="news-search-clear" class="news-search-clear" aria-label="入力をクリア" style="display: none;">&times;</button>
+      </div>
+      <div class="news-search-stats" id="news-search-stats" style="display: none;">
+        <span id="news-match-count">0</span> 件のお知らせが見つかりました
+      </div>
+    </div>
+
+    <!-- カテゴリフィルター -->
     <div class="category-filter" style="margin-bottom: 30px; text-align: center;">
       <button class="filter-btn active" data-filter="all">All</button>
       
-      {% assign all_categories = site.posts | map: "categories" | compact | flatten | uniq %}
+      {% assign all_categories = site.posts | where_exp: "item", "item.hidden != true" | map: "categories" | compact | flatten | uniq %}
       {% for category in all_categories %}
         <button class="filter-btn" data-filter="{{ category }}">{{ category }}</button>
       {% endfor %}
     </div>
 
-    
+    <!-- 該当なしメッセージ -->
+    <div id="news-no-results" class="news-no-results" style="display: none;">
+      <p class="no-results-text">条件に一致するお知らせは見つかりませんでした。</p>
+      <button type="button" id="news-reset-filter" class="btn btn-outline" style="margin-top: 14px;">絞り込みをリセット</button>
+    </div>
+
     <ul class="news-list" id="news-list">
       {% assign visible_posts = site.posts | where_exp: "item", "item.hidden != true" %}
       {% for post in visible_posts %}
       
-      <li class="news-item" data-categories="{{ post.categories | join: ',' }}">
+      {% assign clean_content = post.content | strip_html | strip_newlines | replace: '"', ' ' | escape %}
+      <li class="news-item" 
+          data-categories="{{ post.categories | join: ',' }}"
+          data-title="{{ post.title | strip | escape }}"
+          data-content="{{ clean_content }}">
         <a href="{{ post.url | relative_url }}" class="news-link">
-          
           
           {% assign preview_img = post.image %}
           {% if preview_img == nil %}
@@ -43,42 +66,29 @@ permalink: /news.html
             {% endif %}
           {% endif %}
 
-          
           {% assign first_p = post.content | split: '<p>' | slice: 1 | first | split: '</p>' | first %}
-          
-          
           {% if first_p %}
             {% assign plain_text = first_p | strip_html | strip_newlines | strip %}
           {% else %}
             {% assign plain_text = post.content | strip_html | strip_newlines | strip %}
           {% endif %}
           
-          
           {% assign first_sentence = plain_text | split: "。" | first | split: "．" | first %}
           {% if plain_text != first_sentence %}
             {% assign first_sentence = first_sentence | append: "。" %}
           {% endif %}
           
-          
           <div class="news-preview-data" 
                data-image="{{ preview_img }}" 
                data-text="{{ first_sentence }}"></div>
           
-          
           <div class="news-meta-title">
-            
-            
             <div class="news-date-col">
               <span class="news-date">{{ post.date | date: "%Y.%m.%d" }}</span>
             </div>
             
-            
             <div class="news-content-col">
-              
-              
               <div class="news-category-list">
-                
-                
                 {% assign post_time = post.date | date: "%s" %}
                 <span class="news-new-badge js-new-badge" data-post-time="{{ post_time }}" style="display: none;">NEW</span>
 
@@ -87,15 +97,11 @@ permalink: /news.html
                 {% endfor %}
               </div>
               
-              
               <div class="news-title">{{ post.title }}</div>
-              
             </div>
-            
           </div>
           
           <p class="mobile-news-excerpt">{{ first_sentence }}</p>
-          
         </a>
       </li>
       {% else %}
@@ -105,37 +111,142 @@ permalink: /news.html
   </div>
 </section>
 
-
-
-
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const filterBtns = document.querySelectorAll('.filter-btn');
     const newsItems = document.querySelectorAll('.news-item');
+    const searchInput = document.getElementById('news-search-input');
+    const clearBtn = document.getElementById('news-search-clear');
+    const statsElem = document.getElementById('news-search-stats');
+    const countElem = document.getElementById('news-match-count');
+    const noResults = document.getElementById('news-no-results');
+    const resetBtn = document.getElementById('news-reset-filter');
 
+    let currentCategory = 'all';
+    let currentQuery = '';
+
+    // フィルター＆検索の統合判定
+    function applyFilters() {
+      const q = currentQuery.trim().toLowerCase();
+      let matchCount = 0;
+
+      newsItems.forEach(item => {
+        const itemCategories = (item.getAttribute('data-categories') || '').split(',');
+        const title = (item.getAttribute('data-title') || '').toLowerCase();
+        const content = (item.getAttribute('data-content') || '').toLowerCase();
+        const dateText = item.querySelector('.news-date')?.textContent.toLowerCase() || '';
+
+        // カテゴリ一致判定
+        const matchesCategory = (currentCategory === 'all' || itemCategories.includes(currentCategory));
+
+        // キーワード一致判定（スペース区切りでAND検索）
+        let matchesQuery = true;
+        if (q) {
+          const terms = q.split(/\s+/);
+          matchesQuery = terms.every(term => 
+            title.includes(term) || 
+            content.includes(term) || 
+            dateText.includes(term) ||
+            itemCategories.some(cat => cat.toLowerCase().includes(term))
+          );
+        }
+
+        if (matchesCategory && matchesQuery) {
+          item.style.display = '';
+          matchCount++;
+        } else {
+          item.style.display = 'none';
+        }
+      });
+
+      // 件数表示と該当なしメッセージ
+      if (q !== '') {
+        statsElem.style.display = 'block';
+        countElem.textContent = matchCount;
+      } else {
+        statsElem.style.display = 'none';
+      }
+
+      if (matchCount === 0 && newsItems.length > 0) {
+        noResults.style.display = 'block';
+      } else {
+        noResults.style.display = 'none';
+      }
+    }
+
+    // カテゴリボタンのクリック
     filterBtns.forEach(btn => {
       btn.addEventListener('click', function() {
         filterBtns.forEach(b => b.classList.remove('active'));
         this.classList.add('active');
-
-        const targetCategory = this.getAttribute('data-filter');
-
-        newsItems.forEach(item => {
-          // カンマ区切りの文字列を配列に戻して、ターゲットが含まれているか判定
-          const itemCategories = item.getAttribute('data-categories').split(',');
-          
-          if (targetCategory === 'all' || itemCategories.includes(targetCategory)) {
-            item.style.display = '';
-            item.style.opacity = '0';
-            setTimeout(() => {
-              item.style.transition = 'opacity 0.3s ease';
-              item.style.opacity = '1';
-            }, 10);
-          } else {
-            item.style.display = 'none';
-          }
-        });
+        currentCategory = this.getAttribute('data-filter');
+        applyFilters();
       });
     });
+
+    // 検索入力
+    if (searchInput) {
+      searchInput.addEventListener('input', function() {
+        currentQuery = this.value;
+        if (clearBtn) {
+          clearBtn.style.display = currentQuery ? 'block' : 'none';
+        }
+        applyFilters();
+      });
+
+      if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+          searchInput.value = '';
+          currentQuery = '';
+          clearBtn.style.display = 'none';
+          searchInput.focus();
+          applyFilters();
+        });
+      }
+    }
+
+    // リセットボタン
+    if (resetBtn) {
+      resetBtn.addEventListener('click', function() {
+        currentCategory = 'all';
+        currentQuery = '';
+        if (searchInput) {
+          searchInput.value = '';
+          if (clearBtn) clearBtn.style.display = 'none';
+        }
+        filterBtns.forEach(b => {
+          if (b.getAttribute('data-filter') === 'all') {
+            b.classList.add('active');
+          } else {
+            b.classList.remove('active');
+          }
+        });
+        applyFilters();
+      });
+    }
+
+    // URLパラメータ (?q=... または ?cat=...) のサポート
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialQuery = urlParams.get('q');
+    const initialCat = urlParams.get('cat');
+
+    if (initialCat) {
+      const targetBtn = Array.from(filterBtns).find(b => b.getAttribute('data-filter') === initialCat);
+      if (targetBtn) {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        targetBtn.classList.add('active');
+        currentCategory = initialCat;
+      }
+    }
+
+    if (initialQuery && searchInput) {
+      searchInput.value = initialQuery;
+      currentQuery = initialQuery;
+      if (clearBtn) clearBtn.style.display = 'block';
+    }
+
+    if (initialCat || initialQuery) {
+      applyFilters();
+    }
   });
 </script>
