@@ -18,6 +18,7 @@
 
   const pcOpenBtn = document.getElementById('header-search-btn');
   const mobileOpenBtn = document.getElementById('mobile-search-btn');
+  const footerOpenBtn = document.getElementById('footer-search-btn');
 
   // 検索データを読み込む（1度だけFetch）
   async function loadSearchData() {
@@ -112,7 +113,7 @@
 
     if (allLink) {
       allLink.href = `/news.html?q=${encodeURIComponent(query)}`;
-      allLink.textContent = `「${query}」をNews一覧で詳しく見る →`;
+      allLink.textContent = `News一覧で「${query}」を絞り込む →`;
     }
 
     if (!searchData) {
@@ -121,17 +122,19 @@
     }
 
     const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
-    const matches = searchData.filter(post => {
-      const title = (post.title || '').toLowerCase();
-      const content = (post.content || '').toLowerCase();
-      const categories = (post.categories || []).join(' ').toLowerCase();
-      const date = (post.date || '').toLowerCase();
+    const matches = searchData.filter(item => {
+      const title = (item.title || '').toLowerCase();
+      const content = (item.content || '').toLowerCase();
+      const categories = (item.categories || []).join(' ').toLowerCase();
+      const date = (item.date || '').toLowerCase();
+      const type = (item.type || '').toLowerCase();
 
       return terms.every(term => 
         title.includes(term) || 
         content.includes(term) || 
         categories.includes(term) ||
-        date.includes(term)
+        date.includes(term) ||
+        type.includes(term)
       );
     });
 
@@ -139,11 +142,11 @@
   }
 
   // 結果リストのレンダリング
-  function renderResults(posts, terms) {
+  function renderResults(items, terms) {
     resultsList.innerHTML = '';
     selectedIndex = -1;
 
-    if (posts.length === 0) {
+    if (items.length === 0) {
       resultsList.style.display = 'none';
       emptyState.style.display = 'block';
       return;
@@ -152,18 +155,23 @@
     emptyState.style.display = 'none';
     resultsList.style.display = 'block';
 
-    posts.forEach((post, index) => {
+    items.forEach((item, index) => {
       const li = document.createElement('li');
       li.className = 'search-result-item';
       li.setAttribute('data-index', index);
 
-      // カテゴリバッジ生成
-      const catBadges = (post.categories || []).map(cat => 
+      // 種別バッジ（News, Research, Demo, Page）
+      const typeStr = item.type || 'Page';
+      const typeClass = typeStr.toLowerCase();
+      const typeBadge = `<span class="search-type-badge search-type-${typeClass}">${escapeHTML(typeStr)}</span>`;
+
+      // カテゴリ・タグバッジ生成
+      const catBadges = (item.categories || []).map(cat => 
         `<span class="news-category" data-cat="${escapeHTML(cat)}">${escapeHTML(cat)}</span>`
       ).join(' ');
 
       // マッチ抜粋の作成
-      let snippet = post.content || '';
+      let snippet = item.content || '';
       if (terms.length > 0) {
         const firstTerm = terms[0];
         const termPos = snippet.toLowerCase().indexOf(firstTerm);
@@ -176,13 +184,20 @@
         }
       }
 
+      // 日付の表示（日付がある場合、またはNews/Researchの場合）
+      let dateHtml = '';
+      if (item.date && item.date !== 'DEMO' && item.date !== 'PAGE') {
+        dateHtml = `<span class="search-result-date">${escapeHTML(item.date)}</span>`;
+      }
+
       li.innerHTML = `
-        <a href="${post.url}" class="search-result-link">
+        <a href="${item.url}" class="search-result-link">
           <div class="search-result-meta">
-            <span class="search-result-date">${post.date}</span>
+            ${typeBadge}
+            ${dateHtml}
             <div class="search-result-categories">${catBadges}</div>
           </div>
-          <div class="search-result-title">${highlightText(post.title, terms)}</div>
+          <div class="search-result-title">${highlightText(item.title, terms)}</div>
           <div class="search-result-snippet">${highlightText(snippet, terms)}</div>
         </a>
       `;
@@ -211,6 +226,7 @@
   // イベント登録
   if (pcOpenBtn) pcOpenBtn.addEventListener('click', openModal);
   if (mobileOpenBtn) mobileOpenBtn.addEventListener('click', openModal);
+  if (footerOpenBtn) footerOpenBtn.addEventListener('click', openModal);
 
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
   modal.addEventListener('click', (e) => {
@@ -316,4 +332,3 @@
     setTimeout(loadSearchData, 1000);
   }
 })();
-

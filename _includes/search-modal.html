@@ -6,7 +6,7 @@
         <circle cx="11" cy="11" r="8"></circle>
         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
       </svg>
-      <input type="text" id="search-modal-input" class="search-modal-input" placeholder="お知らせ・記事を検索... (例: 学会名、題目)"
+      <input type="text" id="search-modal-input" class="search-modal-input" placeholder="サイト内を検索... (例: 学会名、DEMO、水族館、研究題目)"
         autocomplete="off" spellcheck="false">
       <button id="search-modal-clear" class="search-modal-clear" aria-label="入力をクリア"
         style="display: none;">&times;</button>
@@ -25,7 +25,7 @@
 
       <!-- 該当なし表示 -->
       <div id="search-modal-empty" class="search-modal-empty" style="display: none;">
-        <p class="search-empty-title">一致するお知らせは見つかりませんでした</p>
+        <p class="search-empty-title">一致するコンテンツは見つかりませんでした</p>
         <p class="search-empty-sub">別のキーワードや短い単語で試してみてください</p>
       </div>
 
@@ -33,18 +33,20 @@
       <div id="search-modal-hints" class="search-modal-hints">
         <p class="search-hints-title">キーワードで絞り込み</p>
         <div class="search-hint-tags">
+          <button type="button" class="search-hint-tag" data-query="DEMO"># DEMO</button>
+          <button type="button" class="search-hint-tag" data-query="物体検出"># 物体検出</button>
+          <button type="button" class="search-hint-tag" data-query="AR・MR"># AR・MR</button>
+          <button type="button" class="search-hint-tag" data-query="水族館"># 水族館</button>
           <button type="button" class="search-hint-tag" data-query="国際学会"># 国際学会</button>
           <button type="button" class="search-hint-tag" data-query="国内学会"># 国内学会</button>
-          <button type="button" class="search-hint-tag" data-query="研究発表会"># 研究発表会</button>
-          <button type="button" class="search-hint-tag" data-query="ポスター"># ポスター</button>
           <button type="button" class="search-hint-tag" data-query="受賞"># 受賞</button>
+          <button type="button" class="search-hint-tag" data-query="研究発表会"># 研究発表会</button>
         </div>
       </div>
     </div>
 
     <div class="search-modal-footer">
-      <a href="{{ '/news.html' | relative_url }}" id="search-modal-all-link" class="search-all-news-link">News一覧ページへ
-        &rarr;</a>
+      <a href="{{ '/news.html' | relative_url }}" id="search-modal-all-link" class="search-all-news-link">News一覧ページへ &rarr;</a>
     </div>
   </div>
 </div>

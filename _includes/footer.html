@@ -1,6 +1,22 @@
 <footer class="site-footer">
-  <div class="container">
-    &copy; {{ 'now' | date: "%Y" }} {{ site.author | default: "Portfolio" }}
+  <div class="container footer-inner">
+    <nav class="footer-nav" aria-label="フッターナビゲーション">
+      <a href="{{ '/' | relative_url }}">HOME</a>
+      <a href="{{ '/news.html' | relative_url }}">NEWS</a>
+      <a href="{{ '/research.html' | relative_url }}">RESEARCH</a>
+      <a href="{{ '/video-demo.html' | relative_url }}">DEMO</a>
+      <a href="{{ '/link.html' | relative_url }}">LINK</a>
+      <button type="button" class="footer-search-btn" id="footer-search-btn" aria-label="サイト内検索を開く">
+        <svg class="icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <span>検索</span>
+      </button>
+    </nav>
+    <div class="footer-copy">
+      &copy; {{ 'now' | date: "%Y" }} {{ site.author | default: "Portfolio" }}
+    </div>
   </div>
 </footer>
 

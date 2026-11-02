@@ -3,15 +3,119 @@ layout: null
 permalink: /assets/search-data.json
 ---
 [
-  {% assign visible_posts = site.posts | where_exp: "item", "item.hidden != true" %}
+  {% assign is_first = true %}
+  {% comment %}1. News (お知らせ・発表) - hidden: true または published: false を除外{% endcomment %}
+  {% assign visible_posts = site.posts | where_exp: "item", "item.hidden != true" | where_exp: "item", "item.published != false" %}
   {% for post in visible_posts %}
-  {
-    "title": {{ post.title | strip | jsonify }},
-    "url": {{ post.url | relative_url | jsonify }},
-    "date": {{ post.date | date: "%Y.%m.%d" | jsonify }},
-    "categories": {{ post.categories | jsonify }},
-    "content": {{ post.content | strip_html | strip_newlines | truncate: 500 | jsonify }}
-  }{% unless forloop.last %},{% endunless %}
+    {% unless is_first %},{% endunless %}
+    {
+      "type": "News",
+      "title": {{ post.title | strip | jsonify }},
+      "url": {{ post.url | relative_url | jsonify }},
+      "date": {{ post.date | date: "%Y.%m.%d" | jsonify }},
+      "categories": {{ post.categories | jsonify }},
+      "content": {{ post.content | strip_html | strip_newlines | truncate: 500 | jsonify }}
+    }
+    {% assign is_first = false %}
   {% endfor %}
-]
 
+  {% comment %}2. Research (研究一覧) - hidden: true または published: false を除外{% endcomment %}
+  {% assign visible_research = site.research | where_exp: "item", "item.hidden != true" | where_exp: "item", "item.published != false" %}
+  {% for r in visible_research %}
+    {% unless is_first %},{% endunless %}
+    {% capture r_content %}{{ r.summary }} {{ r.title_en }} {{ r.content | strip_html | strip_newlines | truncate: 500 }}{% endcapture %}
+    {% assign r_cats = r.keywords | default: r.tags %}
+    {
+      "type": "Research",
+      "title": {{ r.title | strip | jsonify }},
+      "url": {{ r.url | relative_url | jsonify }},
+      "date": {{ r.period | default: r.year | default: "Research" | jsonify }},
+      "categories": {{ r_cats | jsonify }},
+      "content": {{ r_content | strip | jsonify }}
+    }
+    {% assign is_first = false %}
+  {% endfor %}
+
+  {% comment %}3. DEMO (リアルタイム映像解析デモ 各機能・全体){% endcomment %}
+  {% unless is_first %},{% endunless %}
+  {
+    "type": "Demo",
+    "title": "リアルタイム映像解析デモ (Vision Demo Studio)",
+    "url": {{ '/video-demo.html' | relative_url | jsonify }},
+    "date": "DEMO",
+    "categories": ["DEMO", "映像解析", "AI", "Webカメラ"],
+    "content": "Webカメラを使用したリアルタイム映像解析デモ。ブラウザ完結で動作し、物体検出、表情検出、深度推定、顕著性マップ、オプティカルフロー、エッジ検出、AR・MR体験などが可能です。"
+  },
+  {
+    "type": "Demo",
+    "title": "物体検出 (Object Detection) - リアルタイム映像解析デモ",
+    "url": {{ '/video-demo.html?task=object' | relative_url | jsonify }},
+    "date": "DEMO",
+    "categories": ["DEMO", "物体検出", "AI", "YOLO"],
+    "content": "日常の物体80種類をリアルタイムに検出。バウンディングボックスおよび輪郭セグメンテーション（境界線マスク）をブラウザ上で実行します。"
+  },
+  {
+    "type": "Demo",
+    "title": "表情検出 (Facial Expression) - リアルタイム映像解析デモ",
+    "url": {{ '/video-demo.html?task=face' | relative_url | jsonify }},
+    "date": "DEMO",
+    "categories": ["DEMO", "表情検出", "感情分析", "Face-API"],
+    "content": "Webカメラ映像から顔の幾何学的特徴を捉え、笑顔や驚きなどの感情確率をリアルタイムに推定します。"
+  },
+  {
+    "type": "Demo",
+    "title": "深度推定 (Depth Estimation) - リアルタイム映像解析デモ",
+    "url": {{ '/video-demo.html?task=depth' | relative_url | jsonify }},
+    "date": "DEMO",
+    "categories": ["DEMO", "深度推定", "Depth Anything", "3D"],
+    "content": "単眼Webカメラ映像から手前と奥の相対距離を計算し、グレースケールやカラーヒートマップで3次元空間を可視化します。"
+  },
+  {
+    "type": "Demo",
+    "title": "顕著性マップ (Saliency Map) - リアルタイム映像解析デモ",
+    "url": {{ '/video-demo.html?task=saliency' | relative_url | jsonify }},
+    "date": "DEMO",
+    "categories": ["DEMO", "顕著性マップ", "視覚的注意", "AI"],
+    "content": "深層学習による視覚的注意推定と周波数スペクトル残差法を融合し、人間の視線が集まりやすい領域をリアルタイムに可視化します。"
+  },
+  {
+    "type": "Demo",
+    "title": "オプティカルフロー (Optical Flow) - リアルタイム映像解析デモ",
+    "url": {{ '/video-demo.html?task=flow' | relative_url | jsonify }},
+    "date": "DEMO",
+    "categories": ["DEMO", "オプティカルフロー", "動体追跡", "画像処理"],
+    "content": "連続する映像フレームのピクセル移動速度と方向ベクトルを検出し、動きの流れをカラーベクトルとして可視化します。"
+  },
+  {
+    "type": "Demo",
+    "title": "エッジ検出・線画化 (Edge Detection) - リアルタイム映像解析デモ",
+    "url": {{ '/video-demo.html?task=edge' | relative_url | jsonify }},
+    "date": "DEMO",
+    "categories": ["DEMO", "エッジ検出", "Canny", "Sobel", "線画化"],
+    "content": "Canny法やSobelフィルタによる勾配計算から物体の輪郭を抽出し、学会標準の赤線重畳や鉛筆スケッチ、ネオンアートにリアルタイム変換します。"
+  },
+  {
+    "type": "Demo",
+    "title": "AR・MR体験 (Mixed Reality / 水族館) - リアルタイム映像解析デモ",
+    "url": {{ '/video-demo.html?task=ar' | relative_url | jsonify }},
+    "date": "DEMO",
+    "categories": ["DEMO", "AR", "MR", "水族館", "Boids"],
+    "content": "カメラ映像上に仮想空間を重畳。BoidsアルゴリズムによるMR水族館の魚群シミュレーションや、手指姿勢推定による空間描画・給餌インタラクションを体験できます。"
+  },
+  {
+    "type": "Page",
+    "title": "Profile (プロフィール・略歴・資格)",
+    "url": {{ '/index.html#profile' | relative_url | jsonify }},
+    "date": "PAGE",
+    "categories": ["Profile", "自己紹介", "資格", "趣味"],
+    "content": "冨田 暁翔 (Akito Tomita) のプロフィール。資格（基本情報技術者、航空無線通信士、大型自動二輪免許など）、趣味（ツーリング、動画編集、プログラミング、スライド作成）。"
+  },
+  {
+    "type": "Page",
+    "title": "LINK (所属・研究室・関連リンク集)",
+    "url": {{ '/link.html' | relative_url | jsonify }},
+    "date": "PAGE",
+    "categories": ["LINK", "所属", "研究室", "SNS"],
+    "content": "大阪工業大学 情報科学部、Visual Computing 研究室 (VCL)、Researchmap、GitHub、公式SNSアカウントへのリンク一覧です。"
+  }
+]

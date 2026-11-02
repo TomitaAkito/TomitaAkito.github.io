@@ -1,4 +1,4 @@
-﻿:root {
+:root {
 
   --color-bg: #f8f9fa;
   --color-surface: #ffffff;
@@ -2865,4 +2865,216 @@ body.is-changing .page-transition-loader {
   .search-footer-shortcuts {
     display: none;
   }
+}
+
+
+/* ==========================================================================
+   サイト内検索（全サイト対応：DEMO, RESEARCH, PAGE 種別バッジ）
+   ========================================================================== */
+.search-type-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 1px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.search-type-news {
+  background: #eef2ff;
+  color: #4338ca;
+  border: 1px solid #c7d2fe;
+}
+
+.search-type-research {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.search-type-demo {
+  background: #fdf4ff;
+  color: #86198f;
+  border: 1px solid #f5d0fe;
+}
+
+.search-type-page {
+  background: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+/* ==========================================================================
+   フッターナビゲーション＆フッター検索ボタン
+   ========================================================================== */
+.site-footer {
+  padding: 44px 0 36px;
+  background: var(--color-bg, #fff);
+}
+
+.footer-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px 22px;
+}
+
+.footer-nav a {
+  color: var(--color-text);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  transition: color 0.2s ease;
+  text-decoration: none;
+}
+
+.footer-nav a:hover {
+  color: var(--color-main, #1e6fd9);
+}
+
+.footer-search-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 13px;
+  background: #f1f5f9;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.footer-search-btn:hover {
+  background: var(--color-main, #1e6fd9);
+  border-color: var(--color-main, #1e6fd9);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.footer-search-btn .icon-svg {
+  display: block;
+}
+
+.footer-copy {
+  color: var(--color-text-sub, #64748b);
+  font-size: 0.8rem;
+}
+
+
+/* ==========================================================================
+   サイト内検索（全サイト対応：DEMO, RESEARCH, PAGE 種別バッジ）
+   ========================================================================== */
+.search-type-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 1px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.search-type-news {
+  background: #eef2ff;
+  color: #4338ca;
+  border: 1px solid #c7d2fe;
+}
+
+.search-type-research {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.search-type-demo {
+  background: #fdf4ff;
+  color: #86198f;
+  border: 1px solid #f5d0fe;
+}
+
+.search-type-page {
+  background: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+/* ==========================================================================
+   フッターナビゲーション＆フッター検索ボタン
+   ========================================================================== */
+.site-footer {
+  padding: 44px 0 36px;
+  background: var(--color-bg, #fff);
+}
+
+.footer-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px 22px;
+}
+
+.footer-nav a {
+  color: var(--color-text);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  transition: color 0.2s ease;
+  text-decoration: none;
+}
+
+.footer-nav a:hover {
+  color: var(--color-main, #1e6fd9);
+}
+
+.footer-search-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 13px;
+  background: #f1f5f9;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.footer-search-btn:hover {
+  background: var(--color-main, #1e6fd9);
+  border-color: var(--color-main, #1e6fd9);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.footer-search-btn .icon-svg {
+  display: block;
+}
+
+.footer-copy {
+  color: var(--color-text-sub, #64748b);
+  font-size: 0.8rem;
 }
