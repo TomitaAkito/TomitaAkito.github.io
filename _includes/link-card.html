@@ -1,0 +1,88 @@
+{% comment %}
+  万能リンクカード (Link Card)
+  大学ニュース、学会・論文、Instagram、一般Webサイトの引用に対応。
+  画像（image）の有無やタグ（tag）の有無で柔軟に表示が切り替わります。
+{% endcomment %}
+
+{% assign c_url = include.url %}
+{% assign c_title = include.title %}
+{% assign c_image = include.image %}
+{% assign c_date = include.date %}
+{% assign c_tag = include.tag %}
+{% assign c_desc = include.description | default: include.desc | default: include.excerpt %}
+{% assign c_source = include.source | default: include.site_name %}
+
+{% comment %}タイプの自動判定（デザインのスタイル・アイコン用）{% endcomment %}
+{% assign c_type = include.type %}
+{% if c_type == nil or c_type == "" %}
+  {% if c_url contains "instagram.com" or c_tag == "Instagram" %}
+    {% assign c_type = "instagram" %}
+  {% elsif c_url contains "oit.ac.jp" or c_tag == "トピックス" or c_tag == "ニュース" %}
+    {% assign c_type = "univ" %}
+  {% elsif c_url contains "ieee" or c_url contains "ipsj" or c_url contains "iieej" or c_url contains "acm" or c_tag contains "学会" or c_tag contains "論文" %}
+    {% assign c_type = "academic" %}
+  {% else %}
+    {% assign c_type = "default" %}
+  {% endif %}
+{% endif %}
+
+{% comment %}出典（サイト名）のフォールバック{% endcomment %}
+{% if c_source == nil or c_source == "" %}
+  {% if c_type == "instagram" %}
+    {% assign c_source = "Instagram" %}
+  {% elsif c_type == "univ" %}
+    {% assign c_source = "大阪工業大学" %}
+  {% elsif c_type == "academic" %}
+    {% assign c_source = "学会・論文情報" %}
+  {% else %}
+    {% assign c_source = c_url | split: "://" | last | split: "/" | first %}
+  {% endif %}
+{% endif %}
+
+<div class="custom-link-card-wrap">
+  <a href="{{ c_url }}" target="_blank" rel="noopener noreferrer" class="custom-link-card custom-link-card--{{ c_type }}{% unless c_image and c_image != '' %} custom-link-card--no-image{% endunless %}" aria-label="{{ c_title }}">
+    
+    {% if c_image and c_image != "" %}
+      <div class="custom-link-card__thumb-box">
+        <img src="{{ c_image | relative_url }}" alt="{{ c_title }}" class="custom-link-card__img" loading="lazy">
+      </div>
+    {% endif %}
+
+    <div class="custom-link-card__body">
+      {% if (c_date and c_date != "") or (c_tag and c_tag != "") %}
+        <div class="custom-link-card__meta">
+          {% if c_date and c_date != "" %}
+            <span class="custom-link-card__date">{{ c_date }}</span>
+          {% endif %}
+          {% if c_tag and c_tag != "" %}
+            <span class="custom-link-card__badge custom-link-card__badge--{{ c_type }}">{{ c_tag }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <div class="custom-link-card__title">{{ c_title }}</div>
+
+      {% if c_desc and c_desc != "" %}
+        <p class="custom-link-card__desc">{{ c_desc }}</p>
+      {% endif %}
+
+      <div class="custom-link-card__footer">
+        <span class="custom-link-card__source">
+          {% if c_type == 'instagram' %}
+            <svg class="custom-link-card__icon custom-link-card__icon--instagram" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+          {% elsif c_type == 'univ' %}
+            <svg class="custom-link-card__icon custom-link-card__icon--univ" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          {% elsif c_type == 'academic' %}
+            <svg class="custom-link-card__icon custom-link-card__icon--academic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          {% else %}
+            <svg class="custom-link-card__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+          {% endif %}
+          <span class="custom-link-card__source-name">{{ c_source }}</span>
+        </span>
+        <span class="custom-link-card__arrow" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+        </span>
+      </div>
+    </div>
+  </a>
+</div>

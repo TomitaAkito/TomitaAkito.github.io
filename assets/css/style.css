@@ -3078,3 +3078,193 @@ body.is-changing .page-transition-loader {
   color: var(--color-text-sub, #64748b);
   font-size: 0.8rem;
 }
+
+
+/* ==========================================================================
+   万能リンクカード (Link Card) - 大学ニュース・学会・Instagram・Web引用
+   ========================================================================== */
+.custom-link-card-wrap {
+  margin: 28px auto;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.post-body a.custom-link-card,
+a.custom-link-card,
+.custom-link-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 440px;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e9ecef) !important;
+  border-bottom: 1px solid var(--color-border, #e9ecef) !important;
+  border-radius: var(--radius, 12px);
+  overflow: hidden;
+  text-decoration: none !important;
+  color: inherit !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.post-body a.custom-link-card:hover,
+a.custom-link-card:hover,
+.custom-link-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border-color: var(--color-main, #1e6fd9) !important;
+  border-bottom-color: var(--color-main, #1e6fd9) !important;
+}
+
+/* サムネイル画像領域 */
+.custom-link-card__thumb-box {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #f1f5f9;
+}
+
+.custom-link-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.custom-link-card:hover .custom-link-card__img {
+  transform: scale(1.02);
+}
+
+/* コンテンツ本文 */
+.custom-link-card__body {
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* メタ情報（日付・タグ） */
+.custom-link-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.custom-link-card__date {
+  font-size: 0.85rem;
+  color: var(--color-text-sub, #6c757d);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+/* タグバッジ（控えめで上品なスタイル） */
+.custom-link-card__badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  line-height: 1.4;
+  background: var(--color-bg, #f8f9fa);
+  color: var(--color-text-sub, #6c757d);
+  border: 1px solid var(--color-border, #e9ecef);
+}
+
+.custom-link-card__badge--univ {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.custom-link-card__badge--instagram {
+  background: #fdf2f8;
+  color: #be185d;
+  border-color: #fbcfe8;
+}
+
+.custom-link-card__badge--academic {
+  background: #f0fdf4;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+/* 記事タイトル */
+.custom-link-card__title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.55;
+  color: var(--color-text, #212529);
+  margin-bottom: 8px;
+  transition: color 0.2s ease;
+}
+
+.custom-link-card:hover .custom-link-card__title {
+  color: var(--color-main, #1e6fd9);
+}
+
+/* 概要・説明文 */
+.custom-link-card__desc {
+  font-size: 0.85rem;
+  color: var(--color-text-sub, #6c757d);
+  line-height: 1.55;
+  margin: 0 0 12px;
+}
+
+/* フッター（出典情報と矢印） */
+.custom-link-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 10px;
+  font-size: 0.82rem;
+  color: var(--color-text-sub, #6c757d);
+}
+
+.custom-link-card__source {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  color: var(--color-text-sub, #6c757d);
+}
+
+.custom-link-card__icon {
+  flex-shrink: 0;
+  display: block;
+  opacity: 0.75;
+}
+
+.custom-link-card__arrow {
+  color: var(--color-text-sub, #6c757d);
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.custom-link-card:hover .custom-link-card__arrow {
+  transform: translate(2px, -2px);
+  color: var(--color-main, #1e6fd9);
+}
+
+/* ==========================================================================
+   画像なし（no-image）カードのレイアウト
+   太い左線などは一切付けず、クリーンで自然なブログカードにする
+   ========================================================================== */
+.custom-link-card--no-image {
+  max-width: 580px;
+}
+
+.custom-link-card--no-image .custom-link-card__body {
+  padding: 20px 24px;
+}
+
+.custom-link-card--no-image .custom-link-card__title {
+  font-size: 1.05rem;
+  margin-bottom: 8px;
+}
